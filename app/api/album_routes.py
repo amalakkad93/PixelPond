@@ -7,7 +7,7 @@ album_routes = Blueprint('albums', __name__)
 # ***************************************************************
 # Endpoint to Get All Albums
 # ***************************************************************
-@album_routes.route('/')
+@album_routes.route('')
 def get_all_albums():
     try:
         albums = db.session.query(Album).all()
@@ -70,7 +70,7 @@ def update_album(id):
 # ***************************************************************
 # Endpoint to Create a Album
 # ***************************************************************
-@album_routes.route('/', methods=["POST"])
+@album_routes.route('', methods=["POST"])
 def create_album():
     try:
         data = request.get_json()
