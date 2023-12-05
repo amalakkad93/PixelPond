@@ -1,4 +1,17 @@
-from flask import Blueprint, jsonify, session, request
+import os
+import json
+import logging
+from tempfile import NamedTemporaryFile
+import pathlib
+import requests
+
+from google.oauth2 import id_token
+from google_auth_oauthlib.flow import Flow, InstalledAppFlow
+from pip._vendor import cachecontrol
+from google.auth.transport.requests import Request
+import google.auth.transport.requests
+
+from flask import ( Blueprint, jsonify, abort, redirect, request, current_app, session,)
 from app.models import User, db
 from app.forms import LoginForm
 from app.forms import SignUpForm
@@ -63,6 +76,9 @@ def sign_up():
     form['csrf_token'].data = request.cookies['csrf_token']
     if form.validate_on_submit():
         user = User(
+            first_name=form.data['first_name'],
+            last_name=form.data['last_name'],
+            age=form.data['age'],
             username=form.data['username'],
             email=form.data['email'],
             password=form.data['password']

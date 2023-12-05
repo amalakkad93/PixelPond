@@ -5,8 +5,7 @@ from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect, generate_csrf
 from flask_login import LoginManager
 from .models import db, User
-from .api.user_routes import user_routes
-from .api.auth_routes import auth_routes
+from .api import user_routes, auth_routes, album_routes, comment_routes, post_routes, favorite_routes, s3_routes
 from .seeds import seed_commands
 from .config import Config
 
@@ -26,8 +25,21 @@ def load_user(id):
 app.cli.add_command(seed_commands)
 
 app.config.from_object(Config)
+
+s3_client = app.config['S3_CLIENT']
+s3_location = app.config['S3_LOCATION']
+client_id = app.config['CLIENT_ID']
+client_secret = app.config['CLIENT_SECRET']
+base_url = app.config['BASE_URL']
+
 app.register_blueprint(user_routes, url_prefix='/api/users')
 app.register_blueprint(auth_routes, url_prefix='/api/auth')
+app.register_blueprint(album_routes, url_prefix="/api/albums")
+app.register_blueprint(comment_routes, url_prefix="/api/comments")
+app.register_blueprint(post_routes, url_prefix="/api/posts")
+app.register_blueprint(favorite_routes, url_prefix="/api/favorites")
+app.register_blueprint(s3_routes, url_prefix="/api/s3")
+
 db.init_app(app)
 Migrate(app, db)
 
