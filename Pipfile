@@ -67,6 +67,7 @@ virtualenv = "==20.24.5"
 werkzeug = "==3.0.1"
 wtforms = "==3.0.1"
 zipp = "==3.16.2"
+icecream = "*"
 
 [dev-packages]
 

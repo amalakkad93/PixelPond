@@ -5,3 +5,39 @@
 .hidden {
   display: none;
 }
+
+
+
+.navbar {
+  background-color: #2b1f3a;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5em 1em;
+}
+
+.navbar-logo .logo-img {
+  height: 50px;
+}
+
+.navbar-links {
+  list-style: none;
+  display: flex;
+  gap: 1em;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-links li a {
+  color: #ffffff;
+  text-decoration: none;
+  padding: 0.5em 1em;
+  transition: color 0.3s ease;
+}
+
+.navbar-links li a:hover, .navbar-links li a.active {
+  color: #ffcc00;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}

@@ -41,20 +41,36 @@ def authenticate():
     return {'errors': ['Unauthorized']}
 
 
+# @auth_routes.route('/login', methods=['POST'])
+# def login():
+#     """
+#     Logs a user in
+#     """
+#     form = LoginForm()
+#     # Get the csrf_token from the request cookie and put it into the
+#     # form manually to validate_on_submit can be used
+#     form['csrf_token'].data = request.cookies['csrf_token']
+#     if form.validate_on_submit():
+#         # Add the user to the session, we are logged in!
+#         user = User.query.filter(User.email == form.data['email']).first()
+#         login_user(user)
+#         return user.to_dict()
+#     return {'errors': validation_errors_to_error_messages(form.errors)}, 401
 @auth_routes.route('/login', methods=['POST'])
 def login():
     """
-    Logs a user in
+    Logs a user in using either email or username
     """
     form = LoginForm()
-    # Get the csrf_token from the request cookie and put it into the
-    # form manually to validate_on_submit can be used
     form['csrf_token'].data = request.cookies['csrf_token']
     if form.validate_on_submit():
-        # Add the user to the session, we are logged in!
-        user = User.query.filter(User.email == form.data['email']).first()
-        login_user(user)
-        return user.to_dict()
+        user_input = form.data['username_or_email']
+        user = User.query.filter((User.email == user_input) | (User.username == user_input)).first()
+        if user:
+            login_user(user)
+            return user.to_dict()
+        else:
+            return {'errors': ['Invalid username/email or password']}, 401
     return {'errors': validation_errors_to_error_messages(form.errors)}, 401
 
 

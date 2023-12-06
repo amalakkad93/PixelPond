@@ -11,6 +11,7 @@ def seed_users():
         age=30,
         username='Demo',
         email='demo@aa.io',
+        profile_picture= 'http://m.gettywallpapers.com/wp-content/uploads/2023/05/Cool-Anime-Pfp-Profile.jpg',
         password='password',
     )
     marnie = User(
@@ -19,6 +20,7 @@ def seed_users():
         age=28,
         username='marnie',
         email='marnie@aa.io',
+        profile_picture= 'http://m.gettywallpapers.com/wp-content/uploads/2023/05/Cool-Anime-Pfp.jpg',
         password='password',
     )
     bobbie = User(
@@ -27,12 +29,23 @@ def seed_users():
         age=25,
         username='bobbie',
         email='bobbie@aa.io',
+        profile_picture= 'https://avatarfiles.alphacoders.com/364/364930.jpg',
+        password='password',
+    )
+    josh = User(
+        first_name='josh',
+        last_name='Johnson',
+        age=29,
+        username='joshy',
+        email='josh@aa.io',
+        profile_picture= 'http://m.gettywallpapers.com/wp-content/uploads/2023/05/Cool-Anime-Profile-Image.jpg',
         password='password',
     )
 
     db.session.add(demo)
     db.session.add(marnie)
     db.session.add(bobbie)
+    db.session.add(josh)
     db.session.commit()
 
 

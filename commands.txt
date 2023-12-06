@@ -52,6 +52,11 @@ pip install Flask-Caching
 ✨ Install Google Auth Libraries:
 pip install google-auth google-auth-oauthlib
 
+
+=== Icecream log ===
+✨ Install icecream:
+$ pip install icecream
+
 ******************************************
 *********** Frontend Commands ************
 ******************************************
