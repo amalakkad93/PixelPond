@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { setLoading, setError } from "../../../store/ui";
 import { thunkGetAllPosts, thunkGetOwnerPosts } from "../../../store/posts";
 import { selectOwnerPosts, selectAllPosts, selectSessionUser  } from "../../../store/selectors";
@@ -7,6 +8,7 @@ import "./GetAllPosts.css";
 
 export default function GetPosts({ mode = "all" }) {
   const dispatch = useDispatch();
+  const history = useHistory();
   const { loading, error } = useSelector((state) => state.ui);
   const posts = useSelector( mode === "owner" ? selectOwnerPosts : selectAllPosts);
   const sessionUser = useSelector(selectSessionUser);
@@ -47,8 +49,8 @@ export default function GetPosts({ mode = "all" }) {
     <div className="center-container">
       <div className="posts-container">
         {posts.map((post) => (
-          <div key={post.id} className="post-item">
-            <img className= "main-image" src={post.photo_url} alt={`Banner for ${post.title}`} />
+          <div key={post.id} className="post-item" onClick={() => history.push(`/posts/${post.id}`)}>
+            <img className= "main-image" src={post.banner_url} alt={`Banner for ${post.title}`} />
 
             <div className="user-details">
               <img className="profile-picture" src={post.profile_picture} alt={post.username} />

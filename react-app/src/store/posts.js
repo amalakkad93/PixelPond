@@ -99,9 +99,9 @@ export const thunkGetAllPosts =
 // ***************************************************************
 //  Thunk to Fetch Details of a Specific Post
 // ***************************************************************
-
 export const thunkGetPostDetails = (postId) => async (dispatch) => {
   try {
+    dispatch(setLoading(true));
     const response = await fetch(`/api/posts/${postId}`);
 
     if (response.ok) {
@@ -110,26 +110,18 @@ export const thunkGetPostDetails = (postId) => async (dispatch) => {
       return post;
     } else {
       const errors = await response.json();
-      console.error(
-        `Error fetching details for post with ID ${postId}:`,
-        errors
-      );
       dispatch(
-        actionSetPostError(
-          errors.message || `Error fetching details for post with ID ${postId}.`
-        )
+        setError(errors.message || `Error fetching post with ID ${postId}.`)
       );
     }
   } catch (error) {
-    console.error(
-      `An error occurred while fetching details for post with ID ${postId}:`,
-      error
-    );
     dispatch(
-      actionSetPostError(
-        `An error occurred while fetching details for post with ID ${postId}.`
+      setError(
+        `An error occurred while fetching post with ID ${postId}: ${error}`
       )
     );
+  } finally {
+    dispatch(setLoading(false));
   }
 };
 
@@ -259,7 +251,7 @@ export const thunkDeletePost = (postId) => async (dispatch) => {
 // It's a pure function, meaning it doesn't produce side effects and will always return the same output for the same input.
 
 const initialState = {
-  posts: { byId: {}, allIds: [] },
+  AllPosts: { byId: {}, allIds: [] },
   ownerPosts: { byId: {}, allIds: [] },
   singlePost: {},
 };
@@ -271,41 +263,42 @@ const initialState = {
  * @returns {Object} The updated state after applying the action.
  */
 export default function reducer(state = initialState, action) {
+  let newState;
   switch (action.type) {
     case GET_ALL_POSTS:
-      return {
-        ...state,
-        posts: {
-          byId: { ...state.posts.byId, ...action.posts.byId },
-          allIds: [...new Set([...state.posts.allIds, ...action.posts.allIds])],
-        },
+      newState = { ...state, AllPosts: { byId: {}, allIds: [] } };
+      newState.AllPosts = {
+        byId: { ...newState.AllPosts.byId, ...action.posts.byId },
+        allIds: [
+          ...new Set([...newState.AllPosts.allIds, ...action.posts.allIds]),
+        ],
       };
-      
-    case GET_OWNER_POSTS:
-      return {
-        ...state,
-        ownerPosts: {
-          byId: { ...state.posts.byId, ...action.posts.byId },
-          allIds: [...new Set([...state.posts.allIds, ...action.posts.allIds])],
-        },
-      };
-    // case GET_SINGLE_POST:
-    // // ... (Your existing reducer code for GET_SINGLE_POST)
+      return newState;
 
-    // case GET_OWNER_POSTS:
-    // // ... (Your existing reducer code for GET_OWNER_POSTS)
+    case GET_OWNER_POSTS:
+      newState = { ...state, ownerPosts: { byId: {}, allIds: [] } };
+      newState.ownerPosts = {
+        byId: { ...newState.ownerPosts.byId, ...action.posts.byId },
+        allIds: [
+          ...new Set([...newState.ownerPosts.allIds, ...action.posts.allIds]),
+        ],
+      };
+      return newState;
+
+    case GET_SINGLE_POST:
+      newState = { ...state, singlePost: {} };
+      newState.singlePost = action.post;
+      return newState;
+
 
     // case CREATE_POST:
-    // // ... (Your existing reducer code for CREATE_POST)
+    // // ...
 
     // case UPDATE_POST:
-    // // ... (Your existing reducer code for UPDATE_POST)
+    // // ...
 
     // case DELETE_POST:
-    // // ... (Your existing reducer code for DELETE_POST)
-
-    // case SET_POST_ERROR:
-    // // ... (Your existing reducer code for SET_POST_ERROR)
+    // // ...
 
     default:
       return state;

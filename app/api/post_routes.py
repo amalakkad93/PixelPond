@@ -112,6 +112,7 @@ def get_post_detail(id):
     """
     try:
         post = Post.query.get(id)
+        ic(post)
         if not post:
             return jsonify({"error": "Post not found."}), 404
         return jsonify(post.to_dict())

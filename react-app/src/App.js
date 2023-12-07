@@ -4,6 +4,7 @@ import { Route, Switch } from "react-router-dom";
 import SignupFormModal from "./components/SignupFormModal";
 import LoginFormModal from "./components/LoginFormModal";
 import GetPosts from "./components/Posts/GetPosts";
+import PostDetail from "./components/Posts/PostDetail";
 import { authenticate } from "./store/session";
 import Navigation from "./components/Navigation";
 
@@ -22,6 +23,9 @@ function App() {
           <Route path="/login" ><LoginFormModal /></Route>
           <Route path="/signup"><SignupFormModal /></Route>
           <Route path="/posts/all"><GetPosts mode="all" /></Route>
+          <Route path="/posts/owner"><GetPosts mode="owner" /></Route>
+          <Route path="/posts/:postId"><PostDetail /></Route>
+
         </Switch>
       )}
     </>
