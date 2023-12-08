@@ -2,11 +2,16 @@ import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
 import session from './session'
 import posts from './posts'
+import albums from './albums';
+import paginations from './paginations'
 import ui from './ui'
 
 const rootReducer = combineReducers({
   session,
   posts,
+  albums,
+
+  paginations,
   ui
 });
 

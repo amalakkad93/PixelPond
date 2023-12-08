@@ -1,0 +1,34 @@
+.photo-stream-container {
+  /* Your existing styles */
+}
+
+.album-navigation {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  font-size: 18px;
+}
+
+.album-navigation a {
+  margin: 0 15px;
+  text-decoration: none;
+  color: #333;
+}
+
+.album-navigation .active {
+  color: #007bff;
+  font-weight: bold;
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+  padding: 20px;
+}
+
+.photo-grid .lazy-load-image-background {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}

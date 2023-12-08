@@ -19,9 +19,20 @@ export const selectAllPostsById = ((state) => state.posts?.AllPosts?.byId || {},
 export const selectSinglePost = ((state) => state.posts.singlePost);
 
 
+
+
 // =========================================================
 //               ****Album UseSelectors****
 // =========================================================
+export const selectAlbumImages = (state) => {
+  const { byId, allIds } = state.albums.singleAlbum;
+  return allIds.map(id => byId[id]);
+};
+export const selectAlbumUserInfo = (state) => state.albums.userInfo;
+
+
+
+
 
 // =========================================================
 //               ****Favorite UseSelectors****
@@ -30,3 +41,10 @@ export const selectSinglePost = ((state) => state.posts.singlePost);
 // =========================================================
 //               ****Comment UseSelectors****
 // =========================================================
+
+
+// =========================================================
+//               ****Paginations UseSelectors****
+// =========================================================
+export const selectCurrentPage = (state) => state.paginations.currentPage;
+export const selectTotalPages = (state) => state.paginations.totalPages;

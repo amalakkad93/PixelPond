@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+
 import { setLoading, setError } from "../../../store/ui";
 import { thunkGetAllPosts, thunkGetOwnerPosts } from "../../../store/posts";
-import { selectOwnerPosts, selectAllPosts, selectSessionUser  } from "../../../store/selectors";
+import { selectOwnerPosts, selectAllPosts, selectSessionUser, selectCurrentPage, selectTotalPages  } from "../../../store/selectors";
+
+import Pagination from "../../Pagination";
 import "./GetAllPosts.css";
 
 export default function GetPosts({ mode = "all" }) {
@@ -12,8 +17,13 @@ export default function GetPosts({ mode = "all" }) {
   const { loading, error } = useSelector((state) => state.ui);
   const posts = useSelector( mode === "owner" ? selectOwnerPosts : selectAllPosts);
   const sessionUser = useSelector(selectSessionUser);
-  const [currentPage, setCurrentPage] = useState(1);
+  const currentPage = useSelector(selectCurrentPage);
 
+  // const [currentPage, setCurrentPage] = useState(1);
+
+
+  // const [totalPages, setTotalPages] = useState(0);
+  const userId = selectSessionUser?.id;
   const perPage = 10;
 
   useEffect(() => {
@@ -22,10 +32,9 @@ export default function GetPosts({ mode = "all" }) {
         dispatch(setLoading(true));
 
         if (mode === "owner") {
-          await dispatch(thunkGetOwnerPosts());
+          await dispatch(thunkGetOwnerPosts(userId, currentPage, perPage));
         } else {
-          const res = await dispatch(thunkGetAllPosts(currentPage, perPage));
-          console.log("🚀 ~ file: index.js:23 ~ fetchData ~ res:", res);
+          await dispatch(thunkGetAllPosts(currentPage, perPage));
         }
 
         dispatch(setLoading(false));
@@ -39,17 +48,16 @@ export default function GetPosts({ mode = "all" }) {
   }, [dispatch, currentPage, perPage, mode]);
 
 
-  console.log("🚀 ~ file: index.js:37 ~ GetPosts ~ posts:", posts);
 
-  if (!posts || posts.length === 0) {
-    return null;
-  }
+  if (!posts || posts.length === 0) return null;
+
 
   return (
     <div className="center-container">
       <div className="posts-container">
         {posts.map((post) => (
-          <div key={post.id} className="post-item" onClick={() => history.push(`/posts/${post.id}`)}>
+          // <div key={post.id} className="post-item" onClick={() => history.push(`/posts/${post.id}`)}>
+          <div key={post.id} className="post-item" onClick={() => history.push(`/albums/${post.album_id}`)}>
             <img className= "main-image" src={post.banner_url} alt={`Banner for ${post.title}`} />
 
             <div className="user-details">
@@ -62,6 +70,7 @@ export default function GetPosts({ mode = "all" }) {
           </div>
         ))}
       </div>
+      <Pagination />
     </div>
   );
 }

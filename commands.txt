@@ -75,7 +75,11 @@ npm install js-cookie
 
 === Font Awesome Heart Icon ===
 ✨ Install Font Awesome Icons:
+npm install --save @fortawesome/react-fontawesome
 npm install @fortawesome/free-regular-svg-icons
+npm install --save @fortawesome/free-solid-svg-icons
+
+
 
 === Image Magnification Feature ===
 ✨ Add Image Magnifier:

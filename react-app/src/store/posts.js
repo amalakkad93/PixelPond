@@ -1,5 +1,8 @@
+// import { normalizeArray, fetchPaginatedData } from "../assets/helpers/storesHelpers";
 import { normalizeArray } from "../assets/helpers/storesHelpers";
+import { fetchPaginatedData } from "./paginations";
 import { setLoading, setError } from "./ui";
+
 /** Action type to handle fetching all posts */
 const GET_ALL_POSTS = "posts/GET_ALL_POSTS";
 
@@ -22,9 +25,10 @@ const DELETE_POST = "posts/DELETE_POST";
 const SET_POST_ERROR = "posts/SET_POST_ERROR";
 
 /** Creates an action to set all available posts in the store */
-const actionGetAllPosts = (posts) => ({
+const actionGetAllPosts = (posts, metadata)  => ({
   type: GET_ALL_POSTS,
   posts,
+  // metadata,
 });
 
 /** Creates an action to set details of a specific post in the store */
@@ -34,10 +38,13 @@ const actionGetSinglePost = (post) => ({
 });
 
 /** Creates an action to set posts owned by a user in the store */
-const actionGetOwnerPosts = (posts) => ({
+const actionGetOwnerPosts = (posts, metadata)  => ({
   type: GET_OWNER_POSTS,
   posts,
+  // metadata,
 });
+
+
 
 /** Creates an action to handle creating a new post */
 const actionCreatePost = (post) => ({
@@ -72,29 +79,41 @@ const actionSetPostError = (errorMessage) => ({
 // ***************************************************************
 //  Thunk to Fetch All Posts
 // ***************************************************************
-export const thunkGetAllPosts =
-  (page = 1, perPage = 10) =>
-  async (dispatch) => {
-    try {
-      dispatch(setLoading(true));
-      const queryParams = new URLSearchParams({ page, per_page: perPage });
-      const response = await fetch(`/api/posts/all?${queryParams.toString()}`);
+// Thunk to fetch all posts with pagination
+export const thunkGetAllPosts = (page, perPage) => {
 
-      if (response.ok) {
-        const { posts } = await response.json();
-        const normalizedPosts = normalizeArray(posts);
-        dispatch(actionGetAllPosts(normalizedPosts));
-        return normalizedPosts;
-      } else {
-        const errors = await response.json();
-        dispatch(setError(errors.error || "Error creating post."));
-      }
-    } catch (error) {
-      dispatch(setError("An error occurred while creating the post."));
-    } finally {
-      dispatch(setLoading(false));
-    }
-  };
+  return fetchPaginatedData('/api/posts/all', [actionGetAllPosts], page, perPage);
+};
+
+// Thunk to fetch posts owned by a user with pagination
+export const thunkGetOwnerPosts = (userId, page, perPage) => {
+  return fetchPaginatedData(`/api/posts/owner/${userId}`,[ actionGetOwnerPosts], page, perPage);
+};
+
+// export const thunkGetAllPosts =
+//   (page = 1, perPage = 10) =>
+//   async (dispatch) => {
+//     try {
+//       dispatch(setLoading(true));
+//       const queryParams = new URLSearchParams({ page, per_page: perPage });
+//       const response = await fetch(`/api/posts/all?${queryParams.toString()}`);
+
+//       console.log("🚀 ~ file: posts.js:83 ~ response:", response)
+//       if (response.ok) {
+//         const { posts } = await response.json();
+//         const normalizedPosts = normalizeArray(posts);
+//         dispatch(actionGetAllPosts(normalizedPosts));
+//         return normalizedPosts;
+//       } else {
+//         const errors = await response.json();
+//         dispatch(setError(errors.error || "Error creating post."));
+//       }
+//     } catch (error) {
+//       dispatch(setError("An error occurred while creating the post."));
+//     } finally {
+//       dispatch(setLoading(false));
+//     }
+//   };
 
 // ***************************************************************
 //  Thunk to Fetch Details of a Specific Post
@@ -129,26 +148,26 @@ export const thunkGetPostDetails = (postId) => async (dispatch) => {
 //  Thunk to Fetch Posts Owned by a User
 // ***************************************************************
 
-export const thunkGetOwnerPosts = () => async (dispatch) => {
-  try {
-    dispatch(setLoading(true));
-    const response = await fetch(`/api/posts/owned`);
+// export const thunkGetOwnerPosts = () => async (dispatch) => {
+//   try {
+//     dispatch(setLoading(true));
+//     const response = await fetch(`/api/posts/owned`);
 
-    if (response.ok) {
-      const posts = await response.json();
-      const normalizedOwenrPosts = normalizeArray(posts);
-      dispatch(actionGetOwnerPosts(normalizedOwenrPosts));
-      return normalizedOwenrPosts;
-    } else {
-      const errors = await response.json();
-      dispatch(setError(errors.error || "Error fetching owner's posts."));
-    }
-  } catch (error) {
-    dispatch(setError("An error occurred while fetching owner's posts."));
-  } finally {
-    dispatch(setLoading(false));
-  }
-};
+//     if (response.ok) {
+//       const posts = await response.json();
+//       const normalizedOwenrPosts = normalizeArray(posts);
+//       dispatch(actionGetOwnerPosts(normalizedOwenrPosts));
+//       return normalizedOwenrPosts;
+//     } else {
+//       const errors = await response.json();
+//       dispatch(setError(errors.error || "Error fetching owner's posts."));
+//     }
+//   } catch (error) {
+//     dispatch(setError("An error occurred while fetching owner's posts."));
+//   } finally {
+//     dispatch(setLoading(false));
+//   }
+// };
 
 // ***************************************************************
 //  Thunk to Create a New Post
@@ -254,6 +273,8 @@ const initialState = {
   AllPosts: { byId: {}, allIds: [] },
   ownerPosts: { byId: {}, allIds: [] },
   singlePost: {},
+  // currentPage: 1,
+  // totalPages: 1,
 };
 
 /**

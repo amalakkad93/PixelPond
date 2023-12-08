@@ -5,6 +5,7 @@ import SignupFormModal from "./components/SignupFormModal";
 import LoginFormModal from "./components/LoginFormModal";
 import GetPosts from "./components/Posts/GetPosts";
 import PostDetail from "./components/Posts/PostDetail";
+import AlbumImages from "./components/Albums/AlbumImages";
 import { authenticate } from "./store/session";
 import Navigation from "./components/Navigation";
 
@@ -25,6 +26,7 @@ function App() {
           <Route path="/posts/all"><GetPosts mode="all" /></Route>
           <Route path="/posts/owner"><GetPosts mode="owner" /></Route>
           <Route path="/posts/:postId"><PostDetail /></Route>
+          <Route path="/albums/:albumId"><AlbumImages /></Route>
 
         </Switch>
       )}
