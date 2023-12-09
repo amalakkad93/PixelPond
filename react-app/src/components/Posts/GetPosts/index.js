@@ -57,7 +57,8 @@ export default function GetPosts({ mode = "all" }) {
       <div className="posts-container">
         {posts.map((post) => (
           // <div key={post.id} className="post-item" onClick={() => history.push(`/posts/${post.id}`)}>
-          <div key={post.id} className="post-item" onClick={() => history.push(`/albums/${post.album_id}`)}>
+          // <div key={post.id} className="post-item" onClick={() => history.push(`/albums/${post.album_id}`)}>
+          <div key={post.id} className="post-item" onClick={() => history.push(`/posts/users/${post.owner_id}`)}>
             <img className= "main-image" src={post.banner_url} alt={`Banner for ${post.title}`} />
 
             <div className="user-details">

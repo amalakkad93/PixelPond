@@ -11,13 +11,19 @@ export const selectUserId = selectSessionUser?.id;
 // =========================================================
 
 // Select all posts as an array
-export const selectAllPosts = (state) => state.posts?.AllPosts?.allIds.map((id) => state.posts.AllPosts.byId[id]|| {}, shallowEqual);
+export const selectAllPosts = (state) => state.posts?.allPosts?.allIds.map((id) => state.posts.allPosts.byId[id]|| {}, shallowEqual);
 export const selectOwnerPosts = (state) => state.posts?.ownerPosts?.allIds.map((id) => state.posts.ownerPosts.byId[id]|| {}, shallowEqual);
 // Select all posts by ID as an object (normalized structure)
-export const selectAllPostsById = ((state) => state.posts?.AllPosts?.byId || {}, shallowEqual);
+export const selectAllPostsById = ((state) => state.posts?.allPosts?.byId || {}, shallowEqual);
 // Select a single post
 export const selectSinglePost = ((state) => state.posts.singlePost);
 
+export const selectUserPosts = (state) => state.posts?.userPosts?.allIds.map((id) => state.posts.userPosts.byId[id] || [], shallowEqual);
+// Selector to get profile picture from the first post in userPosts
+export const selectFirstUserPostProfilePicture = (state) => {
+  const firstPostId = state.posts.userPosts.allIds[0];
+  return state.posts.userPosts.byId[firstPostId]?.profile_picture;
+};
 
 
 
@@ -28,7 +34,12 @@ export const selectAlbumImages = (state) => {
   const { byId, allIds } = state.albums.singleAlbum;
   return allIds.map(id => byId[id]);
 };
-export const selectAlbumUserInfo = (state) => state.albums.userInfo;
+export const selectAllAlbums = (state) => {
+
+  const { userAlbums } = state.albums;
+  return userAlbums.allIds.map((id) => userAlbums.byId[id]);
+};
+export const selectAlbumUserInfo = (state) => state.albums.userInfo.user_info;
 
 
 

@@ -15,6 +15,7 @@ export const actionSetTotalPages = (totalPages) => ({
   type: SET_TOTAL_PAGES,
   totalPages,
 });
+
 export const fetchPaginatedData = (
   url,
   actionCreators = [],
@@ -22,7 +23,9 @@ export const fetchPaginatedData = (
   perPage = 10,
   additionalParams = {},
   customHeaders = {},
-  customErrorHandling = null
+  customErrorHandling = null,
+  normalizeFlags = [],
+  dataName
 ) => async (dispatch) => {
   dispatch(setLoading(true));
   try {
@@ -33,18 +36,21 @@ export const fetchPaginatedData = (
 
     if (response.ok) {
       const data = await response.json();
-      console.log("🚀 ~ file: paginations.js:37 ~ )=> ~ data :", data);
 
-      // Dispatch each action creator with the fetched data
-      dispatch(actionCreators[0](normalizeArray(data.items)));
-      dispatch(actionCreators[1](data.user_info));
-      console.log("🚀 ~ file: paginations.js:41 ~ )=> ~ actionCreators[1](data.userInfo):", actionCreators[1](data.user_info))
+      // Dispatch each action creator with the appropriate data
 
-      // actionCreators.forEach((actionCreator) => {
-      //   dispatch(actionCreator(normalizeArray(data.items)));
-      // });
+      actionCreators.forEach((actionCreator, index) => {
+        if (typeof actionCreator === 'function') {
+          const normalizeFlag = normalizeFlags[index] !== undefined ? normalizeFlags[index] : true;
+          if (normalizeFlag) {
+            dispatch(actionCreator(normalizeArray(data[dataName])));
+          } else {
+            dispatch(actionCreator(data)); // Dispatch without normalizeArray
+          }
+        }
+      });
 
-      dispatch(actionSetTotalPages(data.total_pages));
+      dispatch(actionSetTotalPages(data.total_pages || 1));
       dispatch(actionSetCurrentPage(page));
     } else {
       const errors = await response.json();
@@ -64,9 +70,10 @@ export const fetchPaginatedData = (
     dispatch(setLoading(false));
   }
 };
+
 // export const fetchPaginatedData = (
 //   url,
-//   actionCreator,
+//   actionCreators = [],
 //   page = 1,
 //   perPage = 10,
 //   additionalParams = {},
@@ -82,13 +89,16 @@ export const fetchPaginatedData = (
 
 //     if (response.ok) {
 //       const data = await response.json();
-//       console.log("🚀 ~ file: paginations.js:37 ~ )=> ~ data :", data )
 
-//       // dispatch(actionCreator(normalizeArray(data.items)));
-//       dispatch(actionCreator(normalizeArray(data.items)));
-//       // dispatch(actionCreator(data.));
-//       // dispatch(actionCreator(data));
-//       dispatch(actionSetTotalPages(data.total_pages));
+//       // Dispatch each action creator with the appropriate data
+//       actionCreators.forEach((actionCreator) => {
+//         if (typeof actionCreator === 'function') {
+//           dispatch(actionCreator(normalizeArray(data.items)));
+//         }
+//       });
+//       // dispatch(actionCreators(data));
+
+//       dispatch(actionSetTotalPages(data.total_pages || 1));
 //       dispatch(actionSetCurrentPage(page));
 //     } else {
 //       const errors = await response.json();
@@ -108,6 +118,8 @@ export const fetchPaginatedData = (
 //     dispatch(setLoading(false));
 //   }
 // };
+
+
 
 // Reducer
 const initialState = {

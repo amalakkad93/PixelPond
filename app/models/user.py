@@ -17,6 +17,8 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(255), nullable=False, unique=True)
     hashed_password = db.Column(db.String(255), nullable=False)
     profile_picture = db.Column(db.String(255), nullable=True)
+    about_me = db.Column(db.Text, nullable=True)
+    country = db.Column(db.String(255), nullable=True)
 
     @property
     def password(self):

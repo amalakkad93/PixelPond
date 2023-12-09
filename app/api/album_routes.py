@@ -1,9 +1,9 @@
-import logging
 from flask import Blueprint, jsonify, request
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import Album, Image, Post, User, db
 from icecream import ic
 from .. import helper_functions as hf
+import logging
 
 # Set up logging to capture error messages and other logs.
 logging.basicConfig(level=logging.INFO)
@@ -18,8 +18,7 @@ album_routes = Blueprint('albums', __name__)
 def get_all_albums():
     try:
         albums_query = Album.query.order_by(Album.created_at.desc())
-        result = hf.paginate_query(albums_query)
-        return jsonify(result)
+        return jsonify(albums_query)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -35,6 +34,28 @@ def get_albums_of_current_user():
         return jsonify([resource.to_dict() for resource in albums])
     except Exception as e:
         return jsonify({"error": "An error occurred while fetching the albums."}), 500
+
+# ***************************************************************
+# Endpoint to Get Albums of a Specific User
+# ***************************************************************
+@album_routes.route('/user/<int:user_id>')
+def get_albums_by_user_id(user_id):
+    """
+    Retrieve albums created by a specific user.
+    Parameters:
+        - user_id (int): The ID of the user whose albums are to be retrieved.
+    Returns:
+        Response: A JSON object with the user's albums or an error message.
+    """
+    try:
+        albums_query = Album.query.filter_by(user_id=user_id)
+        paginated_albums = hf.paginate_query(albums_query, 'albums')
+        return jsonify(paginated_albums)
+    except Exception as e:
+        logging.error(f"Error fetching albums for user (ID: {user_id}): {e}")
+        return jsonify({"error": "An error occurred while fetching the albums."}), 500
+
+
 
 # ***************************************************************
 # Endpoint to Get Images of an Album with Pagination
@@ -81,8 +102,6 @@ def get_album_images(id):
 
         # Return a user-friendly error response
         return jsonify({"error": "An error occurred while fetching album images."}), 500
-
-
 
 # ***************************************************************
 # Endpoint to Edit a Album

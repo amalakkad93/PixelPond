@@ -6,6 +6,7 @@ import { setLoading, setError } from "./ui";
 export const GET_ALBUMS = "albums/GET_ALBUMS";
 export const GET_ALBUM_IMAGES = "albums/GET_ALBUM_IMAGES";
 export const GET_USER_INFO = "albums/GET_USER_INFO";
+export const GET_ALBUMS_BY_USER_ID = "albums/GET_ALBUMS_BY_USER_ID";
 
 // Action Creators
 export const actionGetAlbums = (albums) => ({
@@ -20,6 +21,12 @@ export const actionGetAlbumImages = (album, userInfo) => ({
   userInfo,
 });
 
+// Action creator for albums by user id
+export const actionGetAlbumsByUserId = (albums) => ({
+  type: GET_ALBUMS_BY_USER_ID,
+  albums,
+});
+
 // Action Creator for user info
 export const actionGetUserInfo = (userInfo) => ({
   type: GET_USER_INFO,
@@ -32,7 +39,26 @@ export const ThunkGetAlbumImages = (albumId, page, perPage) => {
     `/api/albums/${albumId}/images`,
     [actionGetAlbumImages, actionGetUserInfo],
     page,
-    perPage
+    perPage,
+    {},
+    {},
+    null,
+    [true, false],
+    'images'
+  );
+};
+
+export const thunkGetAlbumsByUserId = (userId, page, perPage) => {
+  return fetchPaginatedData(
+    `/api/albums/user/${userId}`,
+    [actionGetAlbumsByUserId],
+    page,
+    perPage,
+    {},
+    {},
+    null,
+    [true],
+    'albums'
   );
 };
 
@@ -41,6 +67,7 @@ const initialState = {
   allAlbums: { byId: {}, allIds: [] },
   ownerAlbums: { byId: {}, allIds: [] },
   singleAlbum: { byId: {}, allIds: [] },
+  userAlbums: { byId: {}, allIds: [] },
   userInfo: {},
 };
 
@@ -81,11 +108,22 @@ export default function reducer(state = initialState, action) {
       };
 
       return newState;
+      case GET_ALBUMS_BY_USER_ID:
+        newState = { ...state, userAlbums: { byId: {}, allIds: [] } };
+        newState.userAlbums = {
+          byId: { ...action.album.byId },
+          allIds: [...action.album.allIds],
+        };
+    // case GET_USER_INFO:
+    //   newState = { ...state, userInfo: {} };
+    //   newState.userInfo = { ...action.userInfo };
+    //   return newState;
+
     case GET_USER_INFO:
       newState = { ...state, userInfo: {} };
       newState.userInfo = { ...action.userInfo };
       return newState;
-    
+
     default:
       return state;
   }

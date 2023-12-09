@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import joinedload
 from http import HTTPStatus
 from app.models import Post, User, db
 from .. import helper_functions as hf
@@ -16,8 +17,6 @@ logger = logging.getLogger(__name__)
 # ***************************************************************
 # Endpoint to Get All Posts
 # ***************************************************************
-
-
 @post_routes.route('/all')
 def get_all_posts():
     try:
@@ -46,6 +45,40 @@ def get_posts_of_current_user():
     except Exception as e:
         logging.error(f"Error fetching current user's posts: {e}")
         return jsonify({"error": "An error occurred while fetching the posts."}), 500
+
+# ***************************************************************
+# Endpoint to Get Posts by User ID
+# ***************************************************************
+@post_routes.route('/user/<int:user_id>')
+def get_posts_by_user_id(user_id):
+    try:
+        posts_query = Post.query.filter(Post.owner_id == user_id)
+        paginated_result = hf.paginate_query(
+            posts_query,
+            'user_posts',
+            process_item_callback=hf.add_images_to_post
+        )
+        return jsonify(paginated_result)
+    except Exception as e:
+        logging.error(f"Error fetching posts for user (ID: {user_id}): {e}")
+        return jsonify({"error": "An error occurred while fetching the posts."}), 500
+
+# @post_routes.route('/user/<int:user_id>')
+# def get_posts_by_user_id(user_id):
+#     """
+#     Retrieve posts created by a specific user with pagination.
+#     Parameters:
+#         - user_id (int): The ID of the user.
+#     Returns:
+#         Response: A JSON object with user's posts or an error message.
+#     """
+#     try:
+#         posts_query = Post.query.filter(Post.owner_id == user_id)
+#         paginated_result = hf.paginate_query(posts_query, 'user_posts')
+#         return jsonify(paginated_result)
+#     except Exception as e:
+#         logging.error(f"Error fetching posts for user (ID: {user_id}): {e}")
+#         return jsonify({"error": "An error occurred while fetching the posts."}), 500
 
 # ***************************************************************
 # Endpoint to Get Details of a Post by Id

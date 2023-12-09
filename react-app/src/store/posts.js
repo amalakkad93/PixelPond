@@ -6,11 +6,14 @@ import { setLoading, setError } from "./ui";
 /** Action type to handle fetching all posts */
 const GET_ALL_POSTS = "posts/GET_ALL_POSTS";
 
-/** Action type to handle fetching details of a single post */
-const GET_SINGLE_POST = "posts/GET_SINGLE_POST";
-
 /** Action type to handle fetching posts owned by a user */
 const GET_OWNER_POSTS = "posts/GET_OWNER_POSTS";
+
+/** Action type to handle fetching posts by a user ID */
+const GET_POSTS_BY_USER_ID = "posts/GET_POSTS_BY_USER_ID";
+
+/** Action type to handle fetching details of a single post */
+const GET_SINGLE_POST = "posts/GET_SINGLE_POST";
 
 /** Action type to handle creating a new post */
 const CREATE_POST = "posts/CREATE_POST";
@@ -25,10 +28,15 @@ const DELETE_POST = "posts/DELETE_POST";
 const SET_POST_ERROR = "posts/SET_POST_ERROR";
 
 /** Creates an action to set all available posts in the store */
-const actionGetAllPosts = (posts, metadata)  => ({
+const actionGetAllPosts = (posts) => ({
   type: GET_ALL_POSTS,
   posts,
-  // metadata,
+});
+
+/** Creates an action to get all the user available posts in the store */
+const actionGetPostsByUserId = (posts) => ({
+  type: GET_POSTS_BY_USER_ID,
+  posts,
 });
 
 /** Creates an action to set details of a specific post in the store */
@@ -38,13 +46,10 @@ const actionGetSinglePost = (post) => ({
 });
 
 /** Creates an action to set posts owned by a user in the store */
-const actionGetOwnerPosts = (posts, metadata)  => ({
+const actionGetOwnerPosts = (posts) => ({
   type: GET_OWNER_POSTS,
   posts,
-  // metadata,
 });
-
-
 
 /** Creates an action to handle creating a new post */
 const actionCreatePost = (post) => ({
@@ -77,43 +82,56 @@ const actionSetPostError = (errorMessage) => ({
 // Instead of returning action objects directly, they return a function that can dispatch multiple actions.
 
 // ***************************************************************
-//  Thunk to Fetch All Posts
+//  Thunk to Fetch All Posts With Pagination
 // ***************************************************************
-// Thunk to fetch all posts with pagination
 export const thunkGetAllPosts = (page, perPage) => {
-
-  return fetchPaginatedData('/api/posts/all', [actionGetAllPosts], page, perPage);
+  return fetchPaginatedData(
+    "/api/posts/all",
+    [actionGetAllPosts],
+    page,
+    perPage,
+    {},
+    {},
+    null,
+    [true],
+    'posts'
+  );
 };
 
-// Thunk to fetch posts owned by a user with pagination
+// ***************************************************************
+//  Thunk to Fetch Posts Owned by a User With Pagination
+// ***************************************************************
 export const thunkGetOwnerPosts = (userId, page, perPage) => {
-  return fetchPaginatedData(`/api/posts/owner/${userId}`,[ actionGetOwnerPosts], page, perPage);
+  return fetchPaginatedData(
+    `/api/posts/owner/${userId}`,
+    [actionGetOwnerPosts],
+    page,
+    perPage,
+    {},
+    {},
+    null,
+    [true],
+    'ownerPosts'
+  );
 };
 
-// export const thunkGetAllPosts =
-//   (page = 1, perPage = 10) =>
-//   async (dispatch) => {
-//     try {
-//       dispatch(setLoading(true));
-//       const queryParams = new URLSearchParams({ page, per_page: perPage });
-//       const response = await fetch(`/api/posts/all?${queryParams.toString()}`);
-
-//       console.log("🚀 ~ file: posts.js:83 ~ response:", response)
-//       if (response.ok) {
-//         const { posts } = await response.json();
-//         const normalizedPosts = normalizeArray(posts);
-//         dispatch(actionGetAllPosts(normalizedPosts));
-//         return normalizedPosts;
-//       } else {
-//         const errors = await response.json();
-//         dispatch(setError(errors.error || "Error creating post."));
-//       }
-//     } catch (error) {
-//       dispatch(setError("An error occurred while creating the post."));
-//     } finally {
-//       dispatch(setLoading(false));
-//     }
-//   };
+// ***************************************************************
+//  Thunk to Fetch Posts by a User ID With Pagination
+// ***************************************************************
+// Thunk to fetch posts by a user ID with pagination
+export const thunkGetPostsByUserId = (userId, page, perPage) => {
+  return fetchPaginatedData(
+    `/api/posts/user/${userId}`,
+    [actionGetPostsByUserId],
+    page,
+    perPage,
+    {},
+    {},
+    null,
+    [true],
+    'user_posts'
+  );
+};
 
 // ***************************************************************
 //  Thunk to Fetch Details of a Specific Post
@@ -145,34 +163,8 @@ export const thunkGetPostDetails = (postId) => async (dispatch) => {
 };
 
 // ***************************************************************
-//  Thunk to Fetch Posts Owned by a User
-// ***************************************************************
-
-// export const thunkGetOwnerPosts = () => async (dispatch) => {
-//   try {
-//     dispatch(setLoading(true));
-//     const response = await fetch(`/api/posts/owned`);
-
-//     if (response.ok) {
-//       const posts = await response.json();
-//       const normalizedOwenrPosts = normalizeArray(posts);
-//       dispatch(actionGetOwnerPosts(normalizedOwenrPosts));
-//       return normalizedOwenrPosts;
-//     } else {
-//       const errors = await response.json();
-//       dispatch(setError(errors.error || "Error fetching owner's posts."));
-//     }
-//   } catch (error) {
-//     dispatch(setError("An error occurred while fetching owner's posts."));
-//   } finally {
-//     dispatch(setLoading(false));
-//   }
-// };
-
-// ***************************************************************
 //  Thunk to Create a New Post
 // ***************************************************************
-
 export const thunkCreatePost = (postData) => async (dispatch) => {
   try {
     const response = await fetch("/api/posts", {
@@ -270,11 +262,10 @@ export const thunkDeletePost = (postId) => async (dispatch) => {
 // It's a pure function, meaning it doesn't produce side effects and will always return the same output for the same input.
 
 const initialState = {
-  AllPosts: { byId: {}, allIds: [] },
+  allPosts: { byId: {}, allIds: [] },
   ownerPosts: { byId: {}, allIds: [] },
+  userPosts: { byId: {}, allIds: [] },
   singlePost: {},
-  // currentPage: 1,
-  // totalPages: 1,
 };
 
 /**
@@ -287,11 +278,11 @@ export default function reducer(state = initialState, action) {
   let newState;
   switch (action.type) {
     case GET_ALL_POSTS:
-      newState = { ...state, AllPosts: { byId: {}, allIds: [] } };
-      newState.AllPosts = {
-        byId: { ...newState.AllPosts.byId, ...action.posts.byId },
+      newState = { ...state, allPosts: { byId: {}, allIds: [] } };
+      newState.allPosts = {
+        byId: { ...newState.allPosts.byId, ...action.posts.byId },
         allIds: [
-          ...new Set([...newState.AllPosts.allIds, ...action.posts.allIds]),
+          ...new Set([...newState.allPosts.allIds, ...action.posts.allIds]),
         ],
       };
       return newState;
@@ -306,11 +297,20 @@ export default function reducer(state = initialState, action) {
       };
       return newState;
 
+    case GET_POSTS_BY_USER_ID:
+      newState = { ...state, userPosts: { byId: {}, allIds: [] } };
+      newState.userPosts = {
+        byId: { ...newState.userPosts.byId, ...action.posts.byId },
+        allIds: [
+          ...new Set([...newState.userPosts.allIds, ...action.posts.allIds]),
+        ],
+      };
+      return newState;
+
     case GET_SINGLE_POST:
       newState = { ...state, singlePost: {} };
       newState.singlePost = action.post;
       return newState;
-
 
     // case CREATE_POST:
     // // ...

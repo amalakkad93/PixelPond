@@ -42,5 +42,7 @@ class Post(db.Model):
             'photo_urls': photo_urls,
             'description': self.description,
             'banner_url': banner_url,
+            'about_me': owner.about_me if owner else None,
+            'country': owner.country if owner else None,
             'created_at': self.created_at.isoformat(),
         }
