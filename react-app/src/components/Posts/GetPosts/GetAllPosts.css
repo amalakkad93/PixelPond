@@ -23,6 +23,7 @@
   background-clip: padding-box;
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
   overflow: hidden;
+  cursor: pointer;
 }
 
 .post-item:hover h3 {

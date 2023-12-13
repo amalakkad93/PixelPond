@@ -6,7 +6,7 @@ import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
 import { setLoading, setError } from "../../../store/ui";
 import { thunkGetAllPosts, thunkGetOwnerPosts } from "../../../store/posts";
-import { selectOwnerPosts, selectAllPosts, selectSessionUser, selectCurrentPage, selectTotalPages  } from "../../../store/selectors";
+import { selectOwnerPosts, selectAllPosts, selectSessionUser, selectCurrentPage, selectTotalPages,   } from "../../../store/selectors";
 
 import Pagination from "../../Pagination";
 import "./GetAllPosts.css";
@@ -18,6 +18,7 @@ export default function GetPosts({ mode = "all" }) {
   const posts = useSelector( mode === "owner" ? selectOwnerPosts : selectAllPosts);
   const sessionUser = useSelector(selectSessionUser);
   const currentPage = useSelector(selectCurrentPage);
+  const totalPages = useSelector(selectTotalPages);
 
   // const [currentPage, setCurrentPage] = useState(1);
 
@@ -48,6 +49,7 @@ export default function GetPosts({ mode = "all" }) {
   }, [dispatch, currentPage, perPage, mode]);
 
 
+  const handlePageChange = (newPage) => dispatch(thunkGetAllPosts(newPage, perPage));
 
   if (!posts || posts.length === 0) return null;
 
@@ -59,19 +61,25 @@ export default function GetPosts({ mode = "all" }) {
           // <div key={post.id} className="post-item" onClick={() => history.push(`/posts/${post.id}`)}>
           // <div key={post.id} className="post-item" onClick={() => history.push(`/albums/${post.album_id}`)}>
           <div key={post.id} className="post-item" onClick={() => history.push(`/posts/users/${post.owner_id}`)}>
-            <img className= "main-image" src={post.banner_url} alt={`Banner for ${post.title}`} />
+            <img className= "main-image" src={post.image} alt={`Banner for ${post.title}`} />
 
             <div className="user-details">
-              <img className="profile-picture" src={post.profile_picture} alt={post.username} />
+              <img className="profile-picture" src={post.user_info.profile_picture} alt={post.user_info.username} />
               <div className="post-title-username-div">
               <h3 className="post-title-h3">{post.title}</h3>
-              <p className="post-title-p">{post.username}</p>
+              <p className="post-title-p">{post.user_info.username}</p>
               </div>
             </div>
           </div>
         ))}
       </div>
-      <Pagination />
+      {/* <Pagination onPageChange={handlePageChange} /> */}
+      <Pagination
+        onPageChange={(newPage) => dispatch(thunkGetAllPosts(newPage, perPage))}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        useRedux={true}
+      />
     </div>
   );
 }

@@ -9,12 +9,13 @@
 
 
 .navbar {
-  background-color: #2b1f3a;
-  color: #ffffff;
+  /* background-color: #2b1f3a; */
+  background-color:rgba(21,21,23,.95);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0.5em 1em;
+  border-bottom: black 1px solid;
 }
 
 .navbar-logo .logo-img {
@@ -38,6 +39,6 @@
 
 .navbar-links li a:hover, .navbar-links li a.active {
   color: #ffcc00;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
   border-radius: 4px;
 }

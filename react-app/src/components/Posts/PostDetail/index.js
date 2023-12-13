@@ -1,92 +1,125 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 
-import { thunkGetPostDetails } from "../../../store/posts";
-import { setLoading, setError } from "../../../store/ui";
-import { selectSinglePost } from "../../../store/selectors";
+import {
+  thunkGetPostDetails,
+  thunkGetNeighborPosts,
+} from "../../../store/posts";
+import { thunkGetPostComments } from "../../../store/comments";
+import { setLoading, setError, clearUIState } from "../../../store/ui";
+import {
+  selectSinglePost,
+  selectUserInfo,
+  selectNeighborPosts,
+  selectLoading,
+} from "../../../store/selectors";
+
+import CommentsList from "../../Comments/CommentsList";
+import CreateCommentForm from "../../Comments/CommentForm/CreateCommentForm";
+
 import "./PostDetail.css";
 
 export default function PostDetail() {
   const dispatch = useDispatch();
-  const isMountedRef = useRef(true);
+  const history = useHistory();
   const { postId } = useParams();
+
   const post = useSelector(selectSinglePost);
-  const { loading, error } = useSelector((state) => state.ui);
+  const userInfo = useSelector(selectUserInfo);
+  const neighborPosts = useSelector(selectNeighborPosts);
+
+  const userId = post?.owner_id;
 
   useEffect(() => {
-    const fetchPostDetails = async () => {
+    dispatch(clearUIState());
+
+    const fetchData = async () => {
       try {
         dispatch(setLoading(true));
-        const res = await dispatch(thunkGetPostDetails(postId));
-        console.log(
-          "🚀 ~ file: index.js:22 ~ fetchPostDetails ~ postId:",
-          postId
-        );
-        console.log("🚀 ~ file: index.js:22 ~ fetchPostDetails ~ res:", res);
-      } catch (error) {
-        dispatch(setError(`Error fetching post details: ${error.message}`));
-      } finally {
+        await dispatch(thunkGetPostDetails(postId));
+        await dispatch(thunkGetNeighborPosts(postId, userId));
+        await dispatch(thunkGetPostComments(postId, 1, 10));
+        dispatch(setLoading(false));
+      } catch (err) {
+        dispatch(setError("An error occurred"));
         dispatch(setLoading(false));
       }
     };
 
+    fetchData();
+  }, [dispatch, postId, userId]);
+
+  const goToPost = (postId) => {
     if (postId) {
-      fetchPostDetails();
+      history.push(`/posts/${postId}`);
     }
-  }, [dispatch, postId]);
+  };
 
-  if (loading) return null;
-
-  if (!post) return null;
+  if (!post) return <div>Loading...</div>;
 
   return (
     <div className="post-detail-container">
-      <div className="banner">
-        <LazyLoadImage
-          src={post.banner_url}
-          alt={post.title}
-          effect="blur"
-          width={"100%"}
-          className="banner-image"
-        />
-        <div className="user-details">
-          <img
-            className="profile-picture"
-            src={post.profile_picture}
-            alt={post.username}
+      <div className="main-content-container">
+        <div className="image-container">
+          {neighborPosts.prevPostId && (
+            <button
+              onClick={() => goToPost(neighborPosts.prevPostId)}
+              className="prev-button"
+            >
+              <i className="fas fa-arrow-left"></i>
+            </button>
+          )}
+
+          <LazyLoadImage
+            src={post.image}
+            alt={post.title}
+            effect="blur"
+            width="681"
+            height="511"
+            className="displayed-image"
           />
-          <div className="user-name">
-            <h1 className="user-name-h1">
-              {post.first_name} {post.last_name}
-            </h1>
+
+          {neighborPosts.nextPostId && (
+            <button
+              onClick={() => goToPost(neighborPosts.nextPostId)}
+              className="next-button"
+            >
+              <i className="fas fa-arrow-right"></i>
+            </button>
+          )}
+        </div>
+
+        <div className="user-info-container">
+          <div className="user-profile-picture-name-container">
+            {userInfo && userInfo.profile_picture && (
+              <img
+                src={userInfo.profile_picture}
+                alt={`${userInfo.first_name} ${userInfo.last_name}`}
+                className="user-profile-picture"
+              />
+            )}
+            <div className="user-name-container">
+              <h3 className="user-name">
+                {userInfo
+                  ? `${userInfo.first_name} ${userInfo.last_name}`
+                  : "User Name"}
+              </h3>
+            </div>
+          </div>
+          <div className="post-info-container">
+            <h3 className="post-title">{post.title}</h3>
+            <p className="post-description">{post.description}</p>
           </div>
         </div>
       </div>
 
-      <div className="post-info-container">
-        <h2>{post.title}</h2>
-        <p>{post.description}</p>
-
-        <div className="image-grid">
-          {post.image_urls && (
-            <div className="image-grid">
-              {post.image_urls.map((url, index) => (
-                <LazyLoadImage
-                  key={index}
-                  src={url}
-                  alt={`Image ${index}`}
-                  effect="blur"
-                />
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Comments Section */}
-        <div className="comments-section">{/* Render comments here */}</div>
+      {/* Comments Section */}
+      <div className="comments-section">
+        <CommentsList postId={postId} />
+        <CreateCommentForm postId={postId} />
       </div>
     </div>
   );

@@ -1,6 +1,10 @@
 // import { normalizeArray, fetchPaginatedData } from "../assets/helpers/storesHelpers";
 import { normalizeArray } from "../assets/helpers/storesHelpers";
-import { fetchPaginatedData } from "./paginations";
+import {
+  fetchPaginatedData,
+  actionSetCurrentPage,
+  actionSetTotalPages,
+} from "./paginations";
 import { setLoading, setError } from "./ui";
 
 /** Action type to handle fetching all posts */
@@ -15,6 +19,8 @@ const GET_POSTS_BY_USER_ID = "posts/GET_POSTS_BY_USER_ID";
 /** Action type to handle fetching details of a single post */
 const GET_SINGLE_POST = "posts/GET_SINGLE_POST";
 
+const SET_USER_INFO = "SET_USER_INFO";
+
 /** Action type to handle creating a new post */
 const CREATE_POST = "posts/CREATE_POST";
 
@@ -23,6 +29,8 @@ const UPDATE_POST = "posts/UPDATE_POST";
 
 /** Action type to handle deleting a post */
 const DELETE_POST = "posts/DELETE_POST";
+
+const SET_NEIGHBOR_POSTS = "posts/SET_NEIGHBOR_POSTS";
 
 /** Action type to handle errors during post operations */
 const SET_POST_ERROR = "posts/SET_POST_ERROR";
@@ -34,15 +42,27 @@ const actionGetAllPosts = (posts) => ({
 });
 
 /** Creates an action to get all the user available posts in the store */
-const actionGetPostsByUserId = (posts) => ({
+const actionGetPostsByUserId = (posts, userInfo) => ({
   type: GET_POSTS_BY_USER_ID,
   posts,
+  userInfo,
 });
 
 /** Creates an action to set details of a specific post in the store */
 const actionGetSinglePost = (post) => ({
   type: GET_SINGLE_POST,
   post,
+});
+
+const actionSetNeighborPosts = (nextPostId, prevPostId) => ({
+  type: SET_NEIGHBOR_POSTS,
+  nextPostId,
+  prevPostId,
+});
+
+const actionSetUserInfo = (userInfo) => ({
+  type: SET_USER_INFO,
+  userInfo,
 });
 
 /** Creates an action to set posts owned by a user in the store */
@@ -94,7 +114,7 @@ export const thunkGetAllPosts = (page, perPage) => {
     {},
     null,
     [true],
-    'posts'
+    "posts"
   );
 };
 
@@ -111,25 +131,31 @@ export const thunkGetOwnerPosts = (userId, page, perPage) => {
     {},
     null,
     [true],
-    'ownerPosts'
+    "ownerPosts"
   );
 };
 
 // ***************************************************************
 //  Thunk to Fetch Posts by a User ID With Pagination
 // ***************************************************************
-// Thunk to fetch posts by a user ID with pagination
 export const thunkGetPostsByUserId = (userId, page, perPage) => {
   return fetchPaginatedData(
     `/api/posts/user/${userId}`,
-    [actionGetPostsByUserId],
+    // [(data) => actionGetPostsByUserId(data.user_posts)],
+    // [(data) => actionGetPostsByUserId(data.user_posts, data.user_info)],
+    [
+      (data) =>
+        actionGetPostsByUserId(normalizeArray(data.user_posts), data.user_info),
+    ],
     page,
     perPage,
     {},
     {},
     null,
-    [true],
-    'user_posts'
+    // [true],
+    [false],
+    "user_posts",
+    false
   );
 };
 
@@ -143,7 +169,18 @@ export const thunkGetPostDetails = (postId) => async (dispatch) => {
 
     if (response.ok) {
       const post = await response.json();
+      console.log(
+        "🚀 ~ file: posts.js:164 ~ thunkGetPostDetails ~ post:",
+        post
+      );
+      console.log(
+        "🚀 ~ file: posts.js:164 ~ thunkGetPostDetails ~ post:",
+        post.user_info
+      );
       dispatch(actionGetSinglePost(post));
+      if (post.user_info) {
+        dispatch(actionSetUserInfo(post.user_info));
+      }
       return post;
     } else {
       const errors = await response.json();
@@ -159,6 +196,24 @@ export const thunkGetPostDetails = (postId) => async (dispatch) => {
     );
   } finally {
     dispatch(setLoading(false));
+  }
+};
+
+// ***************************************************************
+//  Thunk to Fetch Neighbor Post IDs
+// ***************************************************************
+export const thunkGetNeighborPosts = (postId, userId) => async (dispatch) => {
+  try {
+    const response = await fetch(`/api/posts/${postId}/neighbors/${userId}`);
+    if (response.ok) {
+      const { next_post_id, prev_post_id } = await response.json();
+      dispatch(actionSetNeighborPosts(next_post_id, prev_post_id));
+    } else {
+      const error = await response.json();
+      throw new Error(error.message);
+    }
+  } catch (error) {
+    console.error("Error fetching neighbor posts:", error);
   }
 };
 
@@ -266,6 +321,8 @@ const initialState = {
   ownerPosts: { byId: {}, allIds: [] },
   userPosts: { byId: {}, allIds: [] },
   singlePost: {},
+  userInfo: {},
+  neighborPosts: { nextPostId: null, prevPostId: null,},
 };
 
 /**
@@ -298,18 +355,37 @@ export default function reducer(state = initialState, action) {
       return newState;
 
     case GET_POSTS_BY_USER_ID:
-      newState = { ...state, userPosts: { byId: {}, allIds: [] } };
+      newState = {
+        ...state,
+        userPosts: { byId: {}, allIds: [] },
+        userInfo: {},
+      };
       newState.userPosts = {
         byId: { ...newState.userPosts.byId, ...action.posts.byId },
         allIds: [
           ...new Set([...newState.userPosts.allIds, ...action.posts.allIds]),
         ],
       };
+      newState.userInfo = { ...action.userInfo };
       return newState;
 
     case GET_SINGLE_POST:
       newState = { ...state, singlePost: {} };
       newState.singlePost = action.post;
+      return newState;
+
+    case SET_NEIGHBOR_POSTS:
+      return {
+        ...state,
+        neighborPosts: {
+          nextPostId: action.nextPostId,
+          prevPostId: action.prevPostId,
+        },
+      };
+
+    case SET_USER_INFO:
+      newState = { ...state, userInfo: {} };
+      newState.userInfo = action.userInfo;
       return newState;
 
     // case CREATE_POST:
@@ -320,7 +396,6 @@ export default function reducer(state = initialState, action) {
 
     // case DELETE_POST:
     // // ...
-
     default:
       return state;
   }

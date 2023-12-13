@@ -15,17 +15,38 @@ export const actionGetAlbums = (albums) => ({
 });
 
 // Action creator for album images
-export const actionGetAlbumImages = (album, userInfo) => ({
-  type: GET_ALBUM_IMAGES,
-  album,
-  userInfo,
-});
+export const actionGetAlbumImages = (data) => {
+  const { images, album_info } = data;
+  return {
+    type: GET_ALBUM_IMAGES,
+    images: images.byId ? images : normalizeArray(images),
+    albumInfo: album_info,
+  };
+};
 
 // Action creator for albums by user id
-export const actionGetAlbumsByUserId = (albums) => ({
-  type: GET_ALBUMS_BY_USER_ID,
-  albums,
-});
+export const actionGetAlbumsByUserId = (albums) => {
+  const normalizedAlbums = albums.map((album) => {
+    // Normalize the images for each album
+    const normalizedImages = normalizeArray(album.images, "id");
+
+    return {
+      ...album.album_info,
+      images: normalizedImages,
+    };
+  });
+
+  // Normalize the albums structure
+  return {
+    type: GET_ALBUMS_BY_USER_ID,
+    albums: normalizeArray(normalizedAlbums, "id"),
+  };
+};
+
+// export const actionGetAlbumsByUserId = (albums) => ({
+//   type: GET_ALBUMS_BY_USER_ID,
+//   albums,
+// });
 
 // Action Creator for user info
 export const actionGetUserInfo = (userInfo) => ({
@@ -33,32 +54,49 @@ export const actionGetUserInfo = (userInfo) => ({
   userInfo,
 });
 
-// Thunk to fetch album images with pagination
+// // Thunk to fetch album images with pagination
+// export const ThunkGetAlbumImages = (albumId, page, perPage) => {
+//   return fetchPaginatedData(
+//     `/api/albums/${albumId}`,
+//     [actionGetAlbumImages],
+//     page,
+//     perPage,
+//     {},
+//     {},
+//     null,
+//     [true],
+//     "images"
+//     // [false],
+//   );
+// };
+
 export const ThunkGetAlbumImages = (albumId, page, perPage) => {
   return fetchPaginatedData(
-    `/api/albums/${albumId}/images`,
-    [actionGetAlbumImages, actionGetUserInfo],
+    `/api/albums/${albumId}`,
+    [(data) => actionGetAlbumImages(data)],
     page,
     perPage,
     {},
     {},
     null,
-    [true, false],
-    'images'
+    [false],
+    // [true],
+    "images"
   );
 };
 
 export const thunkGetAlbumsByUserId = (userId, page, perPage) => {
   return fetchPaginatedData(
     `/api/albums/user/${userId}`,
-    [actionGetAlbumsByUserId],
+    [(data) => actionGetAlbumsByUserId(data.albums)],
     page,
     perPage,
     {},
     {},
     null,
-    [true],
-    'albums'
+    [false],
+    // [true],
+    "albums"
   );
 };
 
@@ -84,39 +122,35 @@ export default function reducer(state = initialState, action) {
       return newState;
 
     // case GET_ALBUM_IMAGES:
-    //   console.log('Received images for album:', action.images);
-    //   newState = { ...state, singleAlbum: { ...state.singleAlbum } };
-    //   newState.singleAlbum.images = {
-    //     byId: { ...action.images.byId },
-    //     allIds: [...action.images.allIds],
+    //   newState = { ...state, singleAlbum: { byId: {}, allIds: [] } };
+    //   newState.singleAlbum = {
+    //     byId: { ...action.album.byId },
+    //     allIds: [...action.album.allIds],
     //   };
     //   return newState;
     case GET_ALBUM_IMAGES:
-      // return {
-      //   ...state,
-      //   singleAlbum: {
-      //     ...state.singleAlbum,
-      //     images: action.images,
-      //     imageIds: action.imageIds
-      //   }
-      // };
-
-      newState = { ...state, singleAlbum: { byId: {}, allIds: [] } };
-      newState.singleAlbum = {
-        byId: { ...action.album.byId },
-        allIds: [...action.album.allIds],
+      newState = {
+        ...state,
+        singleAlbum: {
+          byId: { ...action.images.byId },
+          allIds: [...action.images.allIds],
+        },
+        albumInfo: { ...action.albumInfo },
       };
-
+      console.log("New state after GET_ALBUM_IMAGES:", newState);
       return newState;
-      case GET_ALBUMS_BY_USER_ID:
-        newState = { ...state, userAlbums: { byId: {}, allIds: [] } };
-        newState.userAlbums = {
-          byId: { ...action.album.byId },
-          allIds: [...action.album.allIds],
-        };
-    // case GET_USER_INFO:
-    //   newState = { ...state, userInfo: {} };
-    //   newState.userInfo = { ...action.userInfo };
+
+    case GET_ALBUMS_BY_USER_ID:
+      return {
+        ...state,
+        userAlbums: action.albums,
+      };
+    // case GET_ALBUMS_BY_USER_ID:
+    //   newState = { ...state, userAlbums: { byId: {}, allIds: [] } };
+    //   newState.userAlbums = {
+    //     byId: { ...action.albums.byId },
+    //     allIds: [...action.albums.allIds],
+    //   };
     //   return newState;
 
     case GET_USER_INFO:

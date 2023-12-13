@@ -95,6 +95,7 @@ npm install react-toastify
 
 ✨ Loading Spinners:
 npm install react-spinners
+npm install react-loader-spinner
 
 ✨ Immutable State Management:
 npm install immer
