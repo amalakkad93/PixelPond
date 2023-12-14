@@ -1,0 +1,68 @@
+.PostForm {
+  background-color: #f4f4f4;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.PostForm h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.PostForm form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.PostForm input[type="text"],
+.PostForm textarea,
+.PostForm select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  color: #333;
+}
+
+.PostForm select {
+  background-color: #fff;
+}
+
+.PostForm button[type="submit"] {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.PostForm button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+.AWSImageUploader {
+  margin-top: 20px;
+}
+
+.AWSImageUploader .upload-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.AWSImageUploader .upload-button:hover {
+  background-color: #0056b3;
+}

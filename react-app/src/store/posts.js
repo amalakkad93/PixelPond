@@ -131,7 +131,7 @@ export const thunkGetOwnerPosts = (userId, page, perPage) => {
     {},
     null,
     [true],
-    "ownerPosts"
+    "posts"
   );
 };
 
@@ -141,6 +141,29 @@ export const thunkGetOwnerPosts = (userId, page, perPage) => {
 export const thunkGetPostsByUserId = (userId, page, perPage) => {
   return fetchPaginatedData(
     `/api/posts/user/${userId}`,
+    // [(data) => actionGetPostsByUserId(data.user_posts)],
+    // [(data) => actionGetPostsByUserId(data.user_posts, data.user_info)],
+    [
+      (data) =>
+        actionGetPostsByUserId(normalizeArray(data.user_posts), data.user_info),
+    ],
+    page,
+    perPage,
+    {},
+    {},
+    null,
+    // [true],
+    [false],
+    "user_posts",
+    false
+  );
+};
+// ***************************************************************
+//  Thunk to Fetch Posts by a User ID With Pagination
+// ***************************************************************
+export const thunkGetOwnerPostsByUserId = (userId, page, perPage) => {
+  return fetchPaginatedData(
+    "/api/posts/current-user-posts",
     // [(data) => actionGetPostsByUserId(data.user_posts)],
     // [(data) => actionGetPostsByUserId(data.user_posts, data.user_info)],
     [
@@ -322,7 +345,7 @@ const initialState = {
   userPosts: { byId: {}, allIds: [] },
   singlePost: {},
   userInfo: {},
-  neighborPosts: { nextPostId: null, prevPostId: null,},
+  neighborPosts: { nextPostId: null, prevPostId: null },
 };
 
 /**
@@ -388,11 +411,32 @@ export default function reducer(state = initialState, action) {
       newState.userInfo = action.userInfo;
       return newState;
 
-    // case CREATE_POST:
-    // // ...
+    case CREATE_POST:
+      newState = { ...state };
+      newState.allPosts.byId[action.post.id] = action.post;
+      newState.allPosts.allIds.push(action.post.id);
 
-    // case UPDATE_POST:
-    // // ...
+      if (action.post.owner_id === state.userInfo.id) {
+        newState.ownerPosts.byId[action.post.id] = action.post;
+        newState.ownerPosts.allIds.push(action.post.id);
+      }
+      return newState;
+
+    case UPDATE_POST:
+      newState = { ...state };
+      // Update in allPosts
+      if (newState.allPosts.byId[action.post.id]) {
+        newState.allPosts.byId[action.post.id] = action.post;
+      }
+      // Update in ownerPosts
+      if (newState.ownerPosts.byId[action.post.id]) {
+        newState.ownerPosts.byId[action.post.id] = action.post;
+      }
+      // Update in userPosts
+      if (newState.userPosts.byId[action.post.id]) {
+        newState.userPosts.byId[action.post.id] = action.post;
+      }
+      return newState;
 
     // case DELETE_POST:
     // // ...

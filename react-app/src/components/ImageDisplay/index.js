@@ -1,6 +1,6 @@
 import React, { useEffect, useState, memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams, useHistory, useLocation } from "react-router-dom";
+import { useParams, useHistory, useLocation, Link } from "react-router-dom";
 import Masonry from "react-masonry-css";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import Pagination from "../Pagination";
@@ -15,7 +15,11 @@ import {
   selectUserPosts,
   selectUserInfo,
   selectLoading,
+  selectSessionUser,
 } from "../../store/selectors";
+
+import OpenModalButton from "../Modals/OpenModalButton";
+import CreatePostForm from "../Posts/PostForms/CreatePostForm";
 
 import "./ImageDisplay.css";
 
@@ -42,6 +46,16 @@ const ImageDisplay = ({ mode }) => {
   const [showAbout, setShowAbout] = useState(false);
   const perPage = 10;
 
+  const sessionUser = useSelector(selectSessionUser)
+  const loggedInUserId = sessionUser?.id || null;
+  const isLoggedIn = Boolean(loggedInUserId);
+  const isOwnerMode =
+    mode === "ownerPhotoStream" || mode === "ownerAlbumImages";
+  const hasContent = isOwnerMode
+    ? mode === "ownerPhotoStream"
+      ? userPosts.length > 0
+      : albumImages.length > 0
+    : true;
   useEffect(() => {
     dispatch(clearUIState());
 
@@ -82,11 +96,26 @@ const ImageDisplay = ({ mode }) => {
 
   let profilePhoto, userName, aboutMe, images, imageLength;
 
+  // if (mode === "photoStream") {
+  //   profilePhoto = userInfo?.profile_picture;
+  //   userName = userInfo?.username;
+  //   aboutMe = userInfo?.about_me || "No about me information available.";
+  //   images = userPosts.map((post) => post.image)|| [];
+  //   imageLength = userPosts.length;
+  // } else if (mode === "albumImages") {
+  //   profilePhoto = albumUserInfo?.profile_picture;
+  //   userName = `${albumUserInfo?.first_name || ""} ${
+  //     albumUserInfo?.last_name || ""
+  //   }`;
+  //   aboutMe = albumUserInfo?.about_me || "No about me information available.";
+  //   images = albumImages.map((image) => image?.url) || [];
+  //   imageLength = albumImages?.length;
+  // }
   if (mode === "photoStream") {
     profilePhoto = userInfo?.profile_picture;
     userName = userInfo?.username;
     aboutMe = userInfo?.about_me || "No about me information available.";
-    images = userPosts.map((post) => post.image);
+    images = userPosts.map((post) => post.image).filter(Boolean); // Filter out falsy values
     imageLength = userPosts.length;
   } else if (mode === "albumImages") {
     profilePhoto = albumUserInfo?.profile_picture;
@@ -94,8 +123,16 @@ const ImageDisplay = ({ mode }) => {
       albumUserInfo?.last_name || ""
     }`;
     aboutMe = albumUserInfo?.about_me || "No about me information available.";
-    images = albumImages.map((image) => image?.url);
+    images = albumImages.map((image) => image?.url).filter(Boolean); // Filter out falsy values
     imageLength = albumImages?.length;
+  }
+
+  if (mode === "ownerPhotoStream") {
+    profilePhoto = sessionUser?.profile_picture;
+    userName = sessionUser?.username;
+    aboutMe = sessionUser?.about_me || "No about me information available.";
+    images = userPosts.map((post) => post.image).filter(Boolean); // Filter out falsy values
+    imageLength = userPosts.length;
   }
 
   return (
@@ -106,7 +143,7 @@ const ImageDisplay = ({ mode }) => {
         <>
           <div className="banner-container">
             <div className="banner">
-              {images[0] && (
+              {images?.[0] && (
                 <LazyLoadImage
                   src={images[0]}
                   effect="blur"
@@ -130,6 +167,21 @@ const ImageDisplay = ({ mode }) => {
             </div>
           </div>
           <div className="photo-stream-container">
+            {(!images || images.length === 0) &&
+              mode === "ownerPhotoStream" && (
+                <div className="no-content-message">
+                  <h1>You have no public photos.</h1>
+                  <OpenModalButton
+                    className="create-post-button"
+                    buttonText="Create Post"
+                    modalComponent={
+                      <CreatePostForm
+                      // setReloadPage={setReloadPage}
+                      />
+                    }
+                  />
+                </div>
+              )}
             <nav className="album-navigation">
               <UserNavigationBar
                 id={mode === "photoStream" ? userId : albumId}
@@ -142,27 +194,32 @@ const ImageDisplay = ({ mode }) => {
                 <p>{aboutMe}</p>
               </div>
             )}
-            <Masonry
-              breakpointCols={breakpointColumnsObj}
-              className="photo-grid"
-              columnClassName="photo-grid_column"
-            >
-              {images.map((image, index) => {
-                const postId =
-                  mode === "photoStream"
-                    ? userPosts[index]?.id
-                    : albumImages[index]?.post_id;
+            {images && images.length > 0 && (
+              <Masonry
+                breakpointCols={breakpointColumnsObj}
+                className="photo-grid"
+                columnClassName="photo-grid_column"
+              >
+                {console.log("Images array:", images)}
+                {images.map((image, index) => {
+                  const postId =
+                    mode === "photoStream"
+                      ? userPosts[index]?.id
+                      : albumImages[index]?.post_id;
+                  console.log(`Rendering image at index ${index}:`, image);
+                  return (
+                    <ImageItem
+                      key={index}
+                      imageUrl={image}
+                      postId={postId}
+                      onClick={() => history.push(`/posts/${postId}`)}
+                    />
+                  );
+                })}
+              </Masonry>
+            )}
 
-                return (
-                  <ImageItem
-                    key={index}
-                    imageUrl={image}
-                    postId={postId}
-                    onClick={(postId) => history.push(`/posts/${postId}`)}
-                  />
-                );
-              })}
-            </Masonry>
+            {/* Pagination */}
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}

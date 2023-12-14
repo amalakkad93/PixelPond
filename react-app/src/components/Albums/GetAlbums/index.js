@@ -19,7 +19,7 @@ const GetAlbums = () => {
   const history = useHistory();
   const { userId } = useParams();
   console.log("🚀 ~ file: index.js:16 ~ GetAlbums ~ userId:", userId);
-  const albums = useSelector(selectAllAlbums);
+  const albums = useSelector(selectAllAlbums) || [];
   console.log("🚀 ~ file: index.js:14 ~ GetAlbums ~ albums:", albums);
   const userPosts = useSelector(selectUserPosts);
   console.log("🚀 ~ file: index.js:20 ~ GetAlbums ~ userPosts:", userPosts);

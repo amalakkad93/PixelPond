@@ -48,12 +48,17 @@ def get_posts_of_current_user():
         Response: A JSON object with user's posts or an error message.
     """
     try:
-        paginated_result = hf.paginate_query(
-            Post.query.filter(Post.owner_id == current_user.id)
-        )
-        return jsonify(paginated_result)
+        user = User.query.get(current_user.id)
+        user_info = user.to_dict() if user else None
+
+        user_posts_query = Post.query.filter(Post.owner_id == current_user.id)
+        paginated_posts = hf.paginate_query(user_posts_query, 'posts')
+
+        return jsonify({
+            'user_info': user_info,
+            'posts': paginated_posts
+        })
     except Exception as e:
-        logging.error(f"Error fetching current user's posts: {e}")
         return jsonify({"error": "An error occurred while fetching the posts."}), 500
 
 # ***************************************************************
@@ -93,6 +98,33 @@ def get_posts_by_user_id(user_id):
         return jsonify({"error": "An error occurred while fetching the posts."}), 500
 
 
+
+# ***************************************************************
+# Endpoint to Get All Posts of the Logged-In User
+# ***************************************************************
+@post_routes.route('/current-user-posts')
+@login_required
+def get_current_user_posts():
+    try:
+        user_id = current_user.id
+        posts_query = Post.query.filter(Post.owner_id == user_id)
+        paginated_posts = hf.paginate_query(posts_query, 'user_posts')
+
+        user_posts = [post.to_dict() for post in paginated_posts['user_posts']]
+
+        result = {
+            "user_info": current_user.to_dict(),
+            "user_posts": user_posts,
+            "total_items": paginated_posts['total_items'],
+            "total_pages": paginated_posts['total_pages'],
+            "current_page": paginated_posts['current_page']
+        }
+        return jsonify(result)
+
+    except Exception as e:
+        logging.error(f"Error fetching posts for the current user (ID: {user_id}): {e}")
+        return jsonify({"error": "An error occurred while fetching the posts."}), 500
+
 # ***************************************************************
 # Endpoint to Get Details of a Post by Id
 # ***************************************************************
@@ -126,27 +158,14 @@ def get_post_detail(id):
 # ***************************************************************
 # Endpoint to Get Next and Previous Post by Id
 # ***************************************************************
-# Helper functions to get next and previous post IDs
-def get_next_post_id(current_post_id, user_id):
-    next_post = Post.query.filter(
-        Post.id > current_post_id, Post.owner_id == user_id
-    ).order_by(Post.id.asc()).first()
-    return next_post.id if next_post else None
-
-def get_prev_post_id(current_post_id, user_id):
-    prev_post = Post.query.filter(
-        Post.id < current_post_id, Post.owner_id == user_id
-    ).order_by(Post.id.desc()).first()
-    return prev_post.id if prev_post else None
-
 @post_routes.route('/<int:post_id>/neighbors/<int:user_id>')
 def get_neighbor_posts(post_id, user_id):
     current_post = Post.query.get(post_id)
     if not current_post:
         return jsonify({"error": "Post not found"}), 404
 
-    next_post_id = get_next_post_id(post_id, user_id)
-    prev_post_id = get_prev_post_id(post_id, user_id)
+    next_post_id = hf.get_next_post_id(post_id, user_id)
+    prev_post_id = hf.get_prev_post_id(post_id, user_id)
 
     return jsonify({
         "next_post_id": next_post_id,
@@ -166,23 +185,34 @@ def create_post():
         Response: A JSON object with the newly created post details or an error message.
     """
     try:
-        data = request.get_json()
-        if not data:
-            return jsonify(errors="Invalid data"), 400
+        data = request.json
+        title = data.get('title')
+        description = data.get('description')
+        album_id = data.get('album_id')
+        image_url = data.get('image_url')
 
-        new_post = Post(owner_id=current_user.id, **data)
+        if not title or not image_url:
+            return jsonify({'error': 'Title and Image are required'}), 400
 
-        db.session.add(new_post)
+        post = Post(
+            owner_id=current_user.id,
+            album_id=album_id,
+            title=title,
+            description=description
+        )
+
+        db.session.add(post)
         db.session.commit()
 
-        return jsonify({
-            "message": "Post successfully created",
-            "post": new_post.to_dict()
-        }), 201
+        image = Image(post_id=post.id, url=image_url)
+        db.session.add(image)
+        db.session.commit()
+
+        return jsonify(post.to_dict()), 201
+
     except Exception as e:
-        logging.error(f"Error creating a post: {e}")
         db.session.rollback()
-        return jsonify({"error": "An error occurred while creating the post."}), 500
+        return jsonify({'error': 'An unexpected error occurred'}), 500
 
 # ***************************************************************
 # Endpoint to Edit a Post
@@ -286,7 +316,7 @@ def create_comment(post_id):
         return jsonify({"error": "Comment text is required"}), 400
 
     comment = Comment(
-        user_id=current_user.id,  
+        user_id=current_user.id,
         post_id=post_id,
         comment=comment_text
     )

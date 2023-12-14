@@ -18,10 +18,10 @@ export const selectUserId = selectSessionUser?.id;
 // =========================================================
 
 // Select all posts as an array
-export const selectAllPosts = (state) => state.posts?.allPosts?.allIds.map((id) => state.posts.allPosts.byId[id]|| {}, shallowEqual);
-export const selectOwnerPosts = (state) => state.posts?.ownerPosts?.allIds.map((id) => state.posts.ownerPosts.byId[id]|| {}, shallowEqual);
+export const selectAllPosts = (state) => state.posts?.allPosts?.allIds.map((id) => state.posts.allPosts.byId[id]|| {});
+export const selectOwnerPosts = (state) => state.posts?.ownerPosts?.allIds.map((id) => state.posts.ownerPosts.byId[id]|| {});
 // Select all posts by ID as an object
-export const selectAllPostsById = ((state) => state.posts?.allPosts?.byId || {}, shallowEqual);
+export const selectAllPostsById = ((state) => state.posts?.allPosts?.byId || {});
 // Select a single post
 export const selectSinglePost = ((state) => state.posts.singlePost);
 
@@ -31,13 +31,14 @@ export const selectUserPosts = (state) => {
     return [];
   }
 
-  return state.posts.userPosts.allIds.map((id) => state.posts.userPosts.byId[id], shallowEqual);
+  return state.posts.userPosts.allIds.map((id) => state.posts.userPosts.byId[id]);
 };
-
 
 export const selectUserInfo= (state) => state.posts?.userInfo
 
-
+export const selectPostById = (state, postId) => {
+  return postId ? state.posts.allPosts.byId[postId] : null;
+};
 
 export const selectNeighborPosts = (state) => {
   return state.posts.neighborPosts || { prevPostId: null, nextPostId: null };
@@ -78,10 +79,14 @@ export const selectAllAlbums = (state) => {
 export const selectTotalAlbums = (state) => state.albums?.userAlbums?.allIds?.length;
 export const selectAlbumUserInfo = (state) => state.albums?.albumInfo;
 
+export const selectUserAlbums = (state) => {
+  const albumsById = state.albums.userAlbums.byId;
+  return albumsById ? Object.values(albumsById) : [];
+};
 // =========================================================
 //               ****Comment UseSelectors****
 // =========================================================
-export const selectPostComments = (state) => state.comments?.allCommentsOfPost?.allIds.map((id) => state.comments.allCommentsOfPost.byId[id]|| {}, shallowEqual);
+export const selectPostComments = (state) => state.comments?.allCommentsOfPost?.allIds.map((id) => state.comments.allCommentsOfPost.byId[id]|| {});
 // Selector to get comments for a specific post
 export const selectPostComments1 = (state, postId) => {
   const comments = state.comments[postId];

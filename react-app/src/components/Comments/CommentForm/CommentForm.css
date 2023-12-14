@@ -14,7 +14,7 @@
   margin-bottom: 10px;
 }
 
-textarea {
+.comment-textarea {
   width: 100%;
   height: 100px;
   padding: 10px;
@@ -30,7 +30,7 @@ textarea {
   margin-bottom: 10px;
 }
 
-button {
+.comment-submit-button {
   background-color: #007bff;
   color: #fff;
   border: none;
@@ -40,7 +40,7 @@ button {
   font-size: 1rem;
 }
 
-button:disabled {
+.comment-submit-button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }

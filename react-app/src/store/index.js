@@ -5,6 +5,7 @@ import posts from './posts'
 import albums from './albums';
 import paginations from './paginations'
 import comments from './comments'
+import images from './images'
 import ui from './ui'
 
 const rootReducer = combineReducers({
@@ -12,7 +13,9 @@ const rootReducer = combineReducers({
   posts,
   albums,
   comments,
-  
+  images,
+
+
   paginations,
   ui
 });
