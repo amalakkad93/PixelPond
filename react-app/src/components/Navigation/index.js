@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import ProfileButton from "./ProfileButton";
@@ -14,10 +14,15 @@ import logo from "../../assets/images/logo.png";
 import "./Navigation.css";
 
 function Navigation({ isLoaded }) {
-  const sessionUser = useSelector(state => state.session.user);
+  const sessionUser = useSelector((state) => state.session.user);
   const [showModal, setShowModal] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
 
-  const toggleModal = () => setShowModal(!showModal);
+  // const toggleModal = () => setShowModal(!showModal);
+  const toggleModal = () => {
+    console.log('---Toggling modal:', !showModal);
+    setShowModal(!showModal);
+};
 
   return (
     <nav className="navbar">
@@ -55,9 +60,11 @@ function Navigation({ isLoaded }) {
           )}
 
           {isLoaded && (
-            <li>
-              <ProfileButton user={sessionUser} />
-            </li>
+            <ul className="navBar-far-right">
+              <li>
+                <ProfileButton user={sessionUser} showMenu={showMenu} />
+              </li>
+            </ul>
           )}
         </ul>
       </div>

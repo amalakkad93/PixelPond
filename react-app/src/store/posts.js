@@ -252,9 +252,9 @@ export const thunkCreatePost = (postData) => async (dispatch) => {
     });
 
     if (response.ok) {
-      const data = await response.json();
-      dispatch(actionCreatePost(data.entities.posts));
-      return { type: "SUCCESS", data };
+      const post = await response.json();
+      dispatch(actionCreatePost(post));
+      return { type: "SUCCESS", data: post };
     } else {
       const errors = await response.json();
       dispatch(actionSetPostError(errors.error || "Error creating post."));
@@ -382,11 +382,18 @@ export default function reducer(state = initialState, action) {
         ...state,
         userPosts: { byId: {}, allIds: [] },
         userInfo: {},
+        ownerPosts: { byId: {}, allIds: [] },
       };
       newState.userPosts = {
         byId: { ...newState.userPosts.byId, ...action.posts.byId },
         allIds: [
           ...new Set([...newState.userPosts.allIds, ...action.posts.allIds]),
+        ],
+      };
+      newState.ownerPosts = {
+        byId: { ...newState.ownerPosts.byId, ...action.posts.byId },
+        allIds: [
+          ...new Set([...newState.ownerPosts.allIds, ...action.posts.allIds]),
         ],
       };
       newState.userInfo = { ...action.userInfo };
@@ -416,10 +423,14 @@ export default function reducer(state = initialState, action) {
       newState.allPosts.byId[action.post.id] = action.post;
       newState.allPosts.allIds.push(action.post.id);
 
-      if (action.post.owner_id === state.userInfo.id) {
+      // Update ownerPosts and userPosts if needed
+      // if (action.post.owner_id === state.userInfo.id) {
         newState.ownerPosts.byId[action.post.id] = action.post;
         newState.ownerPosts.allIds.push(action.post.id);
-      }
+        newState.userPosts.byId[action.post.id] = action.post;
+        newState.userPosts.allIds.push(action.post.id);
+      // }
+
       return newState;
 
     case UPDATE_POST:

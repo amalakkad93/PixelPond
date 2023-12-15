@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { logout } from "../../store/session";
-import OpenModalButton from "../OpenModalButton";
+import OpenModalButton from "../Modals/OpenModalButton";
+import OpenModalMenuItem from "./OpenModalMenuItem";
 import LoginFormModal from "../LoginFormModal";
 import SignupFormModal from "../SignupFormModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -29,8 +30,11 @@ function ProfileButton({ user }) {
 
     document.addEventListener("click", closeMenu);
 
+    console.log("---Menu visibility changed:", showMenu);
+
     return () => document.removeEventListener("click", closeMenu);
   }, [showMenu]);
+  const closeMenu = () => setShowMenu(false);
 
   const handleLogout = (e) => {
     e.preventDefault();
@@ -38,13 +42,13 @@ function ProfileButton({ user }) {
   };
 
   const ulClassName = "profile-dropdown" + (showMenu ? "" : " hidden");
-  const closeMenu = () => setShowMenu(false);
 
   return (
     <div className="profile-button-container">
       <button onClick={openMenu} className="profile-button">
         <FontAwesomeIcon icon={faUserCircle} className="profile-icon" />
       </button>
+
       <ul className={ulClassName} ref={ulRef}>
         {user ? (
           <>
@@ -59,13 +63,15 @@ function ProfileButton({ user }) {
         ) : (
           <>
             <OpenModalButton
-              buttonText="Log In"
+              className="center-menu"
+              itemText="Log In"
               onItemClick={closeMenu}
               modalComponent={<LoginFormModal />}
             />
 
             <OpenModalButton
-              buttonText="Sign Up"
+              className="center-menu"
+              itemText="Sign Up"
               onItemClick={closeMenu}
               modalComponent={<SignupFormModal />}
             />

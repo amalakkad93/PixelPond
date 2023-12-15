@@ -42,12 +42,21 @@
   transform: scale(1.1);
 }
 
-.user-details {
+/* .user-details {
   width: 97%;
+
   display: flex;
   align-items: center;
+} */
+.user-details-in-all-posts {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 10px;
+  border-radius: 5px;
+  /* width: 351px; */
 }
-
 .profile-picture {
   width: 40px;
   height: 40px;

@@ -34,6 +34,7 @@ const ImageDisplay = ({ mode }) => {
   const history = useHistory();
   const location = useLocation();
   const { userId, albumId } = useParams();
+  console.log("🚀 ~ file: index.js:37 ~ ImageDisplay ~ userId:", userId);
 
   const loading = useSelector(selectLoading);
   const albumUserInfo = useSelector(selectAlbumUserInfo);
@@ -46,9 +47,8 @@ const ImageDisplay = ({ mode }) => {
   const [showAbout, setShowAbout] = useState(false);
   const perPage = 10;
 
-  const sessionUser = useSelector(selectSessionUser)
-  const loggedInUserId = sessionUser?.id || null;
-  const isLoggedIn = Boolean(loggedInUserId);
+  const sessionUser = useSelector(selectSessionUser);
+
   const isOwnerMode =
     mode === "ownerPhotoStream" || mode === "ownerAlbumImages";
   const hasContent = isOwnerMode
@@ -113,7 +113,10 @@ const ImageDisplay = ({ mode }) => {
   // }
   if (mode === "photoStream") {
     profilePhoto = userInfo?.profile_picture;
-    userName = userInfo?.username;
+
+    userName = `${ userInfo?.first_name || ""} ${
+      userInfo?.last_name || ""
+    }`;
     aboutMe = userInfo?.about_me || "No about me information available.";
     images = userPosts.map((post) => post.image).filter(Boolean); // Filter out falsy values
     imageLength = userPosts.length;
@@ -129,7 +132,11 @@ const ImageDisplay = ({ mode }) => {
 
   if (mode === "ownerPhotoStream") {
     profilePhoto = sessionUser?.profile_picture;
-    userName = sessionUser?.username;
+    // userName = sessionUser?.username;
+
+    userName = `${sessionUser?.first_name || ""} ${
+      sessionUser?.last_name || ""
+    }`;
     aboutMe = sessionUser?.about_me || "No about me information available.";
     images = userPosts.map((post) => post.image).filter(Boolean); // Filter out falsy values
     imageLength = userPosts.length;

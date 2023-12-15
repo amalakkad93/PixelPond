@@ -93,6 +93,7 @@ export const thunkGetAlbumsByUserId = (userId, page, perPage) => {
 };
 
 // Thunk to Create an Album
+// Thunk to Create an Album
 export const thunkCreateAlbum = (albumData) => async (dispatch) => {
   try {
     const response = await fetch("/api/albums", {
@@ -103,14 +104,21 @@ export const thunkCreateAlbum = (albumData) => async (dispatch) => {
 
     if (response.ok) {
       const newAlbum = await response.json();
-      dispatch(actionCreateAlbum(newAlbum.resource));
-      return { type: "SUCCESS", data: newAlbum };
+      // Check if newAlbum contains an id before dispatching
+      if (newAlbum && newAlbum.resource && newAlbum.resource.id) {
+        dispatch(actionCreateAlbum(newAlbum.resource));
+        return { type: "SUCCESS", data: newAlbum };
+      } else {
+        console.error("Invalid album data received:", newAlbum);
+        // Handle error appropriately
+      }
     } else {
       const errors = await response.json();
       throw errors;
     }
   } catch (error) {
-    // handle errors
+    console.error("Exception in thunkCreateAlbum:", error); // Log the exception
+    return { type: "EXCEPTION", data: error };
   }
 };
 
@@ -181,11 +189,21 @@ export default function reducer(state = initialState, action) {
         ...state,
         userAlbums: action.albums,
       };
-      
+
+    // case CREATE_ALBUM:
+    //   newState = { ...state };
+    //   newState.allAlbums.byId[action.album.id] = action.album;
+    //   newState.allAlbums.allIds.push(action.album.id);
+    //   return newState;
     case CREATE_ALBUM:
       newState = { ...state };
-      newState.allAlbums.byId[action.album.id] = action.album;
-      newState.allAlbums.allIds.push(action.album.id);
+
+      if (action.album && action.album.id) {
+        newState.allAlbums.byId[action.album.id] = action.album;
+        newState.allAlbums.allIds.push(action.album.id);
+      } else {
+        console.error("Album data is missing or invalid:", action.album);
+      }
       return newState;
 
     case UPDATE_ALBUM:

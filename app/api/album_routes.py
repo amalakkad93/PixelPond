@@ -148,28 +148,51 @@ def update_album(id):
 # Endpoint to Create a Album
 # ***************************************************************
 @album_routes.route('', methods=["POST"])
+@login_required
 def create_album():
     try:
         data = request.get_json()
         if not data:
-            return jsonify(errors="Invalid data"), 400
+            return jsonify({'error': 'Invalid data'}), 400
 
-        if not current_user.is_authenticated:
-            return jsonify(message="You need to be logged in"), 401
-
-        new_album = Album(**data)
-        new_album.owner_id = current_user.id
+        new_album = Album(
+            user_id=current_user.id,
+            title=data['title']
+        )
 
         db.session.add(new_album)
         db.session.commit()
 
-        return jsonify({
-            "message": "Album successfully created",
-            "resource": new_album.to_dict()
-        }), 201
+        return jsonify(new_album.to_dict()), 201
+
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": "An error occurred while creating the resource."}), 500
+        print(f"Error in create_album: {e}")  # Log the exception
+        return jsonify({'error': 'An error occurred while creating the album.'}), 500
+
+# @album_routes.route('', methods=["POST"])
+# def create_album():
+#     try:
+#         data = request.get_json()
+#         if not data:
+#             return jsonify(errors="Invalid data"), 400
+
+#         if not current_user.is_authenticated:
+#             return jsonify(message="You need to be logged in"), 401
+
+#         new_album = Album(**data)
+#         new_album.owner_id = current_user.id
+
+#         db.session.add(new_album)
+#         db.session.commit()
+
+#         return jsonify({
+#             "message": "Album successfully created",
+#             "resource": new_album.to_dict()
+#         }), 201
+#     except Exception as e:
+#         db.session.rollback()
+#         return jsonify({"error": "An error occurred while creating the resource."}), 500
 
 # ***************************************************************
 # Endpoint to Delete a Album

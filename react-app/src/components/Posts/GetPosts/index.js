@@ -63,7 +63,7 @@ export default function GetPosts({ mode = "all" }) {
           <div key={post.id} className="post-item" onClick={() => history.push(`/posts/users/${post.owner_id}`)}>
             <img className= "main-image" src={post.image} alt={`Banner for ${post.title}`} />
 
-            <div className="user-details">
+            <div className="user-details-in-all-posts">
               <img className="profile-picture" src={post.user_info.profile_picture} alt={post.user_info.username} />
               <div className="post-title-username-div">
               <h3 className="post-title-h3">{post.title}</h3>

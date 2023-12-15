@@ -1,68 +1,68 @@
-.PostForm {
-  background-color: #f4f4f4;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.post-form {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 79px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
 }
 
-.PostForm h2 {
-  font-size: 24px;
+.form-group {
   margin-bottom: 20px;
-  color: #333;
 }
 
-.PostForm form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.PostForm input[type="text"],
-.PostForm textarea,
-.PostForm select {
+.form-control, .form-textarea, .form-select {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  padding: 12px 15px;
+  border: 2px solid #e2e8f0;
+  border-radius: 4px;
   font-size: 16px;
   color: #333;
 }
 
-.PostForm select {
+.form-control:focus, .form-textarea:focus, .form-select:focus {
+  outline: none;
+  border-color: #a0aec0;
+}
+
+.form-textarea {
+  height: 150px;
+  resize: vertical;
+}
+
+.form-select {
+  appearance: none;
   background-color: #fff;
-}
-
-.PostForm button[type="submit"] {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  padding: 10px 20px;
-  font-size: 18px;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M7 10l5 5 5-5z" fill="%23999"/%3E%3C/svg%3E');
+  background-repeat: no-repeat;
+  background-position: right 15px center;
   cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
-.PostForm button[type="submit"]:hover {
-  background-color: #0056b3;
+.upload-error {
+  color: #e53e3e;
+  font-size: 14px;
+  margin-top: 10px;
 }
 
-.AWSImageUploader {
-  margin-top: 20px;
-}
-
-.AWSImageUploader .upload-button {
-  background-color: #007bff;
-  color: #fff;
+.submit-button {
+  background-color: #5a67d8;
+  color: white;
+  padding: 12px 20px;
   border: none;
-  border-radius: 5px;
-  padding: 10px 20px;
+  border-radius: 4px;
   font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s;
 }
 
-.AWSImageUploader .upload-button:hover {
-  background-color: #0056b3;
+.submit-button:hover {
+  background-color: #4c51bf;
+}
+
+@media (max-width: 768px) {
+  .post-form {
+    padding: 15px;
+  }
 }

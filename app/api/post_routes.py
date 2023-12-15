@@ -187,16 +187,18 @@ def create_post():
     try:
         data = request.json
         title = data.get('title')
-        description = data.get('description')
+        description = data.get('description', '')
         album_id = data.get('album_id')
         image_url = data.get('image_url')
 
-        if not title or not image_url:
-            return jsonify({'error': 'Title and Image are required'}), 400
 
+        if not title or not image_url:
+            return jsonify({'error': 'Title and Image URL are required'}), 400
+
+        # Create the Post
         post = Post(
             owner_id=current_user.id,
-            album_id=album_id,
+            album_id=album_id if album_id else None,
             title=title,
             description=description
         )
@@ -204,7 +206,12 @@ def create_post():
         db.session.add(post)
         db.session.commit()
 
-        image = Image(post_id=post.id, url=image_url)
+        # Create the Image
+        image = Image(
+            post_id=post.id,
+            url=image_url
+        )
+
         db.session.add(image)
         db.session.commit()
 
@@ -212,6 +219,7 @@ def create_post():
 
     except Exception as e:
         db.session.rollback()
+        print(f"Error in create_post: {e}")
         return jsonify({'error': 'An unexpected error occurred'}), 500
 
 # ***************************************************************
@@ -327,12 +335,6 @@ def create_comment(post_id):
     except Exception as e:
         current_app.logger.error(f"Error saving comment: {e}")
         return jsonify({"error": "An error occurred while saving the comment"}), 500
-
-
-
-
-
-
 
 # ***************************************************************
 # Endpoint to Edit a Comment for a Post
