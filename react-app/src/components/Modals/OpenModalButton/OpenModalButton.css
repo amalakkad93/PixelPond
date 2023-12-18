@@ -1,0 +1,21 @@
+.more-info-text {
+  display: inline-block;
+  text-decoration: underline;
+  cursor: pointer;
+  color: black;
+  font-family: 'Roboto', sans-serif;
+  border-radius: 5px;
+}
+.more-info-button {
+  display: inline-block;
+  color: black;
+  font-weight: bold;
+  font-family: 'Roboto', sans-serif;
+  border-radius: 5px;
+  padding: 10px 15px;
+  border-radius: 5px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}

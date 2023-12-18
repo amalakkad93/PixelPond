@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import Comment, db
+from .. import helper_functions as hf
 
 comment_routes = Blueprint('comments', __name__)
 

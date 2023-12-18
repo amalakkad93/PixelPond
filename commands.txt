@@ -52,6 +52,11 @@ pip install Flask-Caching
 ✨ Install Google Auth Libraries:
 pip install google-auth google-auth-oauthlib
 
+
+=== Icecream log ===
+✨ Install icecream:
+$ pip install icecream
+
 ******************************************
 *********** Frontend Commands ************
 ******************************************
@@ -70,7 +75,11 @@ npm install js-cookie
 
 === Font Awesome Heart Icon ===
 ✨ Install Font Awesome Icons:
+npm install --save @fortawesome/react-fontawesome
 npm install @fortawesome/free-regular-svg-icons
+npm install --save @fortawesome/free-solid-svg-icons
+
+
 
 === Image Magnification Feature ===
 ✨ Add Image Magnifier:
@@ -86,6 +95,7 @@ npm install react-toastify
 
 ✨ Loading Spinners:
 npm install react-spinners
+npm install react-loader-spinner
 
 ✨ Immutable State Management:
 npm install immer
