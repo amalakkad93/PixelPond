@@ -6,7 +6,13 @@ import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
 import { setLoading, setError } from "../../../store/ui";
 import { thunkGetAllPosts, thunkGetOwnerPosts } from "../../../store/posts";
-import { selectOwnerPosts, selectAllPosts, selectSessionUser, selectCurrentPage, selectTotalPages,   } from "../../../store/selectors";
+import {
+  selectOwnerPosts,
+  selectAllPosts,
+  selectSessionUser,
+  selectCurrentPage,
+  selectTotalPages,
+} from "../../../store/selectors";
 
 import Pagination from "../../Pagination";
 import "./GetAllPosts.css";
@@ -15,19 +21,21 @@ export default function GetPosts({ mode = "all" }) {
   const dispatch = useDispatch();
   const history = useHistory();
   const { loading, error } = useSelector((state) => state.ui);
-  const posts = useSelector( mode === "owner" ? selectOwnerPosts : selectAllPosts);
+  const posts = useSelector(
+    mode === "owner" ? selectOwnerPosts : selectAllPosts
+  );
   const sessionUser = useSelector(selectSessionUser);
   const currentPage = useSelector(selectCurrentPage);
   const totalPages = useSelector(selectTotalPages);
 
   // const [currentPage, setCurrentPage] = useState(1);
 
-
   // const [totalPages, setTotalPages] = useState(0);
   const userId = selectSessionUser?.id;
   const perPage = 10;
 
   useEffect(() => {
+    console.log("useEffect called", { currentPage, perPage, mode });
     const fetchData = async () => {
       try {
         dispatch(setLoading(true));
@@ -35,6 +43,7 @@ export default function GetPosts({ mode = "all" }) {
         if (mode === "owner") {
           await dispatch(thunkGetOwnerPosts(userId, currentPage, perPage));
         } else {
+          console.log("Dispatching thunkGetAllPosts");
           await dispatch(thunkGetAllPosts(currentPage, perPage));
         }
 
@@ -48,11 +57,7 @@ export default function GetPosts({ mode = "all" }) {
     fetchData();
   }, [dispatch, currentPage, perPage, mode]);
 
-
-  const handlePageChange = (newPage) => dispatch(thunkGetAllPosts(newPage, perPage));
-
   if (!posts || posts.length === 0) return null;
-
 
   return (
     <div className="center-container">
@@ -60,14 +65,26 @@ export default function GetPosts({ mode = "all" }) {
         {posts.map((post) => (
           // <div key={post.id} className="post-item" onClick={() => history.push(`/posts/${post.id}`)}>
           // <div key={post.id} className="post-item" onClick={() => history.push(`/albums/${post.album_id}`)}>
-          <div key={post.id} className="post-item" onClick={() => history.push(`/posts/users/${post.owner_id}`)}>
-            <img className= "main-image" src={post.image} alt={`Banner for ${post.title}`} />
+          <div
+            key={post.id}
+            className="post-item"
+            onClick={() => history.push(`/posts/users/${post.owner_id}`)}
+          >
+            <img
+              className="main-image"
+              src={post.image}
+              alt={`Banner for ${post.title}`}
+            />
 
             <div className="user-details-in-all-posts">
-              <img className="profile-picture" src={post.user_info.profile_picture} alt={post.user_info.username} />
+              <img
+                className="profile-picture"
+                src={post.user_info.profile_picture}
+                alt={post.user_info.username}
+              />
               <div className="post-title-username-div">
-              <h3 className="post-title-h3">{post.title}</h3>
-              <p className="post-title-p">{post.user_info.username}</p>
+                <h3 className="post-title-h3">{post.title}</h3>
+                <p className="post-title-p">{post.user_info.username}</p>
               </div>
             </div>
           </div>
@@ -75,11 +92,23 @@ export default function GetPosts({ mode = "all" }) {
       </div>
       {/* <Pagination onPageChange={handlePageChange} /> */}
       <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(newPage) => {
+          if (mode === "owner") {
+            dispatch(thunkGetOwnerPosts(userId, newPage, perPage));
+          } else {
+            dispatch(thunkGetAllPosts(newPage, perPage));
+          }
+        }}
+      />
+
+      {/* <Pagination
         onPageChange={(newPage) => dispatch(thunkGetAllPosts(newPage, perPage))}
         currentPage={currentPage}
         totalPages={totalPages}
         useRedux={true}
-      />
+      /> */}
     </div>
   );
 }

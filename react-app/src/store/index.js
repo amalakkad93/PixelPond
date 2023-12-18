@@ -3,9 +3,9 @@ import thunk from 'redux-thunk';
 import session from './session'
 import posts from './posts'
 import albums from './albums';
-import paginations from './paginations'
+// import paginations from './paginations'
 import comments from './comments'
-import images from './images'
+import aws from './aws'
 import ui from './ui'
 
 const rootReducer = combineReducers({
@@ -13,10 +13,10 @@ const rootReducer = combineReducers({
   posts,
   albums,
   comments,
-  images,
+  aws,
 
 
-  paginations,
+  // paginations,
   ui
 });
 

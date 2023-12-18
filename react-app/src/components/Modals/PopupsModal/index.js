@@ -1,21 +1,31 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStream, faImages, faCameraRetro, faUserCircle,  faPhotoVideo } from '@fortawesome/free-solid-svg-icons';
+
+import {selectSessionUser} from '../../../store/selectors';
 import "./PopupsModal.css";
 
-export default function PopupsModal({ showModal, onClose }) {
 
+
+
+export default function PopupsModal({ showModal, onClose }) {
   const history = useHistory();
 
+  const sessionUser = useSelector(selectSessionUser);
+  const userId = sessionUser?.id;
+
   const handlePhotoStream = () => {
-    history.push('/owner/photostream');
+    // history.push(`/posts//owner/${userId}`);
+    history.push(`/owner/photostream`);
+
     // setModalVisible(false);
     onClose();
   };
 
   const handleAlbum = () => {
-    history.push('/owner/albums');
+    history.push(`/albums/users/${userId}`);
     // setModalVisible(false);
     onClose();
   };

@@ -3,6 +3,14 @@ import { useSelector, useDispatch } from "react-redux";
 import { useParams, useHistory } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import {
+  faChevronRight,
+  faChevronLeft,
+  faSliders,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 
 import {
   thunkGetPostDetails,
@@ -15,8 +23,13 @@ import {
   selectUserInfo,
   selectNeighborPosts,
   selectLoading,
+  selectSessionUser,
 } from "../../../store/selectors";
 
+import OpenModalButton from "../../Modals/OpenModalButton";
+
+import EditPostForm from "../PostForms/EditPostForm";
+import DeletePost from "../DeletePost";
 import CommentsList from "../../Comments/CommentsList";
 import CreateCommentForm from "../../Comments/CommentForm/CreateCommentForm";
 
@@ -27,6 +40,7 @@ export default function PostDetail() {
   const history = useHistory();
   const { postId } = useParams();
 
+  const sessionUser = useSelector(selectSessionUser);
   const post = useSelector(selectSinglePost);
   const userInfo = useSelector(selectUserInfo);
   const neighborPosts = useSelector(selectNeighborPosts);
@@ -35,22 +49,21 @@ export default function PostDetail() {
 
   useEffect(() => {
     dispatch(clearUIState());
-
-    const fetchData = async () => {
-      try {
-        dispatch(setLoading(true));
-        await dispatch(thunkGetPostDetails(postId));
-        await dispatch(thunkGetNeighborPosts(postId, userId));
-        await dispatch(thunkGetPostComments(postId, 1, 10));
-        dispatch(setLoading(false));
-      } catch (err) {
-        dispatch(setError("An error occurred"));
-        dispatch(setLoading(false));
-      }
-    };
-
     fetchData();
   }, [dispatch, postId, userId]);
+
+  const fetchData = async () => {
+    try {
+      dispatch(setLoading(true));
+      await dispatch(thunkGetPostDetails(postId));
+      await dispatch(thunkGetNeighborPosts(postId, userId));
+      await dispatch(thunkGetPostComments(postId, 1, 10));
+      dispatch(setLoading(false));
+    } catch (err) {
+      dispatch(setError("An error occurred"));
+      dispatch(setLoading(false));
+    }
+  };
 
   const goToPost = (postId) => {
     if (postId) {
@@ -69,7 +82,10 @@ export default function PostDetail() {
               onClick={() => goToPost(neighborPosts.prevPostId)}
               className="prev-button"
             >
-              <i className="fas fa-arrow-left"></i>
+              <FontAwesomeIcon
+                icon={faChevronLeft}
+                className="pagination-icon"
+              />
             </button>
           )}
 
@@ -87,11 +103,46 @@ export default function PostDetail() {
               onClick={() => goToPost(neighborPosts.nextPostId)}
               className="next-button"
             >
-              <i className="fas fa-arrow-right"></i>
+              <FontAwesomeIcon
+                icon={faChevronRight}
+                className="pagination-icon"
+              />
             </button>
           )}
+          <div className="edit-delete-post-btn">
+            {sessionUser && sessionUser.id === post.owner_id && (
+              <>
+                <OpenModalButton
+                  className="edit-post-button"
+                  buttonText={<FontAwesomeIcon icon={faSliders}  className="slider-icon"/>}
+                  modalComponent={
+                    <EditPostForm
+                      postId={postId}
+                      fetchPostDetailDat={fetchData}
+                    />
+                  }
+                />
+                <OpenModalButton
+                  buttonText={
+                    <FontAwesomeIcon icon={faTrash} className="trash-icon" />
+                  }
+                  modalComponent={
+                    <DeletePost
+                      postId={postId}
+                      onDelete={() => {
+                        if (neighborPosts.prevPostId) {
+                          history.push(`/posts/${neighborPosts.prevPostId}`);
+                        } else {
+                          history.push("/owner/photostream");
+                        }
+                      }}
+                    />
+                  }
+                />
+              </>
+            )}
+          </div>
         </div>
-
         <div className="user-info-container">
           <div className="user-profile-picture-name-container">
             {userInfo && userInfo.profile_picture && (

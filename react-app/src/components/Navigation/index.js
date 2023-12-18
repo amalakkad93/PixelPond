@@ -20,9 +20,9 @@ function Navigation({ isLoaded }) {
 
   // const toggleModal = () => setShowModal(!showModal);
   const toggleModal = () => {
-    console.log('---Toggling modal:', !showModal);
+    console.log("---Toggling modal:", !showModal);
     setShowModal(!showModal);
-};
+  };
 
   return (
     <nav className="navbar">
@@ -41,21 +41,16 @@ function Navigation({ isLoaded }) {
 
           {sessionUser && (
             <li className="pop-modal-trigger" onClick={toggleModal}>
-              <FontAwesomeIcon icon={faUserCircle} className="white-icon" />
+                <span  className="white-icon">You</span>
+
+
+              {/* <FontAwesomeIcon icon={faUserCircle} className="white-icon" /> */}
+
               {/* <span>{sessionUser.username}</span> */}
               <PopupsModal
                 showModal={showModal}
                 onClose={() => setShowModal(false)}
               />
-            </li>
-          )}
-
-          {sessionUser && (
-            <li>
-              <NavLink to="/albums" activeClassName="active">
-                <FontAwesomeIcon icon={faImages} />
-                Albums
-              </NavLink>
             </li>
           )}
 

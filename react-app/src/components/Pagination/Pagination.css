@@ -1,58 +1,82 @@
-/* Base styles for pagination */
-.pagination-controls {
+.pagination {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 20px;
-  font-family: 'Arial', sans-serif;
+  gap: 5px;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.pagination-controls button, .pagination-controls .page-info {
-  background-color: #2b1f3a;
-  color: white;
+.pagination-btn {
   border: none;
-  padding: 8px 16px;
-  margin: 0 4px;
-  border-radius: 4px;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.1s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  background-color: #fff;
+  color: #898989;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 3px;
+  font-size: 14px;
+  transition: background-color 0.3s, color 0.3s;
+  min-width: 32px;
+  height: 32px;
+  line-height: 32px;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
 }
 
-.pagination-controls button:hover {
-  background-color: rgb(53, 0, 53);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-  transform: translateY(-2px);
+.pagination-btn:hover {
+  background-color: #fff;
+  color: #0063dc;
+  border-color: #0063dc;
 }
 
-.pagination-controls button:disabled {
-  background-color: #3a3441;
+.pagination-btn.active {
+  background-color: #008ddf;
+  color: white;
+  font-weight: 600;
+}
+
+.pagination-btn.disabled {
+  background-color: #e0e0e0;
+  color: #9e9e9e;
   cursor: not-allowed;
-  box-shadow: none;
 }
 
-.pagination-controls button:disabled:hover {
-  transform: none;
+.pagination-icon {
+  /* color: white; */
+  color: #606060;
+  font-size: 12px;
 }
 
-.pagination-controls .page-info {
-  user-select: none;
-  font-size: 16px;
-}
+
+
 
 
 /* Media query for smaller screens */
 @media screen and (max-width: 600px) {
-  .pagination-controls button {
-    padding: 6px 12px;
-    font-size: 14px;
+  .pagination {
+    padding: 5px;
+    gap: 3px; 
   }
 
-  .pagination-controls span {
-    font-size: 14px;
+  .pagination-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+    min-width: 28px;
+    height: 28px;
+    line-height: 28px;
   }
 
-  .pagination-controls .page-info {
-    padding: 4px 8px;
+  .pagination-icon {
+    font-size: 10px;
+  }
+
+
+  .pagination-btn:not(.active):not(:first-child):not(:last-child) {
+    display: none;
   }
 }

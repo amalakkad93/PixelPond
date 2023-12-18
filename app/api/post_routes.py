@@ -107,22 +107,34 @@ def get_posts_by_user_id(user_id):
 def get_current_user_posts():
     try:
         user_id = current_user.id
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({"error": "User not found."}), 404
+
         posts_query = Post.query.filter(Post.owner_id == user_id)
         paginated_posts = hf.paginate_query(posts_query, 'user_posts')
 
-        user_posts = [post.to_dict() for post in paginated_posts['user_posts']]
+        user_posts = []
+        for post in paginated_posts['user_posts']:
+            if isinstance(post, Post):
+                post_dict = post.to_dict()
+            else:
+                post_dict = post
+
+            user_posts.append(post_dict)
 
         result = {
-            "user_info": current_user.to_dict(),
+            "user_info": user.to_dict(),
             "user_posts": user_posts,
             "total_items": paginated_posts['total_items'],
             "total_pages": paginated_posts['total_pages'],
             "current_page": paginated_posts['current_page']
         }
+        ic(result)
         return jsonify(result)
 
     except Exception as e:
-        logging.error(f"Error fetching posts for the current user (ID: {user_id}): {e}")
+        logging.error(f"Error fetching posts for user (ID: {user_id}): {e}")
         return jsonify({"error": "An error occurred while fetching the posts."}), 500
 
 # ***************************************************************
@@ -246,12 +258,22 @@ def update_post(id):
         for key, value in data.items():
             setattr(post_to_update, key, value)
 
+        new_image_url = data.get('image_url')
+        if new_image_url:
+            image_to_update = Image.query.filter_by(post_id=id).first()
+            if image_to_update:
+                image_to_update.url = new_image_url
+            else:
+                new_image = Image(post_id=id, url=new_image_url)
+                db.session.add(new_image)
+
         db.session.commit()
         return jsonify(post_to_update.to_dict())
     except Exception as e:
         logging.error(f"Error updating post (ID: {id}): {e}")
         db.session.rollback()
         return jsonify({"error": "An error occurred while updating the post."}), 500
+
 
 # ***************************************************************
 # Endpoint to Delete a Post

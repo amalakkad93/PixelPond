@@ -37,7 +37,9 @@ const GetAlbums = () => {
     const fetchData = async () => {
       try {
         dispatch(setLoading(true));
-        const response = await dispatch(thunkGetAlbumsByUserId(userId, currentPage, perPage));
+        const response = await dispatch(
+          thunkGetAlbumsByUserId(userId, currentPage, perPage)
+        );
         setTotalPages(response.totalPages);
         dispatch(setLoading(false));
       } catch (err) {
@@ -51,7 +53,7 @@ const GetAlbums = () => {
 
   const toggleAbout = () => setShowAbout(!showAbout);
 
-  if (!albums || albums.length === 0) return null;
+  // if (!albums || albums.length === 0) return null;
 
   return (
     <>
@@ -61,7 +63,6 @@ const GetAlbums = () => {
           onAboutClick={toggleAbout}
           showAbout={showAbout}
           albumCount={totalAlbums}
-
         />
       </nav>
       {showAbout && (
@@ -69,35 +70,42 @@ const GetAlbums = () => {
           <p>{aboutMe || "No about me information available."}</p>
         </div>
       )}
-      <div className="albums-container">
-        {albums.map((album) => (
-          <div
-            key={album.id}
-            className="album-item"
-            onClick={() => history.push(`/albums/${album?.id}`)}
-          >
-            <div className="album-title">{album.title}</div>
-            <div className="album-images">
-              <div className="album-image-grid">
-                {album.images.map((image, index) => (
-                  <img
-                    key={index}
-                    src={image.url}
-                    alt={`Image ${index} of ${album.title}`}
-                    className="album-image"
-                  />
-                ))}
+      {albums?.length === 0 ? (
+        <div className="no-albums-message">
+          <p>You currently have no albums.</p>
+        </div>
+      ) : (
+        <div className="albums-container">
+          {albums.map((album) => (
+            <div
+              key={album.id}
+              className="album-item"
+              onClick={() => history.push(`/albums/${album?.id}`)}
+            >
+              <div className="album-title">{album.title}</div>
+              <div className="album-images">
+                <div className="album-image-grid">
+                  {album.images.map((image, index) => (
+                    <img
+                      key={index}
+                      src={image.url}
+                      alt={`Image ${index} of ${album.title}`}
+                      className="album-image"
+                    />
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
+
       <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={(newPage) => setCurrentPage(newPage)}
-          useRedux={false}
-        />
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(newPage) => setCurrentPage(newPage)}
+        useRedux={false}
+      />
     </>
   );
 };

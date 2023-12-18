@@ -1,6 +1,8 @@
 from flask import Blueprint, jsonify, request, current_app
 from ..s3 import get_unique_filename, BUCKET_NAME, remove_file_from_s3
 
+from icecream import ic
+
 s3_routes = Blueprint('s3_routes', __name__)
 
 @s3_routes.route('/generate_presigned_url', methods=['GET'])
@@ -27,6 +29,7 @@ def generate_presigned_url():
 @s3_routes.route('/delete-image', methods=['POST'])
 def delete_image():
     image_url = request.json.get('image_url')
+    ic(f"Type of image_url: {type(image_url)}")
     if not image_url:
         return jsonify({"error": "Image URL not provided."}), 400
 

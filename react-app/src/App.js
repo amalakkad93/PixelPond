@@ -31,7 +31,7 @@ function App() {
           <Route path="/posts/owner"><GetPosts mode="owner" /></Route>
           <Route path="/owner/photostream"><ImageDisplay mode="ownerPhotoStream"  /></Route>
           <Route path="/owner/albums"><ImageDisplay mode="ownerAlbumImages"  /></Route>
-
+          {/* <Route path="/posts/owner/:userId"><ImageDisplay mode="ownerPhotoStream" /></Route> */}
           {/* <Route path="/posts/users/:userId"><PhotoStream /></Route> */}
           <Route path="/posts/users/:userId"><ImageDisplay mode="photoStream"  /></Route>
           <Route path="/users/show"><UserProfile /></Route>

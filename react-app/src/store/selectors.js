@@ -93,7 +93,10 @@ export const selectPostComments1 = (state, postId) => {
   return comments ? comments.allIds.map(id => comments.byId[id]) : [];
 };
 
-
+// =========================================================
+//               ****Aws UseSelectors****
+// =========================================================
+export const selectUploadedImageUrl = (state) => state.aws.uploadedImageUrl;
 
 // =========================================================
 //               ****Favorite UseSelectors****
@@ -104,5 +107,9 @@ export const selectPostComments1 = (state, postId) => {
 // =========================================================
 //               ****Paginations UseSelectors****
 // =========================================================
-export const selectCurrentPage = (state) => state.paginations.currentPage;
-export const selectTotalPages = (state) => state.paginations.totalPages;
+
+export const selectCurrentPage = (state) => state.posts.pagination.currentPage;
+export const selectTotalPages = (state) => state.posts.pagination.totalPages;
+
+// export const selectCurrentPage = (state) => state.paginations.currentPage;
+// export const selectTotalPages = (state) => state.paginations.totalPages;
