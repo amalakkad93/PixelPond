@@ -18,7 +18,8 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod('users.id'), ondelete='CASCADE'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod('posts.id'), ondelete='CASCADE'), nullable=False)
-    comment = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod('comments.id'), ondelete='CASCADE'), nullable=True)
+    image_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod('images.id'), ondelete='CASCADE'), nullable=True)
+    comment =  comment = db.Column(db.String, nullable=False) 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -27,9 +28,9 @@ class Comment(db.Model):
             'id': self.id,
             'user_id': self.user_id,
             'post_id': self.post_id,
+            'image_id': self.image_id,
             'comment': self.comment,
             'created_at': self.created_at.isoformat(),
             'created_at_display': format_review_date(self.created_at),
             'updated_at': format_review_date(self.updated_at),
-
         }

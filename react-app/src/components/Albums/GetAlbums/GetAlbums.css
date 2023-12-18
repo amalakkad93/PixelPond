@@ -1,0 +1,127 @@
+
+/* Navigation Bar Styles */
+.album-navigation {
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 10px 20px;
+}
+
+/* User Navigation Bar */
+.user-navigation-bar {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.user-navigation-bar a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.user-navigation-bar a.active {
+  color: #0056b3;
+  border-bottom: 2px solid #007bff;
+}
+
+/* About Section */
+.about-section {
+  background-color: #fff;
+  padding: 20px;
+  margin: 20px auto;
+  width: 80%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 5px;
+  text-align: center;
+}
+.no-albums-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+  text-align: center;
+  color: #333;
+  font-size: 1.5rem;
+  background-color: #f0f0f0; 
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin: 20px;
+}
+
+.no-albums-message p {
+  margin: 0;
+}
+
+/* Albums Container */
+.albums-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+  width: 90%;
+  margin: 20px auto;
+  box-sizing: border-box;
+  justify-content: center;
+}
+
+.album-item {
+  flex: 1;
+  min-width: 250px;
+  max-width: calc(33.33% - 20px);
+  box-sizing: border-box;
+  /* border: 1px solid #ccc; */
+  padding: 10px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.album-item:hover {
+  transform: translateY(-5px);
+}
+
+.album-title {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.album-images {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    height: 220px;
+    overflow: hidden;
+}
+
+.album-image {
+  flex: 0 0 calc(50% - 10px);
+  height: 100px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+.album-image-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  /* max-width: calc(33.33% - 20px); */
+}
+
+/* Pagination Styles */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination-item {
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+.pagination-item.active {
+  font-weight: bold;
+}

@@ -1,0 +1,68 @@
+.post-form {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 79px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-control, .form-textarea, .form-select {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #e2e8f0;
+  border-radius: 4px;
+  font-size: 16px;
+  color: #333;
+}
+
+.form-control:focus, .form-textarea:focus, .form-select:focus {
+  outline: none;
+  border-color: #a0aec0;
+}
+
+.form-textarea {
+  height: 150px;
+  resize: vertical;
+}
+
+.form-select {
+  appearance: none;
+  background-color: #fff;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M7 10l5 5 5-5z" fill="%23999"/%3E%3C/svg%3E');
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  cursor: pointer;
+}
+
+.upload-error {
+  color: #e53e3e;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.submit-button {
+  background-color: #5a67d8;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submit-button:hover {
+  background-color: #4c51bf;
+}
+
+@media (max-width: 768px) {
+  .post-form {
+    padding: 15px;
+  }
+}
