@@ -34,9 +34,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import AWSImageUploader from '../Aws/AWSImageUploader';
-import { updateUserProfilePic, setUser } from '../../store/session';
-import { setLoading } from '../../store/ui'; // Import setLoading action
+import AWSImageUploader from '../../Aws/AWSImageUploader';
+import { updateUserProfilePic, setUser } from '../../../store/session';
+import { setLoading } from '../../../store/ui'; // Import setLoading action
 
 const UserProfileManager = ({ setIsEditingProfilePic, onProfilePicUpdate, refreshPageData,  setReloadPage }) => {
   const dispatch = useDispatch();
@@ -46,20 +46,18 @@ const UserProfileManager = ({ setIsEditingProfilePic, onProfilePicUpdate, refres
   const handleUploadSuccess = async (newImageUrl) => {
     dispatch(setLoading(true));
     try {
-      const updatedUser = await dispatch(updateUserProfilePic(newImageUrl));
+      await dispatch(updateUserProfilePic(newImageUrl));
       console.log('Profile picture updated successfully');
-      dispatch(setUser(updatedUser));
       setIsEditingProfilePic(false);
-      onProfilePicUpdate(newImageUrl);
-      // setReloadPage(prevState => !prevState);
-      refreshPageData();
-
+    
     } catch (error) {
       console.error('Error updating profile picture:', error);
     } finally {
       dispatch(setLoading(false));
     }
   };
+
+
 
   const handleUploadFailure = (errorMessage) => {
     console.error('Upload failed:', errorMessage);

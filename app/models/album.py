@@ -43,7 +43,7 @@ class Album(db.Model):
                 album_images.append({
                     'album_id': self.id,
                     'id': image.id,
-                    'url': image.url,  
+                    'url': image.url,
                     'post_id': post.id
                 })
 
@@ -53,11 +53,11 @@ class Album(db.Model):
             'user_id': self.user_id,
             # 'post_id': self.post_id,
             'title': self.title,
-            'username': user.username if user else None,
-            'first_name': user.first_name if user else None,
-            'last_name': user.last_name if user else None,
-            'last_name': user.last_name if user else None,
-            'profile_picture': user.profile_picture if user else None,
-            'about_me': user.about_me if user else None,
+            # 'username': user.username if user else None,
+            # 'first_name': user.first_name if user else None,
+            # 'last_name': user.last_name if user else None,
+            # 'last_name': user.last_name if user else None,
+            # 'profile_picture': user.profile_picture if user else None,
+            # 'about_me': user.about_me if user else None,
             'images': album_images
         }

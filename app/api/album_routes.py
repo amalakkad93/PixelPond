@@ -49,27 +49,9 @@ def get_albums_by_user_id(user_id):
     """
     try:
         albums_query = Album.query.filter_by(user_id=user_id)
+        albums_with_images = [album.to_dict() for album in albums_query]
 
-        albums_with_info_and_images = []
-        for album in albums_query:
-            album_dict = album.to_dict()
-            album_info = {
-                "id": album_dict.get("id"),
-                "title": album_dict.get("title"),
-                "user_id": album_dict.get("user_id"),
-                "username": album_dict.get("username"),
-                "first_name": album_dict.get("first_name"),
-                "last_name": album_dict.get("last_name"),
-                "about_me": album_dict.get("about_me"),
-                "profile_picture": album_dict.get("profile_picture")
-            }
-
-            # Directly use the images from the album_dict
-            images = album_dict['images']
-
-            albums_with_info_and_images.append({"album_info": album_info, "images": images})
-
-        paginated_albums = hf.paginate_query(albums_with_info_and_images, 'albums', is_list=True)
+        paginated_albums = hf.paginate_query(albums_with_images, 'albums', is_list=True)
 
         response_data = {
             "albums": paginated_albums['albums'],
@@ -93,20 +75,10 @@ def get_album_images(id):
             return jsonify({"error": "Album not found."}), 404
 
         album_dict = album.to_dict()
-        album_info = {
-            "about_me": album_dict.get("about_me"),
-            "first_name": album_dict.get("first_name"),
-            "id": album_dict.get("id"),
-            "last_name": album_dict.get("last_name"),
-            "profile_picture": album_dict.get("profile_picture"),
-            "title": album_dict.get("title"),
-            "user_id": album_dict.get("user_id"),
-            "username": album_dict.get("username")
-        }
 
         paginated_images = hf.paginate_query(album_dict['images'], 'images', is_list=True)
         response_data = {
-            "album_info": album_info,
+            "user_id": album_dict.get("user_id"),  
             "images": paginated_images['images'],
             "total_images": paginated_images['total_items'],
             "total_pages": paginated_images['total_pages'],
@@ -117,6 +89,92 @@ def get_album_images(id):
     except Exception as e:
         logger.error(f"Error fetching album images: {str(e)}")
         return jsonify({"error": "An error occurred while fetching album images."}), 500
+
+
+# # ***************************************************************
+# # Endpoint to Get Albums of a Specific User
+# # ***************************************************************
+# @album_routes.route('/user/<int:user_id>')
+# def get_albums_by_user_id(user_id):
+#     """
+#     Retrieve albums created by a specific user.
+#     Parameters:
+#         - user_id (int): The ID of the user whose albums are to be retrieved.
+#     Returns:
+#         Response: A JSON object with the user's albums or an error message.
+#     """
+#     try:
+#         albums_query = Album.query.filter_by(user_id=user_id)
+
+#         albums_with_info_and_images = []
+#         for album in albums_query:
+#             album_dict = album.to_dict()
+#             # album_info = {
+#             #     "id": album_dict.get("id"),
+#             #     "title": album_dict.get("title"),
+#             #     "user_id": album_dict.get("user_id"),
+#             #     "username": album_dict.get("username"),
+#             #     "first_name": album_dict.get("first_name"),
+#             #     "last_name": album_dict.get("last_name"),
+#             #     "about_me": album_dict.get("about_me"),
+#             #     "profile_picture": album_dict.get("profile_picture")
+#             # }
+
+#             # Directly use the images from the album_dict
+#             images = album_dict['images']
+
+#             # albums_with_info_and_images.append({"album_info": album_info, "images": images})
+#             albums_with_info_and_images.append({"images": images})
+
+#         paginated_albums = hf.paginate_query(albums_with_info_and_images, 'albums', is_list=True)
+
+#         response_data = {
+#             "albums": paginated_albums['albums'],
+#             "total_albums": paginated_albums['total_items'],
+#             "total_pages": paginated_albums['total_pages'],
+#             "current_page": paginated_albums['current_page']
+#         }
+#         return jsonify(response_data)
+#     except Exception as e:
+#         logging.error(f"Error fetching albums for user (ID: {user_id}): {e}")
+#         return jsonify({"error": "An error occurred while fetching the albums."}), 500
+
+# # ***************************************************************
+# # Endpoint to Get Images of an Album with Pagination
+# # ***************************************************************
+# @album_routes.route('/<int:id>', methods=['GET'])
+# def get_album_images(id):
+#     try:
+#         album = Album.query.get(id)
+#         if not album:
+#             return jsonify({"error": "Album not found."}), 404
+
+#         album_dict = album.to_dict()
+#         # album_info = {
+#         #     "about_me": album_dict.get("about_me"),
+#         #     "first_name": album_dict.get("first_name"),
+#         #     "id": album_dict.get("id"),
+#         #     "last_name": album_dict.get("last_name"),
+#         #     "profile_picture": album_dict.get("profile_picture"),
+#         #     "title": album_dict.get("title"),
+#         #     "user_id": album_dict.get("user_id"),
+#         #     "username": album_dict.get("username")
+#         # }
+
+#         paginated_images = hf.paginate_query(album_dict['images'], 'images', is_list=True)
+#         response_data = {
+#             # "album_info": album_info,
+#             "images": paginated_images['images'],
+#             "total_images": paginated_images['total_items'],
+#             "total_pages": paginated_images['total_pages'],
+#             "current_page": paginated_images['current_page']
+#         }
+
+#         return jsonify(response_data)
+#     except Exception as e:
+#         logger.error(f"Error fetching album images: {str(e)}")
+#         return jsonify({"error": "An error occurred while fetching album images."}), 500
+
 
 # ***************************************************************
 # Endpoint to Edit a Album

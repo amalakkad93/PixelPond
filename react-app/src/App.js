@@ -8,7 +8,7 @@ import PostDetail from "./components/Posts/PostDetail";
 import GetAlbums from "./components/Albums/GetAlbums";
 import { authenticate } from "./store/session";
 import Navigation from "./components/Navigation";
-import UserProfile from "./components/UserProfile/UserProfile";
+import UserProfile from "./components/Users/UserProfile/UserProfile";
 import ImageDisplay from "./components/ImageDisplay";
 import NotFound from "./components/NotFound";
 

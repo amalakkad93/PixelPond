@@ -17,33 +17,85 @@ export const actionGetAlbums = (albums) => ({
 });
 
 // Action creator for album images
-export const actionGetAlbumImages = (data) => {
-  const { images, album_info } = data;
+// export const actionGetAlbumImages = (data) => {
+//   const { images, album_info } = data;
+//   console.log("-----Data in actionGetAlbumImages:", data);
+//   console.log("-----Images in actionGetAlbumImages:", images);
+//   console.log("-----Album Info in actionGetAlbumImages:", album_info);
+//   return {
+//     type: GET_ALBUM_IMAGES,
+//     images: images.byId ? images : normalizeArray(images),
+//     albumInfo: album_info,
+//   };
+// };
+// export const actionGetAlbumImages = (albumImages) => {
+
+//   console.log("-----Data in actionGetAlbumImages:", albumImages);
+
+//   return {
+//     type: GET_ALBUM_IMAGES,
+//     albumImages: normalizeArray(albumImages, "id"),
+//     user_id:  albumImages.user_id,
+//   };
+// };
+export const actionGetAlbumImages = (albumId, imagesData, userId) => {
+  console.log("🚀🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 ~ file: albums.js:42 ~ actionGetAlbumImages ~  userId:",  userId)
+  console.log("🚀🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 ~ file: albums.js:42 ~ actionGetAlbumImages ~ imagesData:", imagesData)
+  console.log("🚀🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 ~ file: albums.js:42 ~ actionGetAlbumImages ~ albumId:", albumId)
+  const normalizedImages = normalizeArray(imagesData, "id");
   return {
     type: GET_ALBUM_IMAGES,
-    images: images.byId ? images : normalizeArray(images),
-    albumInfo: album_info,
+    payload: { albumId, images: normalizedImages, userId },
   };
 };
 
-// Action creator for albums by user id
+
+
+
+// export const actionGetAlbumImages = (albumImages) => {
+
+//   console.log("-----Data in actionGetAlbumImages:", albumImages);
+
+//   return {
+//     type: GET_ALBUM_IMAGES,
+//     albumImages: normalizeArray(albumImages, "id"),
+//     user_id:  albumImages.user_id,
+//   };
+// };
+
 export const actionGetAlbumsByUserId = (albums) => {
   const normalizedAlbums = albums.map((album) => {
-    // Normalize the images for each album
     const normalizedImages = normalizeArray(album.images, "id");
-
     return {
-      ...album.album_info,
+      id: album.id,
+      title: album.title,
+      user_id: album.user_id,
       images: normalizedImages,
     };
   });
 
-  // Normalize the albums structure
   return {
     type: GET_ALBUMS_BY_USER_ID,
     albums: normalizeArray(normalizedAlbums, "id"),
   };
 };
+
+
+// // Action creator for albums by user id
+// export const actionGetAlbumsByUserId = (albums) => {
+//   const normalizedAlbums = albums.map((album) => {
+//     const normalizedImages = normalizeArray(album.images, "id");
+//     return {
+//       ...album.album_info,
+//       images: normalizedImages,
+//     };
+//   });
+
+//   return {
+//     type: GET_ALBUMS_BY_USER_ID,
+//     albums: normalizeArray(normalizedAlbums, "id"),
+//   };
+// };
 
 // Action Creator for user info
 export const actionGetUserInfo = (userInfo) => ({
@@ -65,32 +117,64 @@ export const actionUpdateAlbum = (album) => ({
 export const ThunkGetAlbumImages = (albumId, page, perPage) => {
   return fetchPaginatedData(
     `/api/albums/${albumId}`,
-    [(data) => actionGetAlbumImages(data)],
+    [(data) => {
+      // Extracting images and userId from the API response
+      const { images, user_id } = data;
+      console.log("🚀🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀  ~ file: albums.js:118 ~ ThunkGetAlbumImages ~ data:", data)
+      console.log("🚀🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀  ~ file: albums.js:118 ~ ThunkGetAlbumImages ~ albumId:", albumId)
+      console.log("🚀🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀  ~ file: albums.js:123 ~ ThunkGetAlbumImages ~ user_id:", user_id)
+      console.log("🚀🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀  ~ file: albums.js:123 ~ ThunkGetAlbumImages ~ images:", images)
+      return actionGetAlbumImages(albumId, images, user_id);
+    }],
     page,
     perPage,
     {},
     {},
     null,
     [false],
-    // [true],
-    "images"
+    ["images", "user_id"]
   );
 };
+
+
+
+
+// // Thunk to fetch album images with pagination
+// export const ThunkGetAlbumImages = (albumId, page, perPage) => {
+//   return fetchPaginatedData(
+//     `/api/albums/${albumId}`,
+//     [(data) =>
+
+//       actionGetAlbumImages(data)
+//     ],
+//     page,
+//     perPage,
+//     {},
+//     {},
+//     null,
+//     [false],
+//     // [true],
+//     "images"
+//   );
+// };
 
 export const thunkGetAlbumsByUserId = (userId, page, perPage) => {
   return fetchPaginatedData(
     `/api/albums/user/${userId}`,
-    [(data) => actionGetAlbumsByUserId(data.albums)],
+    [(data) => {
+      console.log("-----Fetching albums for data:", data);
+      return actionGetAlbumsByUserId(data.albums);
+    }],
     page,
     perPage,
     {},
     {},
     null,
     [false],
-    // [true],
-    "albums"
+    ["albums"]
   );
 };
+
 
 // Thunk to Create an Album
 // Thunk to Create an Album
@@ -172,24 +256,55 @@ export default function reducer(state = initialState, action) {
     //     allIds: [...action.album.allIds],
     //   };
     //   return newState;
+    // case GET_ALBUM_IMAGES:
+    //   newState = {
+    //     ...state,
+    //     singleAlbum: {
+    //       byId: { ...action.albumImages.byId },
+    //       allIds: [...action.albumImages.allIds],
+    //     },
+    //     // albumInfo: { ...action.albumInfo },
+    //   };
+    //   console.log("New state after GET_ALBUM_IMAGES:", newState);
+    //   return newState;
     case GET_ALBUM_IMAGES:
-      newState = {
+      const { albumId, images, userId } = action.payload;
+      console.log("🚀 ~ file: albums.js:272 ~ reducer ~ userId:", userId)
+      console.log("🚀 ~ file: albums.js:272 ~ reducer ~ images:", images)
+      console.log("🚀 ~ file: albums.js:272 ~ reducer ~ albumId:", albumId)
+      return {
         ...state,
         singleAlbum: {
-          byId: { ...action.images.byId },
-          allIds: [...action.images.allIds],
-        },
-        albumInfo: { ...action.albumInfo },
+          ...state.singleAlbum,
+          byId: {
+            ...state.singleAlbum.byId,
+            [albumId]: {
+              images: images.byId,
+              imageIds: images.allIds,
+              userId: userId
+            }
+          },
+          allIds: state.singleAlbum.allIds.includes(albumId)
+                  ? state.singleAlbum.allIds
+                  : [...state.singleAlbum.allIds, albumId]
+        }
       };
-      console.log("New state after GET_ALBUM_IMAGES:", newState);
-      return newState;
 
     case GET_ALBUMS_BY_USER_ID:
+      console.log("-----Updating state with new albums:", action.albums);
+
       return {
         ...state,
         userAlbums: action.albums,
       };
-
+    // newState = { ...state, userAlbums: { byId: {}, allIds: [] } };
+    // newState.userAlbums = {
+    //   byId: { ...newState.userAlbums.byId, ...action.albums.byId },
+    //   allIds: [
+    //     ...new Set([...newState.userAlbums.allIds, ...action.albums.allIds]),
+    //   ],
+    // };
+    // return newState;
     // case CREATE_ALBUM:
     //   newState = { ...state };
     //   newState.allAlbums.byId[action.album.id] = action.album;

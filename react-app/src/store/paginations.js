@@ -81,18 +81,17 @@ import { setCurrentPagePost, setTotalPagesPost } from "./posts";
 //   }
 // };
 
-export const fetchPaginatedData =
-  (
-    url,
-    actionCreators = [],
-    page = 1,
-    perPage = 10,
-    additionalParams = {},
-    customHeaders = {},
-    customErrorHandling = null,
-    normalizeFlags = [],
-    dataName
-  ) =>
+export const fetchPaginatedData = (
+  url,
+  actionCreators = [],
+  page = 1,
+  perPage = 10,
+  additionalParams = {},
+  customHeaders = {},
+  customErrorHandling = null,
+  normalizeFlags = [],
+  dataNames = [] // Array of data names
+) =>
   async (dispatch) => {
     dispatch(setLoading(true));
 
@@ -115,37 +114,24 @@ export const fetchPaginatedData =
         const data = await response.json();
         console.log("Data fetched:", data);
 
-        // actionCreators.forEach((actionCreator, index) => {
-        //   const actionData = normalizeFlags[index] ? normalizeArray(data[dataName]) : data[dataName];
-        //   dispatch(actionCreator(actionData));
-        // });
+        // Collect data specified by dataNames
+        const collectedData = dataNames.reduce((acc, name) => {
+          acc[name] = data[name];
+          return acc;
+        }, {});
 
+        console.log("Collected data for action creators:", collectedData);
 
-
-
-        // actionCreators.forEach((actionCreator, index) => {
-        //   const actionData = data[dataName];
-        //   console.log(`---fetchPaginatedData - actionData for ${dataName}:`, actionData); // Log the action data
-
-        //   if (Array.isArray(actionData)) {
-        //     const normalizedData = normalizeFlags[index] ? normalizeArray(actionData) : actionData;
-        //     dispatch(actionCreator(normalizedData));
-        //   } else {
-        //     // Log for debugging
-        //     console.error(`Expected an array for ${dataName}, received:`, actionData);
-        //     // Handle the unexpected format appropriately
-        //   }
-        // });
-
+        // Dispatch actions for each action creator
         actionCreators.forEach((actionCreator, index) => {
-          const actionData = data[dataName];
-          console.log(`---fetchPaginatedData - actionData for ${dataName}:`, actionData);
-
-          if (normalizeFlags[index] && Array.isArray(actionData)) {
-            const normalizedData = normalizeArray(actionData);
-            dispatch(actionCreator(normalizedData, data));
+          let res;
+          if (normalizeFlags[index] && Array.isArray(collectedData[dataNames[index]])) {
+            const normalizedData = normalizeArray(collectedData[dataNames[index]], 'id');
+            res = dispatch(actionCreator(normalizedData, data));
+            console.log("🚀 ~ file: paginations.js:132 ~ actionCreators.forEach ~ res:", res)
           } else {
-            dispatch(actionCreator(actionData, data));
+            res = dispatch(actionCreator(collectedData, data));
+            console.log("🚀 ~ file: paginations.js:132 ~ actionCreators.forEach ~ res:", res)
           }
         });
 
@@ -153,7 +139,7 @@ export const fetchPaginatedData =
         dispatch(setCurrentPagePost(page));
       } else {
         const errors = await response.json();
-        console.error("API Error:", errors); 
+        console.error("API Error:", errors);
         if (customErrorHandling) {
           customErrorHandling(errors);
         } else {
@@ -171,6 +157,92 @@ export const fetchPaginatedData =
       dispatch(setLoading(false));
     }
   };
+
+
+// export const fetchPaginatedData =
+//   (
+//     url,
+//     actionCreators = [],
+//     page = 1,
+//     perPage = 10,
+//     additionalParams = {},
+//     customHeaders = {},
+//     customErrorHandling = null,
+//     normalizeFlags = [],
+//     dataNames = []
+//   ) =>
+//   async (dispatch) => {
+//     dispatch(setLoading(true));
+
+//     try {
+//       const queryParams = new URLSearchParams({
+//         page,
+//         per_page: perPage,
+//         ...additionalParams,
+//       });
+//       const requestUrl = `${url}?${queryParams.toString()}`;
+//       console.log("Request URL:", requestUrl); // Log the request URL
+
+//       const response = await fetch(requestUrl, {
+//         headers: { "Content-Type": "application/json", ...customHeaders },
+//       });
+
+//       console.log("Network response:", response); // Log the response object
+
+//       if (response.ok) {
+//         const data = await response.json();
+//         console.log("Data fetched:", data);
+
+
+
+//         // actionCreators.forEach((actionCreator, index) => {
+//         //   const actionData = data[dataName];
+//         //   console.log(`---fetchPaginatedData - actionData for ${dataName}:`, actionData);
+
+//         //   if (normalizeFlags[index] && Array.isArray(actionData)) {
+//         //     const normalizedData = normalizeArray(actionData);
+//         //     dispatch(actionCreator(normalizedData, data));
+//         //   } else {
+//         //     dispatch(actionCreator(actionData, data));
+//         //   }
+//         // });
+
+//         actionCreators.forEach((actionCreator, index) => {
+//           const dataName = dataNames[index];
+//           const actionData = data[dataName];
+//           console.log(`---fetchPaginatedData - actionData for ${dataName}:`, actionData);
+
+//           if (normalizeFlags[index] && Array.isArray(actionData)) {
+//             const normalizedData = normalizeArray(actionData, 'id');
+//             dispatch(actionCreator(normalizedData, data));
+//           } else {
+//             dispatch(actionCreator(actionData, data));
+
+//           }
+//         });
+
+//         dispatch(setTotalPagesPost(data.total_pages));
+//         dispatch(setCurrentPagePost(page));
+//       } else {
+//         const errors = await response.json();
+//         console.error("API Error:", errors);
+//         if (customErrorHandling) {
+//           customErrorHandling(errors);
+//         } else {
+//           dispatch(setError(errors.error || "Error fetching data."));
+//         }
+//       }
+//     } catch (error) {
+//       console.error("Fetch error:", error);
+//       if (customErrorHandling) {
+//         customErrorHandling(error);
+//       } else {
+//         dispatch(setError("An error occurred while fetching data."));
+//       }
+//     } finally {
+//       dispatch(setLoading(false));
+//     }
+//   };
 
 // Reducer
 // const initialState = {

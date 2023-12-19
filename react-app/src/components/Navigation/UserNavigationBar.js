@@ -17,8 +17,6 @@ const UserNavigationBar = ({
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
-  const userInfo = useSelector(selectAlbumUserInfo);
-  const albumImages = useSelector(selectAlbumImages);
 
   const sessionUser = useSelector(selectSessionUser);
 
@@ -55,6 +53,12 @@ const UserNavigationBar = ({
           className={isActive(`/albums/users/${id}`) ? "active" : ""}
         >
           Albums {albumCount}
+        </a>
+        <a
+          href={`/albums/${id}`}
+          className={isActive(`/albums/${id}`) ? "active" : ""}
+        >
+          Album Photos {albumCount}
         </a>
         {location.pathname === "/owner/photostream" && (
           <OpenModalButton

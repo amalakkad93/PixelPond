@@ -143,7 +143,7 @@ export const thunkGetAllPosts = (page, perPage) => {
     {},
     null,
     [true],
-    "posts",
+    ["posts"],
     false
   );
 };
@@ -161,7 +161,7 @@ export const thunkGetOwnerPosts = (userId, page, perPage) => {
     {},
     null,
     [true],
-    "posts"
+    ["posts"]
   );
 };
 
@@ -223,7 +223,7 @@ export const thunkGetPostsByUserId = (userId, page, perPage) => {
     {},
     null,
     [true], // Indicate to normalize 'posts'
-    "user_posts"
+    ["user_posts"]
   );
 };
 
@@ -249,7 +249,7 @@ export const thunkGetLoggedInUserPosts = (userId, page, perPage) => {
     null,
     // [true],
     [false],
-    "user_posts",
+    ["user_posts"],
     false
   );
 };
@@ -388,7 +388,7 @@ export const thunkDeletePost = (postId) => async (dispatch) => {
     });
 
     if (response.ok) {
-     
+
       dispatch(actionDeletePost(postId));
 
       return { type: "SUCCESS" };

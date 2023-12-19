@@ -22,11 +22,6 @@ import {
   selectUserInfo,
   selectLoading,
   selectSessionUser,
-  selectAlbumInfo,
-  selectUserById,
-  selectPostById,
-  selectTotalPages,
-  selectCurrentPage,
 } from "../../store/selectors";
 
 import OpenModalButton from "../Modals/OpenModalButton";
@@ -49,30 +44,45 @@ const ImageDisplay = ({ mode }) => {
   const location = useLocation();
 
   const { userId, albumId } = useParams();
-
+  console.log("🚀 ~ file: index.js:37 ~ ImageDisplay ~ userId:", userId);
 
   const loading = useSelector(selectLoading);
+  const albumUserInfo = useSelector(selectAlbumUserInfo);
   const albumImages = useSelector((state) => selectAlbumImages(state, albumId));
+  // const userInfo = useSelector(selectUserInfo);
+  // const userPosts = useSelector(selectUserPosts);
   const sessionUser = useSelector(selectSessionUser);
-  const currentPage = useSelector(selectCurrentPage);
-  const totalPages = useSelector(selectTotalPages);
-  const userPosts = useSelector(selectUserPosts);
-  const userPostsIds = useSelector(selectPostById);
-  const usersById = useSelector(selectUserById);
-  const albumInfo = useSelector((state) => selectAlbumInfo(state, albumId));
+  const currentPage = useSelector(
+    (state) => state.posts.pagination.currentPage
+  );
+  const totalPages = useSelector((state) => state.posts.pagination.totalPages);
 
+  const userPosts = useSelector((state) => state.posts.userPosts.byId);
+  const userPostsIds = useSelector((state) => state.posts.userPosts.allIds);
+  // const userInfo = useSelector((state) => state.posts.userInfo);
+
+  const usersById = useSelector((state) => state.session.usersById);
+
+  const albumInfo = useSelector(
+    (state) => state.albums.singleAlbum.byId[albumId]
+  );
+  console.log("🚀 ~ file: index.js:67 ~ ImageDisplay ~ albumInfo:", albumInfo);
+
+  const [localProfilePhoto, setLocalProfilePhoto] = useState(
+    sessionUser?.profile_picture
+  );
+  const [reloadPage, setReloadPage] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [isEditingProfilePic, setIsEditingProfilePic] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const perPage = 10;
+
 
 
   const idToFetch = mode === "photoStream" ? userId
                  : mode === "ownerPhotoStream" ? sessionUser?.id
                  : mode === "albumImages" ? albumInfo?.userId
                  : null;
-
   const fetchData = async (page) => {
     try {
       dispatch(setLoading(true));
@@ -98,8 +108,93 @@ const ImageDisplay = ({ mode }) => {
   useEffect(() => {
     dispatch(clearUIState());
     fetchData(currentPage);
-  }, [dispatch, userId, albumId, currentPage, perPage, location.pathname, mode,]);
+  }, [
+    dispatch,
+    userId,
+    albumId,
+    currentPage,
+    perPage,
+    location.pathname,
+    mode,
+    reloadPage,
+  ]);
 
+  // useEffect(() => {
+  //   setLocalProfilePhoto(sessionUser?.profile_picture);
+  // }, [sessionUser]);
+
+  // ===============================================================================
+  // const [userInfo, setUserInfo] = useState(null);
+  // const userInfo = useSelector((state) => state.session.userInfoForDisplay, shallowEqual);
+
+// Now use `userInfo` directly in your component
+
+
+  // Fetching user info based on mode
+  // useEffect(() => {
+  //   let idToFetch;
+  //   if (mode === "photoStream" || mode === "ownerPhotoStream") {
+  //     idToFetch = mode === "ownerPhotoStream" ? sessionUser?.id : userId;
+  //   } else if (mode === "albumImages" && albumInfo) {
+  //     idToFetch = albumInfo?.userId;
+  //   }
+
+  //   if (idToFetch && !usersById?.[idToFetch]) {
+  //     dispatch(fetchUserInfoById(idToFetch));
+  //   }
+  // }, [dispatch, mode, userId, sessionUser?.id, albumId, albumInfo, usersById]);
+
+
+  // useEffect(() => {
+  //   let idToFetch;
+  //   if (mode === "photoStream" || mode === "ownerPhotoStream") {
+  //     idToFetch = mode === "ownerPhotoStream" ? sessionUser?.id : userId;
+  //   } else if (mode === "albumImages" && albumInfo) {
+  //     idToFetch = albumInfo?.userId;
+  //   }
+
+  //   // Fetch user info only if it's not already in usersById or if the id has changed
+  //   if (idToFetch && (!usersById?.[idToFetch] || userInfo?.id !== idToFetch)) {
+  //     dispatch(fetchUserInfoById(idToFetch))
+  //       .then(() => {
+  //         setUserInfo(usersById?.[idToFetch]);
+  //       });
+  //   }
+  // }, [dispatch, mode, userId, sessionUser?.id, albumId, albumInfo, usersById, userInfo?.id]);
+
+
+  // useEffect(() => {
+  //   let idToFetch;
+  //   if (mode === "photoStream") {
+  //     idToFetch = userId;
+  //   } else if (mode === "ownerPhotoStream") {
+  //     idToFetch = sessionUser?.id;
+  //   } else if (mode === "albumImages") {
+  //     idToFetch = albumInfo?.userId;
+  //   }
+
+  //   if (idToFetch) {
+  //     dispatch(fetchUserInfoById(idToFetch));
+  //   }
+  // }, [dispatch, mode, userId, sessionUser?.id, albumInfo?.userId]);
+
+  // useEffect(() => {
+
+  //   const fetchUserData = async (id) => {
+  //     if (id && !usersById?.[id]) {
+  //       await dispatch(fetchUserInfoById(id));
+  //     }
+  //   };
+
+  //   if (mode === "photoStream") {
+  //     fetchUserData(userId);
+  //   } else if (mode === "ownerPhotoStream") {
+  //     fetchUserData(sessionUser?.id);
+  //   } else if (mode === "albumImages") {
+  //     fetchUserData(albumInfo?.userId);
+  //   }
+  // }, [dispatch, mode, userId, sessionUser?.id, albumInfo?.userId, usersById]);
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     setIsLoading(true);
     if (idToFetch && !usersById?.[idToFetch]) {
@@ -107,11 +202,9 @@ const ImageDisplay = ({ mode }) => {
     }
     setIsLoading(false);
   }, [dispatch, idToFetch, usersById]);
-
-  
   if (isLoading) return <Spinner />;
   const userInfo = usersById?.[idToFetch] || {};
-
+  // ===============================================================================
 
   const toggleAbout = () => setShowAbout(!showAbout);
 
@@ -216,6 +309,10 @@ const ImageDisplay = ({ mode }) => {
                 {isEditingProfilePic && (
                   <UserProfileManager
                     setIsEditingProfilePic={setIsEditingProfilePic}
+                    // onProfilePicUpdate={(newProfilePicUrl) =>
+                    //   setLocalProfilePhoto(newProfilePicUrl)
+                    // }
+                    // refreshPageData={dispatch(fetchUserInfoById(sessionUser.id))}
                   />
                 )}
 
@@ -233,7 +330,11 @@ const ImageDisplay = ({ mode }) => {
                   <OpenModalButton
                     className="create-post-button"
                     buttonText="Create Post"
-                    modalComponent={ <CreatePostForm /> }
+                    modalComponent={
+                      <CreatePostForm
+                      // setReloadPage={setReloadPage}
+                      />
+                    }
                   />
                 </div>
               )}
@@ -278,7 +379,9 @@ const ImageDisplay = ({ mode }) => {
                 let targetUserId = userId;
                 if (mode === "ownerPhotoStream") targetUserId = sessionUser.id;
                 if (targetUserId)
-                  dispatch( thunkGetPostsByUserId(targetUserId, newPage, perPage) );
+                  dispatch(
+                    thunkGetPostsByUserId(targetUserId, newPage, perPage)
+                  );
                 else console.error("User ID is undefined.");
               }}
             />
@@ -290,3 +393,4 @@ const ImageDisplay = ({ mode }) => {
 };
 
 export default ImageDisplay;
+

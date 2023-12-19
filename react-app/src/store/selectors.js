@@ -12,6 +12,8 @@ export const selectLoading = (state) => state.ui.loading;
 
 export const selectSessionUser = state => state?.session?.user;
 export const selectUserId = selectSessionUser?.id;
+export const selectUserById = state => state.session.usersById
+
 
 // =========================================================
 //               ****Post UseSelectors****
@@ -26,19 +28,19 @@ export const selectAllPostsById = ((state) => state.posts?.allPosts?.byId || {})
 export const selectSinglePost = ((state) => state.posts.singlePost);
 
 
-export const selectUserPosts = (state) => {
-  if (!state.posts.userPosts || !state.posts.userPosts.allIds) {
-    return [];
-  }
+// export const selectUserPosts = (state) => {
+//   if (!state.posts.userPosts || !state.posts.userPosts.allIds) {
+//     return [];
+//   }
 
-  return state.posts.userPosts.allIds.map((id) => state.posts.userPosts.byId[id]);
-};
+//   return state.posts.userPosts.allIds.map((id) => state.posts.userPosts.byId[id]);
+// };
+export const selectUserPosts = (state) => state.posts.userPosts.byId || {};
+
 
 export const selectUserInfo= (state) => state.posts?.userInfo
 
-export const selectPostById = (state, postId) => {
-  return postId ? state.posts.allPosts.byId[postId] : null;
-};
+export const selectPostById = (state) => state.posts.userPosts.allIds
 
 export const selectNeighborPosts = (state) => {
   return state.posts.neighborPosts || { prevPostId: null, nextPostId: null };
@@ -56,9 +58,10 @@ export const selectUserPostImages = (state) => {
 // =========================================================
 //               ****Album UseSelectors****
 // =========================================================
-export const selectAlbumImages = (state) => {
-  const { byId, allIds } = state.albums.singleAlbum;
-  return allIds.map(id => byId[id]);
+
+export const selectAlbumImages =  (state, albumId) => {
+  const album = state.albums.singleAlbum.byId[albumId];
+  return album ? album.imageIds.map(id => album.images[id]) : [];
 };
 
 export const selectAllAlbums = (state) => {
@@ -66,7 +69,6 @@ export const selectAllAlbums = (state) => {
   return userAlbums.allIds.map((id) => {
     const album = userAlbums.byId[id];
 
-    // Reconstructing the album with its images
     const albumWithImages = {
       ...album,
       images: album.images.allIds.map(imageId => album.images.byId[imageId])
@@ -76,8 +78,11 @@ export const selectAllAlbums = (state) => {
   });
 };
 
+
+
+
 export const selectTotalAlbums = (state) => state.albums?.userAlbums?.allIds?.length;
-export const selectAlbumUserInfo = (state) => state.albums?.albumInfo;
+export const selectAlbumInfo = (state, albumId) => state.albums.singleAlbum.byId[albumId];
 
 export const selectUserAlbums = (state) => {
   const albumsById = state.albums.userAlbums.byId;

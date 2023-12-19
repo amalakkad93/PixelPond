@@ -53,7 +53,7 @@ const GetAlbums = () => {
 
   const toggleAbout = () => setShowAbout(!showAbout);
 
-  // if (!albums || albums.length === 0) return null;
+  if (!albums || albums.length === 0) return null;
 
   return (
     <>
