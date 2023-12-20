@@ -10,13 +10,14 @@ import { setLoading, setError } from "./ui";
 /** Action type to handle fetching all posts */
 const GET_ALL_POSTS = "posts/GET_ALL_POSTS";
 
+/** Action type to handle fetching all posts images */
+const GET_ALL_POSTS_IMAGES = "posts/GET_ALL_POSTS_IMAGES";
+
 /** Action type to handle fetching posts owned by a user */
 const GET_OWNER_POSTS = "posts/GET_OWNER_POSTS";
 
 /** Action type to handle fetching posts by a user ID */
 const GET_POSTS_BY_USER_ID = "posts/GET_POSTS_BY_USER_ID";
-
-const GET_LOGGED_IN_USER_POSTS = "posts/GET_LOGGED_IN_USER_POSTS";
 
 /** Action type to handle fetching details of a single post */
 const GET_SINGLE_POST = "posts/GET_SINGLE_POST";
@@ -37,42 +38,46 @@ const SET_NEIGHBOR_POSTS = "posts/SET_NEIGHBOR_POSTS";
 /** Action type to handle errors during post operations */
 const SET_POST_ERROR = "posts/SET_POST_ERROR";
 
-// Action Types
 const SET_CURRENT_PAGE = "posts/SET_CURRENT_PAGE";
+
 const SET_TOTAL_PAGES = "posts/SET_TOTAL_PAGES";
 
+const CLEAR_POSTS_DATA = "CLEAR_POSTS_DATA";
+
+export const CLEAR_POST_DETAILS = "posts/CLEAR_POST_DETAILS";
+
 // Action Creators
-export const setCurrentPagePost = (page) => ({
-  type: SET_CURRENT_PAGE,
-  payload: page,
+export const clearPostDetails = () => ({
+  type: CLEAR_POST_DETAILS,
 });
 
-export const setTotalPagesPost = (pages) => ({
-  type: SET_TOTAL_PAGES,
-  payload: pages,
+export const clearPostsData = (dataType) => ({
+  type: CLEAR_POSTS_DATA,
+  dataType,
 });
-
 /** Creates an action to set all available posts in the store */
 const actionGetAllPosts = (posts) => ({
   type: GET_ALL_POSTS,
   posts,
 });
 
-/** Creates an action to get all the user available posts in the store */
-// const actionGetPostsByUserId = (posts, userInfo) => ({
-//   type: GET_POSTS_BY_USER_ID,
-//   posts,
-//   userInfo,
-// });
+// /** Creates an action to set all available posts images in the store */
+const actionGetAllPostsImages = (data) => {
+  console.log("++actionGetAllPostsImages - Raw posts data:", data);
+  const normalizedPosts = normalizeArray(data.posts, "post_id");
+  console.log(
+    "++actionGetAllPostsImages - Normalized posts data:",
+    normalizedPosts
+  );
+  return {
+    type: GET_ALL_POSTS_IMAGES,
+    posts: normalizedPosts,
+  };
+};
+
 const actionGetPostsByUserId = (normalizedPosts, userInfo) => ({
   type: GET_POSTS_BY_USER_ID,
   posts: normalizedPosts,
-  userInfo,
-});
-
-const actionGetLoggedInUserPosts = (posts, userInfo) => ({
-  type: GET_LOGGED_IN_USER_POSTS,
-  posts,
   userInfo,
 });
 
@@ -117,6 +122,16 @@ const actionDeletePost = (postId) => ({
   postId,
 });
 
+export const setCurrentPagePost = (page) => ({
+  type: SET_CURRENT_PAGE,
+  payload: page,
+});
+
+export const setTotalPagesPost = (pages) => ({
+  type: SET_TOTAL_PAGES,
+  payload: pages,
+});
+
 /** Creates an action to handle errors during post operations */
 const actionSetPostError = (errorMessage) => ({
   type: SET_POST_ERROR,
@@ -129,6 +144,24 @@ const actionSetPostError = (errorMessage) => ({
 // Thunks allow Redux to handle asynchronous operations.
 // Instead of returning action objects directly, they return a function that can dispatch multiple actions.
 
+// ***************************************************************
+//  Thunk to Fetch All Posts Images With Pagination
+// ***************************************************************
+export const thunkGetAllPostsImages = (page, perPage) => {
+  return fetchPaginatedData(
+    "/api/posts/all/images",
+    [actionGetAllPostsImages],
+    page,
+    perPage,
+    {},
+    {},
+    null,
+    // [true],
+    [false],
+    [],
+    false
+  );
+};
 // ***************************************************************
 //  Thunk to Fetch All Posts With Pagination
 // ***************************************************************
@@ -168,47 +201,6 @@ export const thunkGetOwnerPosts = (userId, page, perPage) => {
 // ***************************************************************
 //  Thunk to Fetch Posts by a User ID With Pagination
 // ***************************************************************
-// export const thunkGetPostsByUserId = (userId, page, perPage) => {
-//   return fetchPaginatedData(
-//     `/api/posts/user/${userId}`,
-//     // [(data) => actionGetPostsByUserId(data.user_posts)],
-//     // [(data) => actionGetPostsByUserId(data.user_posts, data.user_info)],
-//     [
-//       (data) =>
-//         actionGetPostsByUserId(normalizeArray(data.user_posts), data.user_info),
-//     ],
-//     page,
-//     perPage,
-//     {},
-//     {},
-//     null,
-//     // [true],
-//     [false],
-//     "user_posts",
-//     false
-//   );
-// };
-
-// export const thunkGetPostsByUserId = (userId, page, perPage) => {
-//   return fetchPaginatedData(
-//     `/api/posts/user/${userId}`,
-//     [
-//       (normalizedPosts, userInfo) => actionGetPostsByUserId(normalizedPosts, userInfo)
-//     ],
-//     page,
-//     perPage,
-//     {},
-//     {},
-//     null,
-//     // [true],
-//     // [{ posts: true, userInfo: false }],
-//     [['posts']], // Normalize only 'posts'
-
-//     "user_posts",
-
-//     false
-//   );
-// };
 export const thunkGetPostsByUserId = (userId, page, perPage) => {
   return fetchPaginatedData(
     `/api/posts/user/${userId}`,
@@ -216,41 +208,15 @@ export const thunkGetPostsByUserId = (userId, page, perPage) => {
       // (posts, userInfo) => actionGetPostsByUserId(posts, userInfo)
       (normalizedPosts, data) =>
         actionGetPostsByUserId(normalizedPosts, data.user_info),
+        // actionGetPostsByUserId(normalizedPosts),
     ],
     page,
     perPage,
     {},
     {},
     null,
-    [true], // Indicate to normalize 'posts'
-    ["user_posts"]
-  );
-};
-
-// ***************************************************************
-//  Thunk to Fetch Posts by a User ID With Pagination
-// ***************************************************************
-export const thunkGetLoggedInUserPosts = (userId, page, perPage) => {
-  return fetchPaginatedData(
-    "/api/posts/current-user-posts",
-    // [(data) => actionGetPostsByUserId(data.user_posts)],
-    // [(data) => actionGetPostsByUserId(data.user_posts, data.user_info)],
-    [
-      (data) =>
-        actionGetLoggedInUserPosts(
-          normalizeArray(data.user_posts),
-          data.user_info
-        ),
-    ],
-    page,
-    perPage,
-    {},
-    {},
-    null,
-    // [true],
-    [false],
-    ["user_posts"],
-    false
+    [true, false],
+    ["user_posts","user_info" ]
   );
 };
 
@@ -315,7 +281,7 @@ export const thunkGetNeighborPosts = (postId, userId) => async (dispatch) => {
 // ***************************************************************
 //  Thunk to Create a New Post
 // ***************************************************************
-export const thunkCreatePost = (postData) => async (dispatch) => {
+export const thunkCreatePost = (postData) => async (dispatch, getState) => {
   try {
     const response = await fetch("/api/posts", {
       method: "POST",
@@ -325,12 +291,18 @@ export const thunkCreatePost = (postData) => async (dispatch) => {
 
     if (response.ok) {
       const post = await response.json();
-      console.log("🚀 ~ file: posts.js:264 ~ thunkCreatePost ~  post:", post);
       dispatch(actionCreatePost(post));
-      console.log("+++CREATE_POST dispatched with:", post);
-      // dispatch(thunkGetPostsByUserId(post.owner_id, 1, 10));
-      // return { type: "SUCCESS", data: post };
-      return post;
+
+      // Fetch the updated posts to get the new total pages and current page
+      const getPostsResponse = await fetch(`/api/posts/user/${post.owner_id}?page=1&perPage=10`);
+      if (getPostsResponse.ok) {
+        const { current_page, total_pages } = await getPostsResponse.json();
+        dispatch(setCurrentPagePost(current_page));
+        dispatch(setTotalPagesPost(total_pages));
+        dispatch(thunkGetPostsByUserId(post.owner_id, current_page, 10));
+      }
+
+      return { type: "SUCCESS", data: post };
     } else {
       const errors = await response.json();
       dispatch(actionSetPostError(errors.error || "Error creating post."));
@@ -341,6 +313,8 @@ export const thunkCreatePost = (postData) => async (dispatch) => {
     throw error;
   }
 };
+
+
 
 // ***************************************************************
 //  Thunk to Update a Post
@@ -388,7 +362,6 @@ export const thunkDeletePost = (postId) => async (dispatch) => {
     });
 
     if (response.ok) {
-
       dispatch(actionDeletePost(postId));
 
       return { type: "SUCCESS" };
@@ -407,7 +380,6 @@ export const thunkDeletePost = (postId) => async (dispatch) => {
   }
 };
 
-
 // =========================================================
 //                   ****Reducer****
 // =========================================================
@@ -416,6 +388,7 @@ export const thunkDeletePost = (postId) => async (dispatch) => {
 
 const initialState = {
   allPosts: { byId: {}, allIds: [] },
+  allPostsImages: { byId: {}, allIds: [] },
   ownerPosts: { byId: {}, allIds: [] },
   userPosts: { byId: {}, allIds: [] },
   singlePost: {},
@@ -446,6 +419,19 @@ export default function reducer(state = initialState, action) {
       };
       return newState;
 
+    case GET_ALL_POSTS_IMAGES:
+      newState = { ...state, allPosts: { byId: {}, allIds: [] } };
+      newState.allPostsImages = {
+        byId: { ...newState.allPostsImages.byId, ...action.posts.byId },
+        allIds: [
+          ...new Set([
+            ...newState.allPostsImages.allIds,
+            ...action.posts.allIds,
+          ]),
+        ],
+      };
+      return newState;
+
     case GET_OWNER_POSTS:
       newState = { ...state, ownerPosts: { byId: {}, allIds: [] } };
       newState.ownerPosts = {
@@ -457,14 +443,10 @@ export default function reducer(state = initialState, action) {
       return newState;
 
     case GET_POSTS_BY_USER_ID:
-      console.log(
-        "---Reducer - action payload for GET_POSTS_BY_USER_ID:",
-        action
-      ); // Log the action payload
       newState = {
         ...state,
         userPosts: { byId: {}, allIds: [] },
-        userInfo: {},
+        // userInfo: {},
         ownerPosts: { byId: {}, allIds: [] },
       };
       newState.userPosts = {
@@ -496,32 +478,24 @@ export default function reducer(state = initialState, action) {
         },
       };
 
-    case SET_USER_INFO:
-      newState = { ...state, userInfo: {} };
-      newState.userInfo = action.userInfo;
-      return newState;
+    // case SET_USER_INFO:
+    //   newState = { ...state, userInfo: {} };
+    //   newState.userInfo = action.userInfo;
+    //   return newState;
 
     case CREATE_POST:
       newState = { ...state };
 
-      // New post ID
       const newPostId = action.post.id;
 
-      // Update userPosts
       newState.userPosts.byId[newPostId] = action.post;
       newState.userPosts.allIds = [newPostId, ...newState.userPosts.allIds];
-      console.log(
-        "+++Updated userPosts after CREATE_POST:",
-        newState.userPosts
-      );
 
-      // Update ownerPosts if the post is owned by the current user
       if (action.post.owner_id === state.userInfo.id) {
         newState.ownerPosts.byId[newPostId] = action.post;
         newState.ownerPosts.allIds = [newPostId, ...newState.ownerPosts.allIds];
       }
 
-      // Optionally update allPosts if needed
       newState.allPosts.byId[newPostId] = action.post;
       newState.allPosts.allIds = [newPostId, ...newState.allPosts.allIds];
 
@@ -534,19 +508,86 @@ export default function reducer(state = initialState, action) {
     // newState.userPosts.allIds = [newPostId, ...newState.userPosts.allIds];
     // return newState;
 
+    // case UPDATE_POST:
+    //   newState = { ...state };
+
+    //   if (newState.allPosts.byId[action.post.id]) {
+    //     newState.allPosts.byId[action.post.id] = action.post;
+    //   }
+
+    //   if (newState.ownerPosts.byId[action.post.id]) {
+    //     newState.ownerPosts.byId[action.post.id] = action.post;
+    //   }
+
+    //   if (newState.userPosts.byId[action.post.id]) {
+    //     newState.userPosts.byId[action.post.id] = action.post;
+    //   }
+    //   return newState;
     case UPDATE_POST:
+  newState = { ...state };
+  const updatedPostId = action.post.id;
+
+  // Update in allPosts
+  if (newState.allPosts.byId.hasOwnProperty(updatedPostId)) {
+    newState.allPosts.byId[updatedPostId] = { ...newState.allPosts.byId[updatedPostId], ...action.post };
+  }
+
+  // Update in ownerPosts
+  if (newState.ownerPosts.byId.hasOwnProperty(updatedPostId)) {
+    newState.ownerPosts.byId[updatedPostId] = { ...newState.ownerPosts.byId[updatedPostId], ...action.post };
+  }
+
+  // Update in userPosts
+  if (newState.userPosts.byId.hasOwnProperty(updatedPostId)) {
+    newState.userPosts.byId[updatedPostId] = { ...newState.userPosts.byId[updatedPostId], ...action.post };
+  }
+
+  return newState;
+
+    // case UPDATE_POST:
+    //   newState = { ...state };
+    //   const updatedPostId = action.post.id;
+
+    //   // Update in allPosts
+    //   if (newState.allPosts.byId[updatedPostId]) {
+    //     newState.allPosts.byId[updatedPostId] = { ...newState.allPosts.byId[updatedPostId], ...action.post };
+    //   }
+
+    //   // Update in ownerPosts
+    //   if (newState.ownerPosts.byId[updatedPostId]) {
+    //     newState.ownerPosts.byId[updatedPostId] = { ...newState.ownerPosts.byId[updatedPostId], ...action.post };
+    //   }
+
+    //   // Update in userPosts
+    //   if (newState.userPosts.byId[updatedPostId]) {
+    //     newState.userPosts.byId[updatedPostId] = { ...newState.userPosts.byId[updatedPostId], ...action.post };
+    //     newState.userInfo = { ...action.userInfo };
+    //   }
+    //   return newState;
+
+    case DELETE_POST:
       newState = { ...state };
-      // Update in allPosts
-      if (newState.allPosts.byId[action.post.id]) {
-        newState.allPosts.byId[action.post.id] = action.post;
+      const postIdToDelete = action.postId;
+
+      if (newState.allPosts.byId[postIdToDelete]) {
+        delete newState.allPosts.byId[postIdToDelete];
+        newState.allPosts.allIds = newState.allPosts.allIds.filter(
+          (id) => id !== postIdToDelete
+        );
       }
-      // Update in ownerPosts
-      if (newState.ownerPosts.byId[action.post.id]) {
-        newState.ownerPosts.byId[action.post.id] = action.post;
+
+      if (newState.ownerPosts.byId[postIdToDelete]) {
+        delete newState.ownerPosts.byId[postIdToDelete];
+        newState.ownerPosts.allIds = newState.ownerPosts.allIds.filter(
+          (id) => id !== postIdToDelete
+        );
       }
-      // Update in userPosts
-      if (newState.userPosts.byId[action.post.id]) {
-        newState.userPosts.byId[action.post.id] = action.post;
+
+      if (newState.userPosts.byId[postIdToDelete]) {
+        delete newState.userPosts.byId[postIdToDelete];
+        newState.userPosts.allIds = newState.userPosts.allIds.filter(
+          (id) => id !== postIdToDelete
+        );
       }
       return newState;
 
@@ -561,35 +602,24 @@ export default function reducer(state = initialState, action) {
         pagination: { ...state.pagination, totalPages: action.payload },
       };
 
-    case DELETE_POST:
-      newState = { ...state };
-      const postIdToDelete = action.postId;
-
-      // Remove the post from allPosts
-      if (newState.allPosts.byId[postIdToDelete]) {
-        delete newState.allPosts.byId[postIdToDelete];
-        newState.allPosts.allIds = newState.allPosts.allIds.filter(
-          (id) => id !== postIdToDelete
-        );
+    case CLEAR_POSTS_DATA:
+      if (state[action.dataType]) {
+        return {
+          ...state,
+          [action.dataType]: {
+            byId: {},
+            allIds: [],
+          },
+        };
       }
+      return state;
+    case CLEAR_POST_DETAILS:
+      return {
+        ...state,
+        singlePost: {},
+        // neighborPosts: {},
+      };
 
-      // Remove the post from ownerPosts
-      if (newState.ownerPosts.byId[postIdToDelete]) {
-        delete newState.ownerPosts.byId[postIdToDelete];
-        newState.ownerPosts.allIds = newState.ownerPosts.allIds.filter(
-          (id) => id !== postIdToDelete
-        );
-      }
-
-      // Remove the post from userPosts
-      if (newState.userPosts.byId[postIdToDelete]) {
-        delete newState.userPosts.byId[postIdToDelete];
-        newState.userPosts.allIds = newState.userPosts.allIds.filter(
-          (id) => id !== postIdToDelete
-        );
-      }
-
-      return newState;
     default:
       return state;
   }

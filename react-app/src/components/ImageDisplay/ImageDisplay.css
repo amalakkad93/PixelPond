@@ -4,12 +4,12 @@
 }
 
 .banner-container {
-  height: auto;
+  /* height: auto; */
 }
 
 .banner {
-  height: 200px;
-  position: relative;
+  /* height: 200px;
+  position: relative; */
 
 }
 
@@ -30,11 +30,14 @@
   gap:20px;
   width: 400px;
   position: relative;
-  z-index: 10;
 }
 
 .user-details {
   margin-top: -218px;
+}
+
+.owner-details {
+  margin-top: -220px;
 }
 
 .profile-picture-container {
@@ -102,22 +105,19 @@
 .photo-grid {
   display: flex;
   margin-left: -15px;
-  /* margin-top: 30px; */
   margin-top: 18px;
   width: auto;
   gap:0px;
 }
 
 .photo-grid_column {
-  /* padding-left: 15px; */
   padding-left: 5px;
   padding-right: 5px;
 }
 
 .photo-item {
-  margin-bottom: 3px; /* Decreases the space between the images */
+  margin-bottom: 3px;
   border-radius: 5px;
-  overflow: hidden;
   cursor: pointer;
 }
 

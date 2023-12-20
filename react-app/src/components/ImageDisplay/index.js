@@ -28,7 +28,7 @@ import {
   selectTotalPages,
   selectCurrentPage,
 } from "../../store/selectors";
-
+import defult_banner_image from "../../assets/images/defult_banner_image.png";
 import OpenModalButton from "../Modals/OpenModalButton";
 import CreatePostForm from "../Posts/PostForms/CreatePostForm";
 import UserProfileManager from "../Users/UserProfile/UserProfileManager";
@@ -43,20 +43,21 @@ const ImageItem = memo(({ imageUrl, postId, onClick }) => (
   </div>
 ));
 
-const ImageDisplay = ({ mode }) => {
+const ImageDisplay = ({ mode, albumId }) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
 
-  const { userId, albumId } = useParams();
-
-
+  // const { userId, albumId } = useParams();
+  const { userId } = useParams();
+  const userInfo = useSelector(selectUserInfo);
   const loading = useSelector(selectLoading);
   const albumImages = useSelector((state) => selectAlbumImages(state, albumId));
   const sessionUser = useSelector(selectSessionUser);
   const currentPage = useSelector(selectCurrentPage);
   const totalPages = useSelector(selectTotalPages);
   const userPosts = useSelector(selectUserPosts);
+  console.log("🚀 ~ file: index.js:60 ~ userPosts:", userPosts)
   const userPostsIds = useSelector(selectPostById);
   const usersById = useSelector(selectUserById);
   const albumInfo = useSelector((state) => selectAlbumInfo(state, albumId));
@@ -67,11 +68,14 @@ const ImageDisplay = ({ mode }) => {
 
   const perPage = 10;
 
-
-  const idToFetch = mode === "photoStream" ? userId
-                 : mode === "ownerPhotoStream" ? sessionUser?.id
-                 : mode === "albumImages" ? albumInfo?.userId
-                 : null;
+  const idToFetch =
+    mode === "photoStream"
+      ? userId
+      : mode === "ownerPhotoStream"
+      ? sessionUser?.id
+      : mode === "albumImages"
+      ? albumInfo?.userId
+      : null;
 
   const fetchData = async (page) => {
     try {
@@ -80,7 +84,8 @@ const ImageDisplay = ({ mode }) => {
         ? sessionUser.id
         : userId;
 
-      if (location.pathname.includes(`/albums/${albumId}`)) {
+      // if (location.pathname.includes(`/albums/${albumId}`)) {
+      if (albumId) {
         await dispatch(ThunkGetAlbumImages(albumId, page, perPage));
       } else if (
         location.pathname.includes(`/users/${userId}`) ||
@@ -98,20 +103,26 @@ const ImageDisplay = ({ mode }) => {
   useEffect(() => {
     dispatch(clearUIState());
     fetchData(currentPage);
-  }, [dispatch, userId, albumId, currentPage, perPage, location.pathname, mode,]);
+  }, [
+    dispatch,
+    userId,
+    albumId,
+    currentPage,
+    perPage,
+    location.pathname,
+    mode,
+  ]);
 
-  useEffect(() => {
-    setIsLoading(true);
-    if (idToFetch && !usersById?.[idToFetch]) {
-      dispatch(fetchUserInfoById(idToFetch));
-    }
-    setIsLoading(false);
-  }, [dispatch, idToFetch, usersById]);
+  // useEffect(() => {
+  //   setIsLoading(true);
+  //   if (idToFetch && !usersById?.[idToFetch]) {
+  //     dispatch(fetchUserInfoById(idToFetch));
+  //   }
+  //   setIsLoading(false);
+  // }, [dispatch, idToFetch, usersById]);
 
-  
   if (isLoading) return <Spinner />;
-  const userInfo = usersById?.[idToFetch] || {};
-
+  // const userInfo = usersById?.[idToFetch] || {};
 
   const toggleAbout = () => setShowAbout(!showAbout);
 
@@ -136,21 +147,21 @@ const ImageDisplay = ({ mode }) => {
 
   switch (mode) {
     case "photoStream":
-      navigationUserId = userId
-      images = userPostsIds.map((id) => userPosts[id]?.image).filter(Boolean);
+      navigationUserId = userId;
+      images = userPostsIds.map((id) => userPosts[id]?.image_url).filter(Boolean);
       imageLength = userPostsIds.length;
       displayedImages = userPostsIds.map((id) => userPosts[id]);
       break;
 
     case "ownerPhotoStream":
-      navigationUserId = sessionUser?.id
+      navigationUserId = sessionUser?.id;
       images = userPostsIds.map((id) => userPosts[id]?.image).filter(Boolean);
       imageLength = userPosts.length;
       displayedImages = userPostsIds.map((id) => userPosts[id]);
       break;
 
     case "albumImages":
-      navigationUserId = albumInfo?.userId
+      navigationUserId = albumInfo?.userId;
       images = albumImages.map((image) => image?.url).filter(Boolean);
       imageLength = albumImages?.length;
       displayedImages = albumImages.map((image) => ({
@@ -162,69 +173,81 @@ const ImageDisplay = ({ mode }) => {
     default:
       break;
   }
-
-
+  console.log("🚀 ~ file: index.js:330 ~ fetchData ~   displayedImages:",  displayedImages)
   return (
     <div>
       {loading ? (
         <Spinner />
       ) : (
         <>
-          <div className="banner-container">
-            <div className="banner">
-              {images?.[0] && (
-                <LazyLoadImage
-                  src={images[0]}
-                  effect="blur"
-                  className="banner-image"
-                  width={"100%"}
-                  height={"300px"}
-                />
-              )}
-
-              <div
-                className={
-                  mode === "ownerPhotoStream" ? "owner-details" : "user-details"
-                }
-              >
-                <div
-                  className="profile-picture-container"
-                  onClick={() =>
-                    mode === "ownerPhotoStream" && setIsEditingProfilePic(true)
-                  }
-                >
-                  {profilePhoto && profilePhoto ? (
-                    <img
-                      src={profilePhoto}
-                      alt="Profile"
-                      className="profile-picture"
-                    />
-                  ) : (
-                    <FontAwesomeIcon
-                      icon={faUserCircle}
-                      className="profile-picture"
-                    />
-                  )}
-
-                  {mode === "ownerPhotoStream" && (
-                    <div className="edit-icon-overlay">
-                      <FontAwesomeIcon icon={faEdit} className="edit-icon" />
-                    </div>
-                  )}
-                </div>
-
-                {isEditingProfilePic && (
-                  <UserProfileManager
-                    setIsEditingProfilePic={setIsEditingProfilePic}
+          {mode !== "albumImages" && (
+            <div className="banner-container">
+              <div className="banner">
+                {images && images[0] ? (
+                  <LazyLoadImage
+                    src={images[0]}
+                    effect="blur"
+                    className="banner-image"
+                    width={"100%"}
+                    height={"300px"}
+                  />
+                ) : (
+                  <LazyLoadImage
+                    src={defult_banner_image}
+                    effect="blur"
+                    className="banner-image"
+                    width={"100%"}
+                    height={"300px"}
                   />
                 )}
 
-                <div className="user-name">
-                  <h1>{userName || "User Name"}</h1>
+                <div
+                  className={
+                    mode === "ownerPhotoStream"
+                      ? "owner-details"
+                      : "user-details"
+                  }
+                >
+                  <div
+                    className="profile-picture-container"
+                    onClick={() =>
+                      mode === "ownerPhotoStream" &&
+                      setIsEditingProfilePic(true)
+                    }
+                  >
+                    {profilePhoto && profilePhoto ? (
+                      <img
+                        src={profilePhoto}
+                        alt="Profile"
+                        className="profile-picture"
+                      />
+                    ) : (
+                      <FontAwesomeIcon
+                        icon={faUserCircle}
+                        className="profile-picture"
+                      />
+                    )}
+
+                    {mode === "ownerPhotoStream" && (
+                      <div className="edit-icon-overlay">
+                        <FontAwesomeIcon icon={faEdit} className="edit-icon" />
+                      </div>
+                    )}
+                  </div>
+
+                  {isEditingProfilePic && (
+                    <UserProfileManager
+                      setIsEditingProfilePic={setIsEditingProfilePic}
+                    />
+                  )}
+
+                  <div className="user-name">
+                    <h1>{userName || "User Name"}</h1>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
           <div className="photo-stream-container">
             {(!images || images.length === 0) &&
               mode === "ownerPhotoStream" && (
@@ -233,18 +256,32 @@ const ImageDisplay = ({ mode }) => {
                   <OpenModalButton
                     className="create-post-button"
                     buttonText="Create Post"
-                    modalComponent={ <CreatePostForm /> }
+                    modalComponent={
+                      <CreatePostForm
+                        onPostCreated={() =>
+                          dispatch(
+                            thunkGetPostsByUserId(
+                              sessionUser.id,
+                              currentPage,
+                              10
+                            )
+                          )
+                        }
+                      />
+                    }
                   />
                 </div>
               )}
-            <nav className="album-navigation">
-              <UserNavigationBar
-                id={navigationUserId}
-                onAboutClick={toggleAbout}
-                photoCount={imageLength}
-                currentPage={currentPage}
-              />
-            </nav>
+            {mode !== "albumImages" && (
+              <nav className="album-navigation">
+                <UserNavigationBar
+                  id={navigationUserId}
+                  onAboutClick={toggleAbout}
+                  photoCount={imageLength}
+                  currentPage={currentPage}
+                />
+              </nav>
+            )}
             {showAbout && (
               <div className="about-section">
                 <p>{aboutMe}</p>
@@ -261,7 +298,7 @@ const ImageDisplay = ({ mode }) => {
                   {displayedImages.map((post) => (
                     <ImageItem
                       key={post?.id}
-                      imageUrl={post?.image}
+                      imageUrl={post?.image_url}
                       postId={post?.id}
                       onClick={() => history.push(`/posts/${post?.id}`)}
                     />
@@ -278,7 +315,9 @@ const ImageDisplay = ({ mode }) => {
                 let targetUserId = userId;
                 if (mode === "ownerPhotoStream") targetUserId = sessionUser.id;
                 if (targetUserId)
-                  dispatch( thunkGetPostsByUserId(targetUserId, newPage, perPage) );
+                  dispatch(
+                    thunkGetPostsByUserId(targetUserId, newPage, perPage)
+                  );
                 else console.error("User ID is undefined.");
               }}
             />
@@ -288,5 +327,6 @@ const ImageDisplay = ({ mode }) => {
     </div>
   );
 };
+
 
 export default ImageDisplay;

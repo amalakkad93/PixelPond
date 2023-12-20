@@ -81,17 +81,18 @@ import { setCurrentPagePost, setTotalPagesPost } from "./posts";
 //   }
 // };
 
-export const fetchPaginatedData = (
-  url,
-  actionCreators = [],
-  page = 1,
-  perPage = 10,
-  additionalParams = {},
-  customHeaders = {},
-  customErrorHandling = null,
-  normalizeFlags = [],
-  dataNames = [] // Array of data names
-) =>
+export const fetchPaginatedData =
+  (
+    url,
+    actionCreators = [],
+    page = 1,
+    perPage = 10,
+    additionalParams = {},
+    customHeaders = {},
+    customErrorHandling = null,
+    normalizeFlags = [],
+    dataNames = [] // Array of data names
+  ) =>
   async (dispatch) => {
     dispatch(setLoading(true));
 
@@ -115,23 +116,43 @@ export const fetchPaginatedData = (
         console.log("Data fetched:", data);
 
         // Collect data specified by dataNames
-        const collectedData = dataNames.reduce((acc, name) => {
-          acc[name] = data[name];
-          return acc;
-        }, {});
+        // const collectedData = dataNames.reduce((acc, name) => {
+        //   acc[name] = data[name];
+        //   return acc;
+        // }, {});
+        // Inside fetchPaginatedData
+        const collectedData =
+          dataNames.length === 0
+            ? data
+            : dataNames.reduce((acc, name) => {
+                acc[name] = data[name];
+                return acc;
+              }, {});
 
         console.log("Collected data for action creators:", collectedData);
 
         // Dispatch actions for each action creator
         actionCreators.forEach((actionCreator, index) => {
           let res;
-          if (normalizeFlags[index] && Array.isArray(collectedData[dataNames[index]])) {
-            const normalizedData = normalizeArray(collectedData[dataNames[index]], 'id');
+          if (
+            normalizeFlags[index] &&
+            Array.isArray(collectedData[dataNames[index]])
+          ) {
+            const normalizedData = normalizeArray(
+              collectedData[dataNames[index]],
+              "id"
+            );
             res = dispatch(actionCreator(normalizedData, data));
-            console.log("🚀 ~ file: paginations.js:132 ~ actionCreators.forEach ~ res:", res)
+            console.log(
+              "🚀 ~ file: paginations.js:132 ~ actionCreators.forEach ~ res:",
+              res
+            );
           } else {
             res = dispatch(actionCreator(collectedData, data));
-            console.log("🚀 ~ file: paginations.js:132 ~ actionCreators.forEach ~ res:", res)
+            console.log(
+              "🚀 ~ file: paginations.js:132 ~ actionCreators.forEach ~ res with normalizeFlags flase :",
+              res
+            );
           }
         });
 
@@ -157,7 +178,6 @@ export const fetchPaginatedData = (
       dispatch(setLoading(false));
     }
   };
-
 
 // export const fetchPaginatedData =
 //   (
@@ -192,8 +212,6 @@ export const fetchPaginatedData = (
 //       if (response.ok) {
 //         const data = await response.json();
 //         console.log("Data fetched:", data);
-
-
 
 //         // actionCreators.forEach((actionCreator, index) => {
 //         //   const actionData = data[dataName];

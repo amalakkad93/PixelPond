@@ -5,7 +5,7 @@ import {
   thunkCreatePost,
   thunkUpdatePost,
   thunkGetPostsByUserId,
-  thunkGetPostDetails
+  thunkGetPostDetails,
 } from "../../../store/posts";
 import { setUploadedImageUrl, deleteImage } from "../../../store/aws";
 import { setLoading, setError, clearUIState } from "../../../store/ui";
@@ -16,15 +16,16 @@ import {
   selectUserAlbums,
   selectSessionUser,
   selectUploadedImageUrl,
+  selectCurrentPage,
 } from "../../../store/selectors";
 
 import "./PostForm.css";
 
-const PostForm = ({ postId, formType, onPostCreated, currentPage, fetchPostDetailData }) => {
+const PostForm = ({ postId, formType, onPostCreated, fetchPostDetailData }) => {
   const dispatch = useDispatch();
   const { closeModal } = useModal();
   const existingPost = useSelector((state) => selectPostById(state, postId));
-
+  const currentPage = useSelector(selectCurrentPage);
   const userAlbums = useSelector(selectUserAlbums);
   const sessionUser = useSelector(selectSessionUser);
   const uploadedImageUrl = useSelector(selectUploadedImageUrl);
@@ -42,15 +43,12 @@ const PostForm = ({ postId, formType, onPostCreated, currentPage, fetchPostDetai
 
   useEffect(() => {
     const fetchAndSetPostData = async () => {
-      if (sessionUser) {
-        const fetchedPost = await dispatch(thunkGetPostDetails(postId))
+      if (sessionUser && formType === "Edit") {
+        const fetchedPost = await dispatch(thunkGetPostDetails(postId));
         if (formType === "Edit" && fetchedPost) {
           setTitle(fetchedPost.title);
           setDescription(fetchedPost.description);
           dispatch(setUploadedImageUrl(fetchedPost.image));
-          // let img = dispatch(setUploadedImageUrl(fetchedPost.image));
-
-
         }
       }
     };
@@ -60,13 +58,7 @@ const PostForm = ({ postId, formType, onPostCreated, currentPage, fetchPostDetai
 
 
   const createOrUpdatePost = async (imageUrl) => {
-    const imageUrlToUse = imageUrl || uploadedImageUrl;
-    if (!imageUrl) {
-      setUploadError("No image URL available for the post");
-      return;
-    }
-
-    const postData = { title, description, image_url: imageUrlToUse};
+    const postData = { title, description, image_url: imageUrl };
     try {
       let postResponse;
       if (formType === "Create") {
@@ -76,46 +68,33 @@ const PostForm = ({ postId, formType, onPostCreated, currentPage, fetchPostDetai
       }
 
       if (postResponse && postResponse.type === "SUCCESS") {
-        // Handle successful post creation/update
-        // Reset form fields, close modal, etc.
-        setTitle("");
-        setDescription("");
-        dispatch(setUploadedImageUrl(""));
-        setUploadError(null);
-        setIsUploading(false);
+        resetFormFields();
         closeModal();
-        // If a new post was created, update the posts list
-        if (formType === "Create") {
-          dispatch(thunkGetPostsByUserId(sessionUser.id, currentPage, 10));
-        }
-        if (formType === "Edit") {
-          dispatch(thunkGetPostDetails(postId))
-        }
       } else {
-        // Handle case where response does not indicate success
         setUploadError("Failed to create/update post");
-        console.log("Post response error:", postResponse);
       }
     } catch (error) {
-      setUploadError("An error occurred during post creation/update");
-      console.error("Post creation/update error:", error);
+      setUploadError("An error occurred");
+      console.error(error);
     }
   };
 
-
+  const resetFormFields = () => {
+    setTitle("");
+    setDescription("");
+    dispatch(setUploadedImageUrl(""));
+    setUploadError(null);
+    setIsUploading(false);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitting with image URL:", uploadedImageUrl);
-    const postCreationResponse = await createOrUpdatePost(uploadedImageUrl);
-
-
-    // if (postCreationResponse && postCreationResponse.type === "SUCCESS") {
-    //   // Dispatch the thunk to get updated posts after successful post creation
-    //   dispatch(thunkGetPostsByUserId(sessionUser.id, currentPage, 10));
-    // } else {
-    //   // Handle the case where post creation was not successful
-    //   console.error("Post creation failed:", postCreationResponse);
+    // if (formType === "Create") {
+      if (!uploadedImageUrl) {
+        setUploadError("Please upload an image first.");
+        return;
+      }
+      await createOrUpdatePost(uploadedImageUrl);
     // }
   };
 
@@ -144,6 +123,9 @@ const PostForm = ({ postId, formType, onPostCreated, currentPage, fetchPostDetai
         <AWSImageUploader
           onUploadSuccess={(newImageUrl) => {
             dispatch(setUploadedImageUrl(newImageUrl));
+            // if (formType === "Edit") {
+            //   createOrUpdatePost(newImageUrl);
+            // }
           }}
           onUploadFailure={(errorMessage) => setUploadError(errorMessage)}
           initiateUpload={isUploading}
@@ -219,7 +201,6 @@ export default PostForm;
 //     fetchAndSetPostData();
 //   }, [dispatch, postId, sessionUser, formType]);
 
-
 //   const createOrUpdatePost = async (imageUrl) => {
 //     if (!imageUrl) {
 //       setUploadError("No image URL available for the post");
@@ -259,7 +240,6 @@ export default PostForm;
 //       console.error("Post creation/update error:", error); // Log any caught errors
 //     }
 //   };
-
 
 //   const handleSubmit = async (e) => {
 //     e.preventDefault();

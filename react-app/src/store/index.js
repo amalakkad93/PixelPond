@@ -14,10 +14,8 @@ const rootReducer = combineReducers({
   albums,
   comments,
   aws,
-
-
-  // paginations,
   ui
+  // paginations,
 });
 
 

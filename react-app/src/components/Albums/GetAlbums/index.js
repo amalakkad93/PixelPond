@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { thunkGetAlbumsByUserId } from "../../../store/albums";
 import {
   selectAllAlbums,
@@ -11,7 +13,7 @@ import {
 import { setLoading, setError } from "../../../store/ui";
 import Pagination from "../../Pagination";
 import UserNavigationBar from "../../Navigation/UserNavigationBar";
-
+import ImageDisplay from "../../ImageDisplay";
 import "./GetAlbums.css";
 
 const GetAlbums = () => {
@@ -30,6 +32,8 @@ const GetAlbums = () => {
   const [totalPages, setTotalPages] = useState(1);
 
   const [showAbout, setShowAbout] = useState(false);
+
+  const [activeAlbumId, setActiveAlbumId] = useState(null);
 
   const perPage = 4;
   const aboutMe = albums[0]?.about_me;
@@ -54,10 +58,9 @@ const GetAlbums = () => {
   const toggleAbout = () => setShowAbout(!showAbout);
 
   if (!albums || albums.length === 0) return null;
-
   return (
     <>
-      <nav className="album-navigation">
+     <nav className="album-navigation">
         <UserNavigationBar
           id={userId}
           onAboutClick={toggleAbout}
@@ -70,7 +73,7 @@ const GetAlbums = () => {
           <p>{aboutMe || "No about me information available."}</p>
         </div>
       )}
-      {albums?.length === 0 ? (
+     {albums?.length === 0 ? (
         <div className="no-albums-message">
           <p>You currently have no albums.</p>
         </div>
@@ -80,34 +83,122 @@ const GetAlbums = () => {
             <div
               key={album.id}
               className="album-item"
-              onClick={() => history.push(`/albums/${album?.id}`)}
+              onClick={() => setActiveAlbumId(album.id)}
             >
               <div className="album-title">{album.title}</div>
-              <div className="album-images">
-                <div className="album-image-grid">
-                  {album.images.map((image, index) => (
-                    <img
-                      key={index}
-                      src={image.url}
-                      alt={`Image ${index} of ${album.title}`}
-                      className="album-image"
-                    />
-                  ))}
+              {/* Conditionally render images based on the activeAlbumId */}
+              {activeAlbumId === null && (
+                <div className="album-images">
+                  <div className="album-image-grid">
+                    {album.images.map((image, index) => (
+                      <img
+                        key={index}
+                        src={image.url}
+                        alt={`Image ${index} of ${album.title}`}
+                        className="album-image"
+                      />
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           ))}
         </div>
       )}
-
+      {/* Pagination component */}
+      {activeAlbumId === null && (
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={(newPage) => setCurrentPage(newPage)}
         useRedux={false}
       />
+      )}
+        {/* Display ImageDisplay component when an album is active */}
+        {activeAlbumId && (
+         <div className={`album-overlay ${activeAlbumId ? 'open' : ''}`}>
+           <FontAwesomeIcon
+            icon={faTimes}
+            className="close-icon"
+            onClick={() => setActiveAlbumId(null)}
+          />
+          <ImageDisplay mode="albumImages" albumId={activeAlbumId} />
+        </div>
+      )}
     </>
   );
 };
 
 export default GetAlbums;
+
+//   return (
+//     <>
+      // <nav className="album-navigation">
+      //   <UserNavigationBar
+      //     id={userId}
+      //     onAboutClick={toggleAbout}
+      //     showAbout={showAbout}
+      //     albumCount={totalAlbums}
+      //   />
+      // </nav>
+      // {showAbout && (
+      //   <div className="about-section">
+      //     <p>{aboutMe || "No about me information available."}</p>
+      //   </div>
+      // )}
+//       {albums?.length === 0 ? (
+//         <div className="no-albums-message">
+//           <p>You currently have no albums.</p>
+//         </div>
+//       ) : (
+
+//         <div className="albums-container">
+//           {albums.map((album) => (
+//             <div
+//               key={album.id}
+//               className="album-item"
+//               // onClick={() => setActiveAlbumId(album.id)}
+//               onClick={() => {
+//                 if (activeAlbumId === album.id) setActiveAlbumId(null);
+//                 else setActiveAlbumId(album.id);
+//               }}
+//               // onClick={() => history.push(`/albums/${album?.id}`)}
+//             >
+//               <div className="album-title">{album.title}</div>
+//               {activeAlbumId !== album.id && (
+//               <div className="album-images">
+//                 <div className="album-image-grid">
+//                   {album.images.map((image, index) => (
+//                     <img
+//                       key={index}
+//                       src={image.url}
+//                       alt={`Image ${index} of ${album.title}`}
+//                       className="album-image"
+//                     />
+//                   ))}
+//                 </div>
+//               </div>
+//               )}
+//             </div>
+//           ))}
+//         </div>
+//       )}
+//       {activeAlbumId && (
+//         <div className="album-overlay">
+//           <ImageDisplay mode="albumImages" albumId={activeAlbumId} />
+//           <button onClick={() => setActiveAlbumId(null)}>Close</button>
+//         </div>
+//       )}
+//       <Pagination
+//         currentPage={currentPage}
+//         totalPages={totalPages}
+//         onPageChange={(newPage) => setCurrentPage(newPage)}
+//         useRedux={false}
+//       />
+
+
+//     </>
+//   );
+// };
+
+// export default GetAlbums;

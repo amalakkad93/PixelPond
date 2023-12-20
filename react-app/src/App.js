@@ -10,6 +10,7 @@ import { authenticate } from "./store/session";
 import Navigation from "./components/Navigation";
 import UserProfile from "./components/Users/UserProfile/UserProfile";
 import ImageDisplay from "./components/ImageDisplay";
+import Explore from "./components/Posts/Explore";
 import NotFound from "./components/NotFound";
 
 function App() {
@@ -27,17 +28,16 @@ function App() {
 
           <Route path="/login" ><LoginFormModal /></Route>
           <Route path="/signup"><SignupFormModal /></Route>
+          <Route path="/explore"><Explore /></Route>
+
           <Route path="/posts/all"><GetPosts mode="all" /></Route>
           <Route path="/posts/owner"><GetPosts mode="owner" /></Route>
           <Route path="/owner/photostream"><ImageDisplay mode="ownerPhotoStream"  /></Route>
           <Route path="/owner/albums"><ImageDisplay mode="ownerAlbumImages"  /></Route>
-          {/* <Route path="/posts/owner/:userId"><ImageDisplay mode="ownerPhotoStream" /></Route> */}
-          {/* <Route path="/posts/users/:userId"><PhotoStream /></Route> */}
           <Route path="/posts/users/:userId"><ImageDisplay mode="photoStream"  /></Route>
           <Route path="/users/show"><UserProfile /></Route>
           <Route path="/posts/:postId"><PostDetail /></Route>
           <Route path="/albums/users/:userId"><GetAlbums /></Route>
-          {/* <Route path="/albums/:albumId"><AlbumImages /></Route> */}
           <Route path="/albums/:albumId"><ImageDisplay mode="albumImages"/></Route>
 
           <Route path="*" element={<NotFound />} />

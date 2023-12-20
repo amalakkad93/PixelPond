@@ -15,12 +15,12 @@ class Image(db.Model):
         __table_args__ = {'schema': SCHEMA}
 
     id = db.Column(db.Integer, primary_key=True)
-    post_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod('posts.id'), ondelete='CASCADE'))
+    # post_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod('posts.id'), ondelete='CASCADE'))
     url = db.Column(db.String(500))
 
     def to_dict(self):
         return {
             'id': self.id,
-            'post_id': self.post_id,
+            # 'post_id': self.post_id,
             'url': self.url
         }

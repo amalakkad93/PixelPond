@@ -20,23 +20,24 @@ export const selectUserById = state => state.session.usersById
 // =========================================================
 
 // Select all posts as an array
-export const selectAllPosts = (state) => state.posts?.allPosts?.allIds.map((id) => state.posts.allPosts.byId[id]|| {});
+// export const selectAllPosts = (state) => state.posts?.allPosts?.allIds.map((id) => state.posts.allPosts.byId[id]|| {});
+export const selectAllPosts = (state) => {
+  const posts = state.posts?.allPosts?.allIds.map((id) => state.posts.allPosts.byId[id] || {});
+  const ownerIds = [...new Set(posts.map(post => post.owner_id))];
+  return { posts, ownerIds };
+};
+
+export const selectAllPostsImages = (state) => {
+  const { allPostsImages } = state.posts;
+  return allPostsImages.allIds.map(id => allPostsImages.byId[id]);
+};
 export const selectOwnerPosts = (state) => state.posts?.ownerPosts?.allIds.map((id) => state.posts.ownerPosts.byId[id]|| {});
 // Select all posts by ID as an object
 export const selectAllPostsById = ((state) => state.posts?.allPosts?.byId || {});
 // Select a single post
 export const selectSinglePost = ((state) => state.posts.singlePost);
 
-
-// export const selectUserPosts = (state) => {
-//   if (!state.posts.userPosts || !state.posts.userPosts.allIds) {
-//     return [];
-//   }
-
-//   return state.posts.userPosts.allIds.map((id) => state.posts.userPosts.byId[id]);
-// };
 export const selectUserPosts = (state) => state.posts.userPosts.byId || {};
-
 
 export const selectUserInfo= (state) => state.posts?.userInfo
 
