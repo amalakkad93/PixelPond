@@ -18,5 +18,5 @@
   border: none;
   cursor: pointer;
   transition: background-color 0.3s;
-  z-index: 10000;
+  z-index: 100000;
 }

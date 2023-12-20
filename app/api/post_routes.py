@@ -323,7 +323,8 @@ def update_post(id):
             if key != 'image_url':
                 setattr(post_to_update, key, value)
 
-        if 'image_url' in data:
+        # if 'image_url' in data:
+        if 'image_url' in data and data['image_url']:
             image_to_update = Image.query.get(post_to_update.image_id)
             if image_to_update:
                 image_to_update.url = data['image_url']

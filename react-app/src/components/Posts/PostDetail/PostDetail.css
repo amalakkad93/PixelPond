@@ -46,7 +46,8 @@
 
 .displayed-image {
   max-width: 100%;
-  max-height: 511px;
+  max-height: 410px;
+  height:410px;
   object-fit: contain;
 }
 
@@ -75,16 +76,18 @@
 }
 
 .edit-delete-post-btn {
-  position: absolute;
-  top: 490px;
-  right: 10px;
+  /* position: absolute; */
+  /* top: 490px; */
+  /* right: 10px; */
   color: white;
   border: none;
-  padding: 10px;
+  /* padding: 10px; */
+  margin-left: 792px;
   cursor: pointer;
   font-size: 16px;
   display: flex;
   gap: 10px;
+  margin-top: -49px;
 }
 
 .trash-icon {

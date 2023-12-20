@@ -208,7 +208,7 @@ export const thunkGetPostsByUserId = (userId, page, perPage) => {
       // (posts, userInfo) => actionGetPostsByUserId(posts, userInfo)
       (normalizedPosts, data) =>
         actionGetPostsByUserId(normalizedPosts, data.user_info),
-        // actionGetPostsByUserId(normalizedPosts),
+      // actionGetPostsByUserId(normalizedPosts),
     ],
     page,
     perPage,
@@ -216,7 +216,7 @@ export const thunkGetPostsByUserId = (userId, page, perPage) => {
     {},
     null,
     [true, false],
-    ["user_posts","user_info" ]
+    ["user_posts", "user_info"]
   );
 };
 
@@ -293,8 +293,9 @@ export const thunkCreatePost = (postData) => async (dispatch, getState) => {
       const post = await response.json();
       dispatch(actionCreatePost(post));
 
-      // Fetch the updated posts to get the new total pages and current page
-      const getPostsResponse = await fetch(`/api/posts/user/${post.owner_id}?page=1&perPage=10`);
+      const getPostsResponse = await fetch(
+        `/api/posts/user/${post.owner_id}?page=1&perPage=10`
+      );
       if (getPostsResponse.ok) {
         const { current_page, total_pages } = await getPostsResponse.json();
         dispatch(setCurrentPagePost(current_page));
@@ -314,8 +315,6 @@ export const thunkCreatePost = (postData) => async (dispatch, getState) => {
   }
 };
 
-
-
 // ***************************************************************
 //  Thunk to Update a Post
 // ***************************************************************
@@ -331,6 +330,7 @@ export const thunkUpdatePost = (postId, updatedData) => async (dispatch) => {
     if (response.ok) {
       const data = await response.json();
       dispatch(actionUpdatePost(data));
+      await dispatch(thunkGetPostDetails(postId));
       return { type: "SUCCESS", data };
     } else {
       const errors = await response.json();
@@ -501,69 +501,27 @@ export default function reducer(state = initialState, action) {
 
       return newState;
 
-    //   case CREATE_POST:
-    // newState = { ...state };
-    // const newPostId = action.post.id;
-    // newState.userPosts.byId[newPostId] = action.post;
-    // newState.userPosts.allIds = [newPostId, ...newState.userPosts.allIds];
-    // return newState;
-
-    // case UPDATE_POST:
-    //   newState = { ...state };
-
-    //   if (newState.allPosts.byId[action.post.id]) {
-    //     newState.allPosts.byId[action.post.id] = action.post;
-    //   }
-
-    //   if (newState.ownerPosts.byId[action.post.id]) {
-    //     newState.ownerPosts.byId[action.post.id] = action.post;
-    //   }
-
-    //   if (newState.userPosts.byId[action.post.id]) {
-    //     newState.userPosts.byId[action.post.id] = action.post;
-    //   }
-    //   return newState;
     case UPDATE_POST:
-  newState = { ...state };
-  const updatedPostId = action.post.id;
+      newState = { ...state };
 
-  // Update in allPosts
-  if (newState.allPosts.byId.hasOwnProperty(updatedPostId)) {
-    newState.allPosts.byId[updatedPostId] = { ...newState.allPosts.byId[updatedPostId], ...action.post };
-  }
+      const updatedPost = action.post;
+      const updatedPostId = updatedPost.id;
 
-  // Update in ownerPosts
-  if (newState.ownerPosts.byId.hasOwnProperty(updatedPostId)) {
-    newState.ownerPosts.byId[updatedPostId] = { ...newState.ownerPosts.byId[updatedPostId], ...action.post };
-  }
+      newState.allPosts.byId[updatedPostId] = updatedPost;
 
-  // Update in userPosts
-  if (newState.userPosts.byId.hasOwnProperty(updatedPostId)) {
-    newState.userPosts.byId[updatedPostId] = { ...newState.userPosts.byId[updatedPostId], ...action.post };
-  }
+      if (newState.ownerPosts.byId[updatedPostId]) {
+        newState.ownerPosts.byId[updatedPostId] = updatedPost;
+      }
 
-  return newState;
+      if (newState.userPosts.byId[updatedPostId]) {
+        newState.userPosts.byId[updatedPostId] = updatedPost;
+      }
 
-    // case UPDATE_POST:
-    //   newState = { ...state };
-    //   const updatedPostId = action.post.id;
+      if (newState.singlePost && newState.singlePost.id === updatedPostId) {
+        newState.singlePost = updatedPost;
+      }
 
-    //   // Update in allPosts
-    //   if (newState.allPosts.byId[updatedPostId]) {
-    //     newState.allPosts.byId[updatedPostId] = { ...newState.allPosts.byId[updatedPostId], ...action.post };
-    //   }
-
-    //   // Update in ownerPosts
-    //   if (newState.ownerPosts.byId[updatedPostId]) {
-    //     newState.ownerPosts.byId[updatedPostId] = { ...newState.ownerPosts.byId[updatedPostId], ...action.post };
-    //   }
-
-    //   // Update in userPosts
-    //   if (newState.userPosts.byId[updatedPostId]) {
-    //     newState.userPosts.byId[updatedPostId] = { ...newState.userPosts.byId[updatedPostId], ...action.post };
-    //     newState.userInfo = { ...action.userInfo };
-    //   }
-    //   return newState;
+      return newState;
 
     case DELETE_POST:
       newState = { ...state };

@@ -31,27 +31,10 @@ const setError = (error) => ({
   payload: error,
 });
 
-// Thunks
-// export const getPresignedUrl = (filename, contentType) => async (dispatch) => {
-//   try {
-//     const response = await fetch(
-//       `/api/s3/generate_presigned_url?filename=${filename}&contentType=${contentType}`
-//     );
-//     if (response.ok) {
-//       const { presigned_url, file_url } = await response.json();
-//       dispatch(setUploadUrl(presigned_url));
-//       dispatch(setImageUrl(file_url));
-//     } else {
-//       const { error } = await response.json();
-//       dispatch(setError(error));
-//     }
-//   } catch (error) {
-//     dispatch(setError("Failed to generate presigned URL"));
-//   }
-// };
+
 
 export const deleteImage = (imageUrl) => async (dispatch) => {
-  console.log("Type of imageUrl:", typeof imageUrl); 
+  console.log("Type of imageUrl:", typeof imageUrl);
 
   try {
       const response = await fetch("/api/s3/delete-image", {
@@ -68,36 +51,6 @@ export const deleteImage = (imageUrl) => async (dispatch) => {
   }
 };
 
-// export const getPresignedUrl =
-//   (filename, contentType, file) => async (dispatch) => {
-//     try {
-//       const presignedResponse = await fetch(
-//         `/api/s3/generate_presigned_url?filename=${encodeURIComponent(
-//           filename
-//         )}&contentType=${contentType}`
-//       );
-//       if (!presignedResponse.ok) throw new Error("Failed to get presigned URL");
-
-//       const { presigned_url, file_url } = await presignedResponse.json();
-
-//       // Perform the upload to S3
-//       const uploadResult = await fetch(presigned_url, {
-//         method: "PUT",
-//         headers: { "Content-Type": contentType },
-//         body: file,
-//       });
-
-//       if (uploadResult.status !== 200)
-//         throw new Error("Failed to upload image");
-
-//       // Dispatch success action with file_url
-//       dispatch(setUploadedImageUrl(file_url));
-//     } catch (error) {
-//       dispatch(setError(error.message));
-//       return null;
-//     }
-//   };
-
 export const getPresignedUrl = (filename, contentType) => async (dispatch) => {
   try {
     const response = await fetch(
@@ -110,7 +63,7 @@ export const getPresignedUrl = (filename, contentType) => async (dispatch) => {
     return { presignedUrl: presigned_url, fileUrl: file_url };
   } catch (error) {
     dispatch(setError(error.message));
-    return null; // Important to return null or an error object here
+    return null; 
   }
 };
 
