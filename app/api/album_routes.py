@@ -48,10 +48,11 @@ def get_albums_by_user_id(user_id):
         Response: A JSON object with the user's albums or an error message.
     """
     try:
+        ic(f"Fetching albums for user: {user_id}")
         albums_query = Album.query.filter_by(user_id=user_id)
         albums_with_images = [album.to_dict() for album in albums_query]
 
-        paginated_albums = hf.paginate_query(albums_with_images, 'albums', per_page_default=4, is_list=True)
+        paginated_albums = hf.paginate_query(albums_with_images, 'albums', per_page_default=2, is_list=True)
 
         response_data = {
             "albums": paginated_albums['albums'],

@@ -75,26 +75,26 @@ export const selectUserPostImages = (state) => {
 
 
 export const selectAlbumImages = (state, albumId) => {
-  const album = state.albums.singleAlbum.byId[albumId];
-  if (!album || !album.images) return [];
+  const album = state.albums?.singleAlbum?.byId?.[albumId];
+  if (!album || !album?.images) return [];
 
-  return album.imageIds.map(id => {
-    const image = album.images[id];
+  return album.imageIds?.map(id => {
+    const image = album.images?.[id];
     return {
       ...image,
-      post_id: image.post_id
+      post_id: image?.post_id
     };
   });
 };
 
 export const selectAllAlbums = (state) => {
-  const { userAlbums } = state.albums;
-  return userAlbums.allIds.map((id) => {
-    const album = userAlbums.byId[id];
+  const { userAlbums } = state?.albums;
+  return userAlbums?.allIds.map((id) => {
+    const album = userAlbums?.byId?.[id];
 
     const albumWithImages = {
       ...album,
-      images: album.images.allIds.map(imageId => album.images.byId[imageId])
+      images: album?.images?.allIds?.map(imageId => album?.images?.byId?.[imageId])
     };
 
     return albumWithImages;
@@ -105,10 +105,10 @@ export const selectAllAlbums = (state) => {
 
 
 export const selectTotalAlbums = (state) => state.albums?.userAlbums?.allIds?.length;
-export const selectAlbumInfo = (state, albumId) => state.albums.singleAlbum.byId[albumId];
+export const selectAlbumInfo = (state, albumId) => state.albums?.singleAlbum?.byId?.[albumId];
 
 export const selectUserAlbums = (state) => {
-  const albumsById = state.albums.userAlbums.byId;
+  const albumsById = state.albums?.userAlbums?.byId;
   return albumsById ? Object.values(albumsById) : [];
 };
 // =========================================================
@@ -118,7 +118,7 @@ export const selectPostComments = (state) => state.comments?.allCommentsOfPost?.
 // Selector to get comments for a specific post
 export const selectPostComments1 = (state, postId) => {
   const comments = state.comments[postId];
-  return comments ? comments.allIds.map(id => comments.byId[id]) : [];
+  return comments ? comments?.allIds.map(id => comments?.byId?.[id]) : [];
 };
 
 // =========================================================

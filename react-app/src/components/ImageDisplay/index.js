@@ -193,9 +193,9 @@ const ImageDisplay = ({ mode, albumId }) => {
 
     case "albumImages":
       navigationUserId = albumInfo?.userId;
-      images = albumImages.map((image) => image?.url).filter(Boolean);
+      images = albumImages?.map((image) => image?.url).filter(Boolean);
       imageLength = albumImages?.length;
-      displayedImages = albumImages.map((image) => ({
+      displayedImages = albumImages?.map((image) => ({
         image_url: image?.url,
         imageId: image?.id,
         post_id: image?.post_id,

@@ -372,19 +372,31 @@ export default function reducer(state = initialState, action) {
         return state;
       }
 
-    case UPDATE_ALBUM: {
-      const updatedAlbum = action.updatedAlbum;
+      case UPDATE_ALBUM: {
+        const updatedAlbum = action.updatedAlbum;
 
-      // handle updating the album in your state
-      newState = { ...state };
-      newState.allAlbums.byId[updatedAlbum.id] = updatedAlbum;
-      newState.ownerAlbums.byId[updatedAlbum.id] = updatedAlbum;
-      newState.userAlbums.byId[updatedAlbum.id] = updatedAlbum;
-      newState.singleAlbum.byId[updatedAlbum.id] = updatedAlbum;
-      
+        newState = { ...state };
 
-      return newState;
-    }
+        if (newState.allAlbums.byId[updatedAlbum.id]) {
+          newState.allAlbums.byId[updatedAlbum.id] = updatedAlbum;
+        }
+
+        if (newState.ownerAlbums.byId[updatedAlbum.id]) {
+          newState.ownerAlbums.byId[updatedAlbum.id] = updatedAlbum;
+        }
+
+        if (newState.userAlbums.byId[updatedAlbum.id]) {
+          newState.userAlbums.byId[updatedAlbum.id] = updatedAlbum;
+        }
+
+        if (newState.singleAlbum.byId[updatedAlbum.id]) {
+          newState.singleAlbum.byId[updatedAlbum.id] = updatedAlbum;
+        }
+
+        return newState;
+      }
+
+    
     // case DELETE_ALBUM: {
     //   const albumId = action.albumId;
     //   newState = { ...state };

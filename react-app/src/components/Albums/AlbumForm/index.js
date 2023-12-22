@@ -45,7 +45,7 @@ const AlbumForm = ({ formType, albumId, albumTitle: initialAlbumTitle, currentPa
         }
 
         if (response.type === "SUCCESS") {
-          if (isMounted) { 
+          if (isMounted) {
               setAlbumTitle("");
               setError(null);
               closeModal();

@@ -204,7 +204,7 @@ const GetAlbums = () => {
               {activeAlbumId === null && (
                 <div className="album-images">
                   <div className="album-image-grid">
-                    {album.images.map((image, index) => (
+                    {album?.images?.map((image, index) => (
                       <img
                         key={index}
                         src={image?.url}
