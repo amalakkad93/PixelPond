@@ -17,6 +17,8 @@ import {
   selectSessionUser,
   selectCurrentPage,
   selectTotalPages,
+  selectCurrentPageAllPosts,
+  selectTotalPagesAllPosts,
 } from "../../../store/selectors";
 
 import Pagination from "../../Pagination";
@@ -33,12 +35,14 @@ export default function GetPosts({ mode = "all" }) {
   //   mode === "owner" ? selectOwnerPosts : selectAllPosts
   // );
   const sessionUser = useSelector(selectSessionUser);
-  const currentPage = useSelector(selectCurrentPage);
-  const totalPages = useSelector(selectTotalPages);
 
-  // const [currentPage, setCurrentPage] = useState(1);
+  // const currentPage = useSelector(selectCurrentPageAllPosts);
+  // const totalPages = useSelector(selectTotalPagesAllPosts);
+  // const currentPage = useSelector(selectCurrentPage);
+  // const totalPages = useSelector(selectTotalPages);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
 
-  // const [totalPages, setTotalPages] = useState(0);
   const userId = selectSessionUser?.id;
   const perPage = 10;
   const { posts, ownerIds } = useSelector(
@@ -56,30 +60,31 @@ export default function GetPosts({ mode = "all" }) {
   //   });
   // }, [dispatch, ownerIds]);
 
-  useEffect(() => {
-    console.log("useEffect called", { currentPage, perPage, mode });
-    const fetchData = async () => {
-      try {
-        dispatch(setLoading(true));
+  const fetchData = async (page) => {
+    try {
+      dispatch(setLoading(true));
+      let response;
 
-        if (mode === "owner") {
-          dispatch(clearPostsData("ownerPosts"));
-          await dispatch(thunkGetOwnerPosts(userId, currentPage, perPage));
-        } else {
-          dispatch(clearPostsData("allPosts"));
-          await dispatch(thunkGetAllPosts(currentPage, perPage));
-
-        }
-
-        dispatch(setLoading(false));
-      } catch (err) {
-        dispatch(setError("An error occurred"));
-        dispatch(setLoading(false));
+      if (mode === "owner") {
+        response = await dispatch(thunkGetOwnerPosts(userId, page, perPage));
+      } else {
+        response = await dispatch(thunkGetAllPosts(page, perPage));
       }
-    };
 
-    fetchData();
-  }, [dispatch, currentPage, perPage, mode]);
+      if (response) {
+        setCurrentPage(response.current_page);
+        setTotalPages(response.total_pages);
+      }
+      dispatch(setLoading(false));
+    } catch (err) {
+      dispatch(setError("An error occurred"));
+      dispatch(setLoading(false));
+    }
+  };
+
+  useEffect(() => {
+    fetchData(currentPage);
+  }, [currentPage, mode, dispatch]);
 
   if (!posts || posts.length === 0) return null;
 
@@ -117,13 +122,14 @@ export default function GetPosts({ mode = "all" }) {
         totalItems={totalPages * perPage}
         itemsPerPage={perPage}
         currentPage={currentPage}
-        onPageChange={(newPage) => {
-          if (mode === "owner") {
-            dispatch(thunkGetOwnerPosts(userId, newPage, perPage));
-          } else {
-            dispatch(thunkGetAllPosts(newPage, perPage));
-          }
-        }}
+        onPageChange={(newPage) => fetchData(newPage)}
+        // onPageChange={(newPage) => {
+        //   if (mode === "owner") {
+        //     dispatch(thunkGetOwnerPosts(userId, newPage, perPage));
+        //   } else {
+        //     dispatch(thunkGetAllPosts(newPage, perPage));
+        //   }
+        // }}
       />
     </div>
   );

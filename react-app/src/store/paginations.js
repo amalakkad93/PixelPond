@@ -1,6 +1,6 @@
 import { normalizeArray } from "../assets/helpers/storesHelpers";
 import { setLoading, setError } from "./ui";
-import { setCurrentPagePost, setTotalPagesPost } from "./posts";
+import { setCurrentPage, setTotalPages } from "./posts";
 
 // // Action types
 // const SET_CURRENT_PAGE = "pagination/SET_CURRENT_PAGE";
@@ -91,9 +91,12 @@ export const fetchPaginatedData =
     customHeaders = {},
     customErrorHandling = null,
     normalizeFlags = [],
-    dataNames = [] // Array of data names
+    dataNames = [],
+    section,
   ) =>
   async (dispatch) => {
+
+
     dispatch(setLoading(true));
 
     try {
@@ -103,24 +106,19 @@ export const fetchPaginatedData =
         ...additionalParams,
       });
       const requestUrl = `${url}?${queryParams.toString()}`;
-      console.log("Request URL:", requestUrl); // Log the request URL
+      console.log("Request URL:", requestUrl);
 
       const response = await fetch(requestUrl, {
         headers: { "Content-Type": "application/json", ...customHeaders },
       });
 
-      console.log("Network response:", response); // Log the response object
+      console.log("Network response:", response);
 
       if (response.ok) {
         const data = await response.json();
         console.log("Data fetched:", data);
 
         // Collect data specified by dataNames
-        // const collectedData = dataNames.reduce((acc, name) => {
-        //   acc[name] = data[name];
-        //   return acc;
-        // }, {});
-        // Inside fetchPaginatedData
         const collectedData =
           dataNames.length === 0
             ? data
@@ -143,21 +141,15 @@ export const fetchPaginatedData =
               "id"
             );
             res = dispatch(actionCreator(normalizedData, data));
-            console.log(
-              "🚀 ~ file: paginations.js:132 ~ actionCreators.forEach ~ res:",
-              res
-            );
           } else {
             res = dispatch(actionCreator(collectedData, data));
-            console.log(
-              "🚀 ~ file: paginations.js:132 ~ actionCreators.forEach ~ res with normalizeFlags flase :",
-              res
-            );
+
           }
         });
 
-        dispatch(setTotalPagesPost(data.total_pages));
-        dispatch(setCurrentPagePost(page));
+        // dispatch(setTotalPages(section, data.total_pages));
+        // dispatch(setCurrentPage(section, page));
+        return data;
       } else {
         const errors = await response.json();
         console.error("API Error:", errors);

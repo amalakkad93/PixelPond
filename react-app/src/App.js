@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Route, Switch } from "react-router-dom";
+
+import PageResetter from "./components/Pagination/PageResetter";
+
 import SignupFormModal from "./components/SignupFormModal";
 import LoginFormModal from "./components/LoginFormModal";
 import GetPosts from "./components/Posts/GetPosts";
@@ -24,6 +27,8 @@ function App() {
     <>
       <Navigation isLoaded={isLoaded} />
       {isLoaded && (
+      <>
+        {/* <PageResetter /> */}
         <Switch>
 
           <Route path="/login" ><LoginFormModal /></Route>
@@ -34,6 +39,8 @@ function App() {
           <Route path="/posts/owner"><GetPosts mode="owner" /></Route>
           <Route path="/owner/photostream"><ImageDisplay mode="ownerPhotoStream"  /></Route>
           <Route path="/owner/albums"><ImageDisplay mode="ownerAlbumImages"  /></Route>
+          <Route path="/owner/unassigned-posts"><ImageDisplay mode="unassignedPosts"  /></Route>
+
           <Route path="/posts/users/:userId"><ImageDisplay mode="photoStream"  /></Route>
           <Route path="/users/show"><UserProfile /></Route>
           <Route path="/posts/:postId"><PostDetail /></Route>
@@ -44,6 +51,7 @@ function App() {
 
 
         </Switch>
+      </>
       )}
     </>
   );

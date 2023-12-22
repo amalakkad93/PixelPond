@@ -28,9 +28,15 @@ export const selectAllPosts = (state) => {
 };
 
 export const selectAllPostsImages = (state) => {
-  const { allPostsImages } = state.posts;
-  return allPostsImages.allIds.map(id => allPostsImages.byId[id]);
+  return state.posts.allPosts.allIds.map(postId => {
+    const post = state.posts.allPosts?.byId?.[postId];
+    return {
+      post_id: post.id,
+      image_url: post.image_url
+    };
+  });
 };
+
 export const selectOwnerPosts = (state) => state.posts?.ownerPosts?.allIds.map((id) => state.posts.ownerPosts.byId[id]|| {});
 // Select all posts by ID as an object
 export const selectAllPostsById = ((state) => state.posts?.allPosts?.byId || {});
@@ -38,10 +44,12 @@ export const selectAllPostsById = ((state) => state.posts?.allPosts?.byId || {})
 export const selectSinglePost = ((state) => state.posts.singlePost);
 
 export const selectUserPosts = (state) => state.posts.userPosts.byId || {};
+export const selectPostById = (state) => state.posts.userPosts.allIds
+export const selectUserPostsWithNoAlbumId = (state) => state.posts.userPostsNoAlbum.byId || {};
+export const selectPostWithNoAlbumIdById = (state) => state.posts.userPostsNoAlbum.allIds
 
 export const selectUserInfo= (state) => state.posts?.userInfo
 
-export const selectPostById = (state) => state.posts.userPosts.allIds
 
 export const selectNeighborPosts = (state) => {
   return state.posts.neighborPosts || { prevPostId: null, nextPostId: null };
@@ -60,9 +68,23 @@ export const selectUserPostImages = (state) => {
 //               ****Album UseSelectors****
 // =========================================================
 
-export const selectAlbumImages =  (state, albumId) => {
+// export const selectAlbumImages =  (state, albumId) => {
+//   const album = state.albums.singleAlbum.byId[albumId];
+//   return album ? album.imageIds.map(id => album.images[id]) : [];
+// };
+
+
+export const selectAlbumImages = (state, albumId) => {
   const album = state.albums.singleAlbum.byId[albumId];
-  return album ? album.imageIds.map(id => album.images[id]) : [];
+  if (!album || !album.images) return [];
+
+  return album.imageIds.map(id => {
+    const image = album.images[id];
+    return {
+      ...image,
+      post_id: image.post_id
+    };
+  });
 };
 
 export const selectAllAlbums = (state) => {
@@ -114,8 +136,8 @@ export const selectUploadedImageUrl = (state) => state.aws.uploadedImageUrl;
 //               ****Paginations UseSelectors****
 // =========================================================
 
+export const selectCurrentPageAllPosts = (state) => state.posts.allPosts.pagination.currentPage;
+export const selectTotalPagesAllPosts = (state) => state.posts.allPosts.pagination.totalPages;
+
 export const selectCurrentPage = (state) => state.posts.pagination.currentPage;
 export const selectTotalPages = (state) => state.posts.pagination.totalPages;
-
-// export const selectCurrentPage = (state) => state.paginations.currentPage;
-// export const selectTotalPages = (state) => state.paginations.totalPages;

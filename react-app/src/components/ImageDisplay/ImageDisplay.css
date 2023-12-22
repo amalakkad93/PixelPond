@@ -115,17 +115,7 @@
   padding-right: 5px;
 }
 
-.photo-item {
-  margin-bottom: 3px;
-  border-radius: 5px;
-  cursor: pointer;
-}
 
-.photo-item img {
-  width: 100%;
-  display: block;
-  object-fit: cover;
-}
 .no-content-message {
   text-align: center;
   margin-top: 20px;

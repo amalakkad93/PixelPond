@@ -1,4 +1,4 @@
-from app.models import db, User, Post, Image, environment, SCHEMA
+from app.models import db, User, Post, Image,  PostAlbum, environment, SCHEMA
 from datetime import datetime
 from sqlalchemy.sql import text
 
@@ -50,10 +50,11 @@ def seed_posts():
     ]
 
     posts_and_images = []
+    post_album_links = []
     for i, data in enumerate(post_data):
         post = Post(
             owner_id=data['owner_id'],
-            album_id=data['album_id'],
+            # album_id=data['album_id'],
             image_id=data['image_id'],
             title=data['title'],
             description=data['description'],
@@ -68,13 +69,23 @@ def seed_posts():
         )
         posts_and_images.append(image)
 
+        post_album = PostAlbum(
+            post_id=post.id,
+            album_id=data['album_id']
+        )
+        post_album_links.append(post_album)
+
     db.session.add_all(posts_and_images)
+    db.session.add_all(post_album_links)
     db.session.commit()
 
 
 def undo_posts():
     if environment == "production":
-        db.session.execute(f"TRUNCATE table {SCHEMA}.posts RESTART IDENTITY CASCADE;")
+        db.session.execute(f"TRUNCATE {SCHEMA}.post_albums RESTART IDENTITY CASCADE;")
+        db.session.execute(f"TRUNCATE {SCHEMA}.posts RESTART IDENTITY CASCADE;")
     else:
-        db.session.execute("DELETE FROM posts")
+        db.session.execute("DELETE FROM post_albums;")
+        db.session.execute("DELETE FROM posts;")
     db.session.commit()
+

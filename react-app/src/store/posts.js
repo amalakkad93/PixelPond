@@ -33,7 +33,16 @@ const UPDATE_POST = "posts/UPDATE_POST";
 /** Action type to handle deleting a post */
 const DELETE_POST = "posts/DELETE_POST";
 
+/** Action type to handle adding a post to an album */
+const ADD_POST_TO_ALBUM = "posts/ADD_POST_TO_ALBUM";
+
+/** Action type to handle fetching posts with No Album ID's */
+const GET_POSTS_NOT_IN_ALBUM = "posts/GET_POSTS_NOT_IN_ALBUM";
+
+/** Action type to handle fetching neighbor post IDs */
 const SET_NEIGHBOR_POSTS = "posts/SET_NEIGHBOR_POSTS";
+
+
 
 /** Action type to handle errors during post operations */
 const SET_POST_ERROR = "posts/SET_POST_ERROR";
@@ -42,38 +51,21 @@ const SET_CURRENT_PAGE = "posts/SET_CURRENT_PAGE";
 
 const SET_TOTAL_PAGES = "posts/SET_TOTAL_PAGES";
 
+const SET_CURRENT_PAGE_POST = "posts/SET_CURRENT_PAGE";
+
+const SET_TOTAL_PAGES_POST = "posts/SET_TOTAL_PAGES";
+
 const CLEAR_POSTS_DATA = "CLEAR_POSTS_DATA";
 
 export const CLEAR_POST_DETAILS = "posts/CLEAR_POST_DETAILS";
 
 // Action Creators
-export const clearPostDetails = () => ({
-  type: CLEAR_POST_DETAILS,
-});
 
-export const clearPostsData = (dataType) => ({
-  type: CLEAR_POSTS_DATA,
-  dataType,
-});
 /** Creates an action to set all available posts in the store */
 const actionGetAllPosts = (posts) => ({
   type: GET_ALL_POSTS,
   posts,
 });
-
-// /** Creates an action to set all available posts images in the store */
-const actionGetAllPostsImages = (data) => {
-  console.log("++actionGetAllPostsImages - Raw posts data:", data);
-  const normalizedPosts = normalizeArray(data.posts, "post_id");
-  console.log(
-    "++actionGetAllPostsImages - Normalized posts data:",
-    normalizedPosts
-  );
-  return {
-    type: GET_ALL_POSTS_IMAGES,
-    posts: normalizedPosts,
-  };
-};
 
 const actionGetPostsByUserId = (normalizedPosts, userInfo) => ({
   type: GET_POSTS_BY_USER_ID,
@@ -105,10 +97,20 @@ const actionGetOwnerPosts = (posts) => ({
 });
 
 /** Creates an action to handle creating a new post */
-const actionCreatePost = (post) => ({
-  type: CREATE_POST,
-  post,
-});
+// const actionCreatePost = (post) => ({
+//   type: CREATE_POST,
+//   post,
+// });
+const actionCreatePost = (post) => {
+  console.log("Creating action for post creation: ", {
+    type: CREATE_POST,
+    post,
+  });
+  return {
+    type: CREATE_POST,
+    post,
+  };
+};
 
 /** Creates an action to handle updating a post */
 const actionUpdatePost = (post) => ({
@@ -122,6 +124,24 @@ const actionDeletePost = (postId) => ({
   postId,
 });
 
+const actionGetPostsNotInAlbum = (normalizedPosts, userInfo) => ({
+  type: GET_POSTS_NOT_IN_ALBUM,
+  posts: normalizedPosts,
+  userInfo,
+});
+
+export const setCurrentPage = (section, page) => ({
+  type: SET_CURRENT_PAGE,
+  section,
+  payload: page,
+});
+
+export const setTotalPages = (section, pages) => ({
+  type: SET_TOTAL_PAGES,
+  section,
+  payload: pages,
+});
+
 export const setCurrentPagePost = (page) => ({
   type: SET_CURRENT_PAGE,
   payload: page,
@@ -130,6 +150,20 @@ export const setCurrentPagePost = (page) => ({
 export const setTotalPagesPost = (pages) => ({
   type: SET_TOTAL_PAGES,
   payload: pages,
+});
+
+export const clearPostDetails = () => ({
+  type: CLEAR_POST_DETAILS,
+});
+
+export const clearPostsData = (dataType) => ({
+  type: CLEAR_POSTS_DATA,
+  dataType,
+});
+
+export const actionAddPostToAlbum = (post) => ({
+  type: ADD_POST_TO_ALBUM,
+  post,
 });
 
 /** Creates an action to handle errors during post operations */
@@ -145,24 +179,6 @@ const actionSetPostError = (errorMessage) => ({
 // Instead of returning action objects directly, they return a function that can dispatch multiple actions.
 
 // ***************************************************************
-//  Thunk to Fetch All Posts Images With Pagination
-// ***************************************************************
-export const thunkGetAllPostsImages = (page, perPage) => {
-  return fetchPaginatedData(
-    "/api/posts/all/images",
-    [actionGetAllPostsImages],
-    page,
-    perPage,
-    {},
-    {},
-    null,
-    // [true],
-    [false],
-    [],
-    false
-  );
-};
-// ***************************************************************
 //  Thunk to Fetch All Posts With Pagination
 // ***************************************************************
 export const thunkGetAllPosts = (page, perPage) => {
@@ -177,7 +193,7 @@ export const thunkGetAllPosts = (page, perPage) => {
     null,
     [true],
     ["posts"],
-    false
+    "allPosts"
   );
 };
 
@@ -194,7 +210,8 @@ export const thunkGetOwnerPosts = (userId, page, perPage) => {
     {},
     null,
     [true],
-    ["posts"]
+    ["posts"],
+    "ownerPosts"
   );
 };
 
@@ -291,35 +308,32 @@ export const thunkCreatePost = (postData) => async (dispatch, getState) => {
 
     if (response.ok) {
       const post = await response.json();
+
       dispatch(actionCreatePost(post));
 
-      const getPostsResponse = await fetch(
-        `/api/posts/user/${post.owner_id}?page=1&perPage=10`
-      );
-      if (getPostsResponse.ok) {
-        const { current_page, total_pages } = await getPostsResponse.json();
-        dispatch(setCurrentPagePost(current_page));
-        dispatch(setTotalPagesPost(total_pages));
-        dispatch(thunkGetPostsByUserId(post.owner_id, current_page, 10));
-      }
+    
 
       return { type: "SUCCESS", data: post };
     } else {
       const errors = await response.json();
       dispatch(actionSetPostError(errors.error || "Error creating post."));
-      throw errors;
+      return { type: "FAILURE", error: errors };
     }
   } catch (error) {
+    console.error("Error in thunkCreatePost: ", error);
     dispatch(actionSetPostError("An error occurred while creating the post."));
-    throw error;
+    return { type: "ERROR", error };
   }
 };
 
 // ***************************************************************
 //  Thunk to Update a Post
 // ***************************************************************
-
 export const thunkUpdatePost = (postId, updatedData) => async (dispatch) => {
+  if (!postId) {
+    return { type: "ERROR", error: { message: "Invalid post ID" } };
+  }
+
   try {
     const response = await fetch(`/api/posts/${postId}`, {
       method: "PUT",
@@ -329,25 +343,30 @@ export const thunkUpdatePost = (postId, updatedData) => async (dispatch) => {
 
     if (response.ok) {
       const data = await response.json();
+
       dispatch(actionUpdatePost(data));
-      await dispatch(thunkGetPostDetails(postId));
+
+      dispatch(thunkGetPostDetails(postId));
+
       return { type: "SUCCESS", data };
     } else {
       const errors = await response.json();
+      console.error("Update Post Error: ", errors);
       dispatch(
         actionSetPostError(
           errors.error || `Error updating post with ID ${postId}.`
         )
       );
-      throw errors;
+      return { type: "FAILURE", error: errors };
     }
   } catch (error) {
+    console.error("Error in thunkUpdatePost: ", error);
     dispatch(
       actionSetPostError(
         `An error occurred while updating post with ID ${postId}.`
       )
     );
-    throw error;
+    return { type: "ERROR", error };
   }
 };
 
@@ -380,6 +399,30 @@ export const thunkDeletePost = (postId) => async (dispatch) => {
   }
 };
 
+
+
+// ***************************************************************
+//  Thunk to Fetch Posts Not in Album for the Logged-In User With Pagination
+// ***************************************************************
+export const thunkGetUserPostsNotInAlbum = (userId, page, perPage) => {
+  return fetchPaginatedData(
+    `/api/posts/user/${userId}/not-in-album`,
+    [
+      // (posts, userInfo) => actionGetPostsByUserId(posts, userInfo)
+      (normalizedPosts, data) =>
+      actionGetPostsNotInAlbum(normalizedPosts, data.user_info),
+      // actionGetPostsByUserId(normalizedPosts),
+    ],
+    page,
+    perPage,
+    {},
+    {},
+    null,
+    [true, false],
+    ["user_posts", "user_info"]
+  );
+};
+
 // =========================================================
 //                   ****Reducer****
 // =========================================================
@@ -387,10 +430,31 @@ export const thunkDeletePost = (postId) => async (dispatch) => {
 // It's a pure function, meaning it doesn't produce side effects and will always return the same output for the same input.
 
 const initialState = {
-  allPosts: { byId: {}, allIds: [] },
-  allPostsImages: { byId: {}, allIds: [] },
-  ownerPosts: { byId: {}, allIds: [] },
-  userPosts: { byId: {}, allIds: [] },
+  allPosts: {
+    byId: {},
+    allIds: [],
+    pagination: { currentPage: 1, totalPages: 1 },
+  },
+  allPostsImages: {
+    byId: {},
+    allIds: [],
+    pagination: { currentPage: 1, totalPages: 1 },
+  },
+  ownerPosts: {
+    byId: {},
+    allIds: [],
+    pagination: { currentPage: 1, totalPages: 1 },
+  },
+  userPosts: {
+    byId: {},
+    allIds: [],
+    pagination: { currentPage: 1, totalPages: 1 },
+  },
+  userPostsNoAlbum: {
+    byId: {},
+    allIds: [],
+    pagination: { currentPage: 1, totalPages: 1 },
+  },
   singlePost: {},
   userInfo: {},
   neighborPosts: { nextPostId: null, prevPostId: null },
@@ -464,6 +528,21 @@ export default function reducer(state = initialState, action) {
       newState.userInfo = { ...action.userInfo };
       return newState;
 
+    case GET_POSTS_NOT_IN_ALBUM:
+      newState = {
+        ...state,
+        userPostsNoAlbum: { byId: {}, allIds: [] },
+      };
+      newState.userPostsNoAlbum = {
+        byId: { ...newState.userPostsNoAlbum.byId, ...action.posts.byId },
+        allIds: [
+          ...new Set([...newState.userPostsNoAlbum.allIds, ...action.posts.allIds]),
+        ],
+      };
+
+      newState.userInfo = { ...action.userInfo };
+      return newState;
+
     case GET_SINGLE_POST:
       newState = { ...state, singlePost: {} };
       newState.singlePost = action.post;
@@ -477,11 +556,6 @@ export default function reducer(state = initialState, action) {
           prevPostId: action.prevPostId,
         },
       };
-
-    // case SET_USER_INFO:
-    //   newState = { ...state, userInfo: {} };
-    //   newState.userInfo = action.userInfo;
-    //   return newState;
 
     case CREATE_POST:
       newState = { ...state };
@@ -506,6 +580,10 @@ export default function reducer(state = initialState, action) {
 
       const updatedPost = action.post;
       const updatedPostId = updatedPost.id;
+
+      if (newState.singlePost.id === updatedPostId && !updatedPost.user_info) {
+        updatedPost.user_info = newState.singlePost.user_info;
+      }
 
       newState.allPosts.byId[updatedPostId] = updatedPost;
 
@@ -549,17 +627,62 @@ export default function reducer(state = initialState, action) {
       }
       return newState;
 
-    case SET_CURRENT_PAGE:
+    case ADD_POST_TO_ALBUM: {
+      const updatedPost = action.post;
+      const updatedPosts = {
+        ...state.allPosts.byId,
+        [updatedPost.id]: updatedPost,
+      };
+
+      return {
+        ...state,
+        allPosts: {
+          ...state.allPosts,
+          byId: updatedPosts,
+        },
+      };
+    }
+
+    case SET_CURRENT_PAGE_POST:
       return {
         ...state,
         pagination: { ...state.pagination, currentPage: action.payload },
       };
-    case SET_TOTAL_PAGES:
+    case SET_TOTAL_PAGES_POST:
       return {
         ...state,
         pagination: { ...state.pagination, totalPages: action.payload },
       };
 
+    case SET_CURRENT_PAGE:
+      if (state[action.section]) {
+        return {
+          ...state,
+          [action.section]: {
+            ...state[action.section],
+            pagination: {
+              ...state[action.section].pagination,
+              currentPage: action.payload,
+            },
+          },
+        };
+      }
+      break;
+
+    case SET_TOTAL_PAGES:
+      if (state[action.section]) {
+        return {
+          ...state,
+          [action.section]: {
+            ...state[action.section],
+            pagination: {
+              ...state[action.section].pagination,
+              totalPages: action.payload,
+            },
+          },
+        };
+      }
+      break;
     case CLEAR_POSTS_DATA:
       if (state[action.dataType]) {
         return {

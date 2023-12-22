@@ -7,6 +7,7 @@ from .db import db, environment, SCHEMA, add_prefix_for_prod
 from .user import User
 from .image import Image
 from .post import Post
+from .post_album import PostAlbum
 
 
 class Album(db.Model):
@@ -26,38 +27,42 @@ class Album(db.Model):
     title = db.Column(db.String(255), nullable=False)
 
     def to_dict(self):
-        user = User.query.get(self.user_id)
-        posts = Post.query.filter_by(album_id=self.id).all()
-
         album_images = []
+        post_albums = PostAlbum.query.filter_by(album_id=self.id).all()
 
-        # for post in posts:
-        #     images = Image.query.filter(Image.post_id == post.id).all()
-        #     album_images.extend([image.url for image in images])
-
-
-        for post in posts:
-            images = Image.query.filter(Image.post_id == post.id).all()
-
-            for image in images:
-                album_images.append({
-                    'album_id': self.id,
-                    'id': image.id,
-                    'url': image.url,
-                    'post_id': post.id
-                })
-
-
+        for post_album in post_albums:
+            post = Post.query.get(post_album.post_id)
+            if post:
+                image = Image.query.get(post.image_id)
+                if image:
+                    album_images.append({
+                        'album_id': self.id,
+                        'id': image.id,
+                        'url': image.url,
+                        'post_id': post.id
+                    })
         return {
             'id': self.id,
             'user_id': self.user_id,
-            # 'post_id': self.post_id,
             'title': self.title,
-            # 'username': user.username if user else None,
-            # 'first_name': user.first_name if user else None,
-            # 'last_name': user.last_name if user else None,
-            # 'last_name': user.last_name if user else None,
-            # 'profile_picture': user.profile_picture if user else None,
-            # 'about_me': user.about_me if user else None,
             'images': album_images
         }
+    # def to_dict(self):
+    #     posts = Post.query.filter_by(album_id=self.id).all()
+    #     album_images = []
+    #     for post in posts:
+    #         image = Image.query.get(post.image_id)
+    #         if image:
+    #             album_images.append({
+    #                 'album_id': self.id,
+    #                 'id': image.id,
+    #                 'url': image.url,
+    #                 'post_id': post.id
+    #             })
+
+    #     return {
+    #         'id': self.id,
+    #         'user_id': self.user_id,
+    #         'title': self.title,
+    #         'images': album_images
+    #     }

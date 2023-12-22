@@ -48,28 +48,12 @@ export default function PostDetail() {
 
   const sessionUser = useSelector(selectSessionUser);
   const post = useSelector(selectSinglePost);
-  // const userInfo = useSelector(selectUserInfo);
-  // const userInfo = useSelector(selectUserById);
+  console.log("🚀 ~ file: index.js:51 ~ PostDetail ~ post:", post)
   const userInfo = post?.user_info;
-  console.log("🚀 ~ file: index.js:53 ~ PostDetail ~ userInfo:", userInfo )
   const neighborPosts = useSelector(selectNeighborPosts);
   const loading = useSelector(selectLoading);
   const userId = post?.owner_id;
-  console.log("🚀 ~ file: index.js:53 ~ PostDetail ~ userId :", userId )
 
-  // const fetchData = useCallback(async () => {
-  //   try {
-  //     dispatch(setLoading(true));
-  //     await dispatch(thunkGetPostDetails(postId));
-  //     await dispatch(thunkGetNeighborPosts(postId, userId));
-  //     await dispatch(thunkGetPostComments(postId, 1, 10));
-  //     dispatch(setLoading(false));
-  //   } catch (err) {
-  //     dispatch(setError("An error occurred"));
-  //   } finally {
-  //     dispatch(setLoading(false));
-  //   }
-  // }, [dispatch, postId, userId]);
   const fetchData = useCallback(async () => {
     try {
       dispatch(setLoading(true));
@@ -95,7 +79,6 @@ export default function PostDetail() {
     fetchData();
   }, [fetchData]);
 
-  console.log("🚀 ~ file: index.js:185 ~ PostDetail ~ post:", post);
   if (loading && (!post || !post.image_url)) return <Spinner />;
   if (!post || !post.image_url) return null;
 

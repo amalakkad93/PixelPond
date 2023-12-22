@@ -3,7 +3,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import joinedload
 from http import HTTPStatus
-from app.models import Post, User, Image, Comment, db
+from app.models import Post, User, Image, Comment, Album, PostAlbum, db
 from .. import helper_functions as hf
 from icecream import ic
 import requests
@@ -36,53 +36,6 @@ def get_all_posts():
         logging.error(f"Error fetching all posts: {e}")
         return jsonify({"error": str(e)}), 500
 
-    # try:
-    #     posts_query = Post.query
-    #     paginated_posts = hf.paginate_query(posts_query, 'posts')
-
-    #     # Add user information to each post
-    #     # for post in paginated_posts['posts']:
-    #     #     user = User.query.get(post['owner_id'])
-    #     #     if user:
-    #     #         post['user_info'] = user.to_dict()
-    #     #     else:
-    #     #         post['user_info'] = None
-
-    #     return jsonify(paginated_posts)
-    # except Exception as e:
-    #     logging.error(f"Error fetching all posts: {e}")
-    #     return jsonify({"error": str(e)}), 500
-
-# ***************************************************************
-# Endpoint to Get All Posts Images
-# ***************************************************************
-# @post_routes.route('/all/images')
-# def get_all_posts_images():
-#     try:
-#         posts_query = Post.query
-#         paginated_posts = hf.paginate_query(posts_query, 'posts')
-
-#         simplified_posts_data = []
-#         for post in paginated_posts['posts']:
-#             images = Image.query.filter(Image.post_id == post['id']).all()
-#             for image in images:
-#                 simplified_posts_data.append({
-#                     'post_id': post['id'],
-#                     'owner_id': post['owner_id'],
-#                     'image_url': image.url
-#                 })
-
-
-#         return jsonify({
-#             'posts': simplified_posts_data,
-#             'total_items': paginated_posts['total_items'],
-#             'total_pages': paginated_posts['total_pages'],
-#             'current_page': paginated_posts['current_page']
-#         })
-#     except Exception as e:
-#         logging.error(f"Error fetching all posts: {e}")
-#         return jsonify({"error": str(e)}), 500
-
 # ***************************************************************
 # Endpoint to Get Posts of Current User
 # ***************************************************************
@@ -111,27 +64,6 @@ def get_posts_of_current_user():
 # ***************************************************************
 # Endpoint to Get Posts by User ID
 # ***************************************************************
-# @post_routes.route('/user/<int:user_id>')
-# def get_posts_by_user_id(user_id):
-#     try:
-#         user = User.query.get(user_id)
-#         if not user:
-#             return jsonify({"error": "User not found."}), 404
-
-#         posts_query = Post.query.filter(Post.owner_id == user_id)
-#         paginated_posts = hf.paginate_query(posts_query, 'user_posts')
-
-#         return jsonify({
-#             "user_posts": [post.to_dict() for post in paginated_posts['user_posts']],
-#             "total_items": paginated_posts['total_items'],
-#             "total_pages": paginated_posts['total_pages'],
-#             "current_page": paginated_posts['current_page']
-#         })
-
-#     except Exception as e:
-#         logging.error(f"Error fetching posts for user (ID: {user_id}): {e}")
-#         return jsonify({"error": "An error occurred while fetching the posts."}), 500
-
 @post_routes.route('/user/<int:user_id>')
 def get_posts_by_user_id(user_id):
     try:
@@ -231,16 +163,18 @@ def create_post():
     """
     try:
         data = request.json
-        title, description, album_id, image_url = data.get('title'), data.get('description', ''), data.get('album_id'), data.get('image_url')
+        title, description,image_url = data.get('title'), data.get('description', ''), data.get('image_url')
 
         if not title or not image_url:
             return jsonify({'error': 'Title and Image URL are required'}), 400
 
+        # Create and commit the Image instance
         image = Image(url=image_url)
         db.session.add(image)
-        db.session.flush()
+        db.session.commit()
 
-        post = Post(owner_id=current_user.id, album_id=album_id, title=title, description=description, image_id=image.id)
+        # Create the Post instance with the image_id
+        post = Post(owner_id=current_user.id, title=title, description=description, image_id=image.id)
         db.session.add(post)
         db.session.commit()
 
@@ -250,55 +184,6 @@ def create_post():
         db.session.rollback()
         print(f"Error in create_post: {e}")
         return jsonify({'error': 'An unexpected error occurred'}), 500
-
-# # ***************************************************************
-# # Endpoint to Create a Post
-# # ***************************************************************
-# @post_routes.route('', methods=["POST"])
-# @login_required
-# def create_post():
-#     """
-#     Create a new post. Only accessible by authenticated users.
-#     Returns:
-#         Response: A JSON object with the newly created post details or an error message.
-#     """
-#     try:
-#         data = request.json
-#         title = data.get('title')
-#         description = data.get('description', '')
-#         album_id = data.get('album_id')
-#         image_url = data.get('image_url')
-
-
-#         if not title or not image_url:
-#             return jsonify({'error': 'Title and Image URL are required'}), 400
-
-#         # Create the Post
-#         post = Post(
-#             owner_id=current_user.id,
-#             album_id=album_id if album_id else None,
-#             title=title,
-#             description=description
-#         )
-
-#         db.session.add(post)
-#         db.session.commit()
-
-#         # Create the Image
-#         image = Image(
-#             post_id=post.id,
-#             url=image_url
-#         )
-
-#         db.session.add(image)
-#         db.session.commit()
-
-#         return jsonify(post.to_dict()), 201
-
-#     except Exception as e:
-#         db.session.rollback()
-#         print(f"Error in create_post: {e}")
-#         return jsonify({'error': 'An unexpected error occurred'}), 500
 
 # ***************************************************************
 # Endpoint to Edit a Post
@@ -340,6 +225,194 @@ def update_post(id):
         logging.error(f"Error updating post (ID: {id}): {e}")
         db.session.rollback()
         return jsonify({"error": "An error occurred while updating the post."}), 500
+
+# ***************************************************************
+# Endpoint to Add a Post to an Album
+# ***************************************************************
+# @post_routes.route('/<int:post_id>/add-to-album/<int:album_id>', methods=["PUT"])
+# @login_required
+# def add_post_to_album(post_id, album_id):
+#     """
+#     Add a post to an album. Accessible only by the post owner.
+#     Parameters:
+#         - post_id (int): The ID of the post to add to the album.
+#         - album_id (int): The ID of the album to add the post to.
+#     Returns:
+#         Response: A JSON object with the updated post or an error message.
+#     """
+#     try:
+#         post = Post.query.get(post_id)
+#         if not post or post.owner_id != current_user.id:
+#             return jsonify({"error": "Post not found or unauthorized"}), 404
+
+#         album = Album.query.get(album_id)
+#         if not album or album.user_id != current_user.id:
+#             return jsonify({"error": "Album not found or unauthorized"}), 404
+
+#         post.album_id = album_id
+#         db.session.commit()
+
+#         return jsonify(post.to_dict())
+#     except Exception as e:
+#         logging.error(f"Error adding post (ID: {post_id}) to album (ID: {album_id}): {e}")
+#         db.session.rollback()
+#         return jsonify({"error": "An error occurred while adding the post to the album."}), 500
+@post_routes.route('/<int:post_id>/add-to-album/<int:album_id>', methods=["PUT"])
+@login_required
+def add_post_to_album(post_id, album_id):
+    try:
+        post = Post.query.get(post_id)
+        if not post or post.owner_id != current_user.id:
+            return jsonify({"error": "Post not found or unauthorized"}), 404
+
+        album = Album.query.get(album_id)
+        if not album or album.user_id != current_user.id:
+            return jsonify({"error": "Album not found or unauthorized"}), 404
+
+        # Create a new PostAlbum association
+        new_post_album = PostAlbum(post_id=post_id, album_id=album_id)
+        db.session.add(new_post_album)
+        db.session.commit()
+
+        return jsonify(post.to_dict())
+    except Exception as e:
+        logging.error(f"Error adding post (ID: {post_id}) to album (ID: {album_id}): {e}")
+        db.session.rollback()
+        return jsonify({"error": "An error occurred while adding the post to the album."}), 500
+
+
+# ***************************************************************
+# Endpoint to Remove a Post from an Album
+# ***************************************************************
+# @post_routes.route('/<int:post_id>/remove-from-album/<int:album_id>', methods=["PUT"])
+# @login_required
+# def remove_post_from_album(post_id, album_id):
+#     """
+#     Remove a post from an album. Accessible only by the post owner.
+#     Parameters:
+#         - post_id (int): The ID of the post to remove from the album.
+#         - album_id (int): The ID of the album to remove the post from.
+#     Returns:
+#         Response: A JSON object with the updated post or an error message.
+#     """
+#     try:
+#         post = Post.query.get(post_id)
+#         if not post or post.owner_id != current_user.id:
+#             return jsonify({"error": "Post not found or unauthorized"}), 404
+
+#         if post.album_id != album_id:
+#             return jsonify({"error": "Post not in specified album"}), 400
+
+#         post.album_id = None
+#         db.session.commit()
+
+#         return jsonify(post.to_dict())
+#     except Exception as e:
+#         logging.error(f"Error removing post (ID: {post_id}) from album (ID: {album_id}): {e}")
+#         db.session.rollback()
+#         return jsonify({"error": "An error occurred while removing the post from the album."}), 500
+
+@post_routes.route('/<int:post_id>/remove-from-album/<int:album_id>', methods=["PUT"])
+@login_required
+def remove_post_from_album(post_id, album_id):
+    try:
+        post_album = PostAlbum.query.filter_by(post_id=post_id, album_id=album_id).first()
+        if not post_album:
+            return jsonify({"error": "Post not found in specified album"}), 404
+
+        # Fetch the post directly using post_id
+        post = Post.query.get(post_id)
+        if not post or post.owner_id != current_user.id:
+            return jsonify({"error": "Unauthorized access"}), 403
+
+        db.session.delete(post_album)
+        db.session.commit()
+
+        return jsonify({"message": "Post removed from album successfully"})
+    except Exception as e:
+        logging.error(f"Error removing post (ID: {post_id}) from album (ID: {album_id}): {e}")
+        db.session.rollback()
+        return jsonify({"error": "An error occurred while removing the post from the album."}), 500
+
+
+
+# ***************************************************************
+# Endpoint to Get a Post Not in Album for the Logged-In User
+# ***************************************************************
+# @post_routes.route('/user/<int:user_id>/not-in-album')
+# @login_required
+# def get_user_posts_not_in_album(user_id):
+#     if current_user.id != user_id:
+#         return jsonify({"error": "Unauthorized access"}), 403
+
+#     try:
+#         user = current_user
+#         user_info = user.to_dict()
+
+#         posts_query = Post.query.filter(Post.owner_id == user_id, Post.album_id.is_(None))
+
+#         image_ids = [post.image_id for post in posts_query]
+#         images = Image.query.filter(Image.id.in_(image_ids)).all()
+#         image_url_map = {image.id: image.url for image in images}
+
+#         def process_post(post, _):
+#             post_dict = post.to_dict()
+#             post_dict['image_url'] = image_url_map.get(post.image_id)
+#             return post_dict
+
+#         paginated_posts = hf.paginate_query(
+#             posts_query,
+#             'unassigned_user_posts',
+#             process_item_callback=process_post
+#         )
+
+#         return jsonify({
+#             "user_info": user_info,
+#             "user_posts": paginated_posts['unassigned_user_posts'],
+#             "total_items": paginated_posts['total_items'],
+#             "total_pages": paginated_posts['total_pages'],
+#             "current_page": paginated_posts['current_page']
+#         })
+
+#     except Exception as e:
+#         logging.error(f"Error fetching unassigned posts for user (ID: {user_id}): {e}")
+#         return jsonify({"error": "An error occurred while fetching the unassigned posts."}), 500
+@post_routes.route('/user/<int:user_id>/not-in-album')
+@login_required
+def get_user_posts_not_in_album(user_id):
+    if current_user.id != user_id:
+        return jsonify({"error": "Unauthorized access"}), 403
+
+    try:
+        posts_query = Post.query.join(PostAlbum, Post.id == PostAlbum.post_id, isouter=True)\
+                                .filter(Post.owner_id == user_id, PostAlbum.id.is_(None))
+
+        image_ids = [post.image_id for post in posts_query]
+        images = Image.query.filter(Image.id.in_(image_ids)).all()
+        image_url_map = {image.id: image.url for image in images}
+
+        def process_post(post, _):
+            post_dict = post.to_dict()
+            post_dict['image_url'] = image_url_map.get(post.image_id)
+            return post_dict
+
+        paginated_posts = hf.paginate_query(
+            posts_query,
+            'unassigned_user_posts',
+            process_item_callback=process_post
+        )
+
+        return jsonify({
+            "user_info": current_user.to_dict(),
+            "user_posts": paginated_posts['unassigned_user_posts'],
+            "total_items": paginated_posts['total_items'],
+            "total_pages": paginated_posts['total_pages'],
+            "current_page": paginated_posts['current_page']
+        })
+
+    except Exception as e:
+        logging.error(f"Error fetching unassigned posts for user (ID: {user_id}): {e}")
+        return jsonify({"error": "An error occurred while fetching the unassigned posts."}), 500
 
 
 # ***************************************************************

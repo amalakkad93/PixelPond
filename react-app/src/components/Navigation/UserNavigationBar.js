@@ -1,10 +1,18 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlusSquare } from '@fortawesome/free-solid-svg-icons';
-import { selectAlbumImages, selectAlbumUserInfo, selectSessionUser, selectCurrentPage, } from "../../store/selectors";
-import { thunkGetPostsByUserId,  thunkGetLoggedInUserPosts } from "../../store/posts";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlusSquare } from "@fortawesome/free-solid-svg-icons";
+import {
+  selectAlbumImages,
+  selectAlbumUserInfo,
+  selectSessionUser,
+  selectCurrentPage,
+} from "../../store/selectors";
+import {
+  thunkGetPostsByUserId,
+  thunkGetLoggedInUserPosts,
+} from "../../store/posts";
 import OpenModalButton from "../Modals/OpenModalButton";
 import CreatePostForm from "../Posts/PostForms/CreatePostForm";
 import "./UserNavigationBar.css";
@@ -15,7 +23,7 @@ const UserNavigationBar = ({
   albumCount,
   onAboutClick,
   showAbout,
-  currentPage
+  currentPage,
 }) => {
   const location = useLocation();
   const dispatch = useDispatch();
@@ -26,11 +34,27 @@ const UserNavigationBar = ({
   return (
     <div className="user-navigation-bar">
       <div className="navigation-links">
-        <a href="#!" onClick={onAboutClick} className={showAbout ? "active" : ""}>About</a>
-        <a href={`/posts/users/${id}`} className={isActive(`/posts/users/${id}`) ? "active" : ""}>Photos {photoCount}</a>
-        <a href={`/albums/users/${id}`} className={isActive(`/albums/users/${id}`) ? "active" : ""}>Albums {albumCount}</a>
+        <a
+          href="#!"
+          onClick={onAboutClick}
+          className={showAbout ? "active" : ""}
+        >
+          About
+        </a>
+        <a
+          href={`/posts/users/${id}`}
+          className={isActive(`/posts/users/${id}`) ? "active" : ""}
+        >
+          Photos {photoCount}
+        </a>
+        <a
+          href={`/albums/users/${id}`}
+          className={isActive(`/albums/users/${id}`) ? "active" : ""}
+        >
+          Albums {albumCount}
+        </a>
         {/* {location.pathname === "/owner/photostream" && ( */}
-          <OpenModalButton
+        <OpenModalButton
           className="create-post-button"
           buttonText={<FontAwesomeIcon icon={faPlusSquare} />}
           modalComponent={
@@ -42,7 +66,7 @@ const UserNavigationBar = ({
           }
         />
 
-      {/* )} */}
+        {/* )} */}
       </div>
     </div>
   );

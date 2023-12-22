@@ -1,73 +1,103 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getPresignedUrl, deleteImage } from '../../store/aws';
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getPresignedUrl, deleteImage } from "../../store/aws";
 
-import './AWSImageUploader.css';
+import "./AWSImageUploader.css";
 
-
-const AWSImageUploader = ({ onUploadSuccess, onUploadFailure, initiateUpload }) => {
+const AWSImageUploader =  ({ setUploadImage }) => {
   const dispatch = useDispatch();
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [preview, setPreview] = useState(null);
 
-  const handleUpload = (uploadFile) => {
-    setUploading(true);
-    setProgress(0);
+  const [fileForUpload, setFileForUpload] = useState(null);
 
-    dispatch(getPresignedUrl(uploadFile.name, uploadFile.type)).then(presignedData => {
-      if (!presignedData) {
-        setUploading(false);
-        onUploadFailure("Failed to get presigned URL");
-        return;
-      }
 
-      const xhr = new XMLHttpRequest();
-      xhr.open("PUT", presignedData.presignedUrl);
+  // const uploadImage = async () => {
+  //   if (!file) {
+  //     throw new Error("No file selected for upload.");
+  //   }
 
-      xhr.upload.onprogress = (event) => {
-        if (event.lengthComputable) {
-          const percentComplete = Math.round((event.loaded / event.total) * 100);
-          setProgress(percentComplete);
-        }
+  //   setUploading(true);
+  //   setProgress(0);
+
+  //   try {
+  //     const presignedData = await dispatch(getPresignedUrl(file.name, file.type));
+  //     if (!presignedData) throw new Error("Failed to get presigned URL");
+
+  //     const xhr = new XMLHttpRequest();
+  //     xhr.open("PUT", presignedData.presignedUrl);
+  //     xhr.setRequestHeader("Content-Type", file.type);
+
+  //     return new Promise((resolve, reject) => {
+  //       xhr.upload.onprogress = (event) => {
+  //         if (event.lengthComputable) {
+  //           const percentComplete = Math.round((event.loaded / event.total) * 100);
+  //           setProgress(percentComplete);
+  //         }
+  //       };
+
+  //       xhr.onload = () => {
+  //         if (xhr.status === 200) {
+  //           setUploading(false);
+  //           resolve(presignedData.fileUrl + "?t=" + new Date().getTime());
+  //         } else {
+  //           setUploading(false);
+  //           reject("Failed to upload image");
+  //         }
+  //       };
+
+  //       xhr.onerror = () => {
+  //         setUploading(false);
+  //         reject("Error during the upload");
+  //       };
+
+  //       xhr.send(file);
+  //     });
+  //   } catch (error) {
+  //     setUploading(false);
+  //     throw error;
+  //   }
+  // };
+
+
+  useEffect(() => {
+    if (file) {
+      const upload = async () => {
+        const presignedData = await dispatch(getPresignedUrl(file.name, file.type));
+        if (!presignedData) throw new Error("Failed to get presigned URL");
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("PUT", presignedData.presignedUrl);
+        xhr.setRequestHeader("Content-Type", file.type);
+        xhr.send(file);
+
+        return new Promise((resolve, reject) => {
+          xhr.onload = () => {
+            if (xhr.status === 200) {
+              resolve(presignedData.fileUrl + "?t=" + new Date().getTime());
+            } else {
+              reject("Failed to upload image");
+            }
+          };
+          xhr.onerror = () => reject("Error during the upload");
+        });
       };
 
-      xhr.onload = () => {
-        if (xhr.status === 200) {
-          const newImageUrlWithCacheBust = presignedData.fileUrl + "?t=" + new Date().getTime();
-          onUploadSuccess(newImageUrlWithCacheBust);
-        } else {
-          onUploadFailure("Failed to upload image");
-        }
-        setUploading(false);
-      };
 
-      xhr.onerror = () => {
-        onUploadFailure("Error during the upload");
-        setUploading(false);
-      };
-
-      xhr.setRequestHeader("Content-Type", uploadFile.type);
-      xhr.send(uploadFile);
-    }).catch(error => {
-      setUploading(false);
-      onUploadFailure(error.message);
-    });
-  };
+      setUploadImage(() => upload);
+    }
+  }, [file, dispatch, setUploadImage]);
 
   const handleFileChange = (e) => {
     const newFile = e.target.files[0];
     if (newFile) {
       setFile(newFile);
-      handleUpload(newFile);
+      setPreview(URL.createObjectURL(newFile));
+      setFileForUpload(newFile);
     }
   };
-
-  useEffect(() => {
-    if (initiateUpload && file) {
-      handleUpload(file);
-    }
-  }, [initiateUpload, file]);
 
   return (
     <div>
@@ -79,6 +109,9 @@ const AWSImageUploader = ({ onUploadSuccess, onUploadFailure, initiateUpload }) 
               {progress}%
             </div>
           </div>
+          <div className="profile-preview">
+            {preview && <img src={preview} alt="Profile Preview" />}
+          </div>
         </div>
       )}
     </div>
@@ -87,52 +120,72 @@ const AWSImageUploader = ({ onUploadSuccess, onUploadFailure, initiateUpload }) 
 
 export default AWSImageUploader;
 
+// const AWSImageUploader = ({
+//   onUploadSuccess,
+//   onUploadFailure,
+//   initiateUpload,
+// }) => {
+  // const dispatch = useDispatch();
+  // const [file, setFile] = useState(null);
+  // const [uploading, setUploading] = useState(false);
+  // const [progress, setProgress] = useState(0);
+  // const [preview, setPreview] = useState(null);
 
-// import React, { useState, useEffect } from 'react';
-// import { useDispatch, useSelector } from 'react-redux';
-// import { getPresignedUrl, deleteImage } from '../../store/aws';
+//   const handleUpload = (uploadFile) => {
+//     setUploading(true);
+//     setProgress(0);
 
+//     dispatch(getPresignedUrl(uploadFile.name, uploadFile.type))
+//       .then((presignedData) => {
+//         if (!presignedData) {
+//           setUploading(false);
+//           onUploadFailure("Failed to get presigned URL");
+//           return;
+//         }
 
+//         const xhr = new XMLHttpRequest();
+//         xhr.open("PUT", presignedData.presignedUrl);
 
-// const AWSImageUploader = ({ onUploadSuccess, onUploadFailure, initiateUpload }) => {
-//   const dispatch = useDispatch();
-//   const [file, setFile] = useState(null);
-//   const handleUpload = async (uploadFile) => {
-//     if (!uploadFile) {
-//       onUploadFailure("No file selected");
-//       return;
-//     }
+//         xhr.upload.onprogress = (event) => {
+//           if (event.lengthComputable) {
+//             const percentComplete = Math.round(
+//               (event.loaded / event.total) * 100
+//             );
+//             setProgress(percentComplete);
+//           }
+//         };
 
-//     try {
-//       const presignedData = await dispatch(getPresignedUrl(uploadFile.name, uploadFile.type));
-//       if (!presignedData) {
-//         throw new Error("Failed to get presigned URL");
-//       }
+//         xhr.onload = () => {
+//           if (xhr.status === 200) {
+//             const newImageUrlWithCacheBust =
+//               presignedData.fileUrl + "?t=" + new Date().getTime();
+//             onUploadSuccess(newImageUrlWithCacheBust);
+//           } else {
+//             onUploadFailure("Failed to upload image");
+//           }
+//           setUploading(false);
+//         };
 
-//       const uploadResult = await fetch(presignedData.presignedUrl, {
-//         method: "PUT",
-//         headers: { "Content-Type": uploadFile.type },
-//         body: uploadFile,
+//         xhr.onerror = () => {
+//           onUploadFailure("Error during the upload");
+//           setUploading(false);
+//         };
+
+//         xhr.setRequestHeader("Content-Type", uploadFile.type);
+//         xhr.send(uploadFile);
+//       })
+//       .catch((error) => {
+//         setUploading(false);
+//         onUploadFailure(error.message);
 //       });
-
-//       if (uploadResult.status === 200) {
-//         // onUploadSuccess(presignedData.fileUrl);
-//         const newImageUrlWithCacheBust = presignedData.fileUrl + "?t=" + new Date().getTime();
-//         onUploadSuccess(newImageUrlWithCacheBust);
-//       } else {
-//         onUploadFailure("Failed to upload image");
-//       }
-//     } catch (error) {
-//       onUploadFailure(error.message);
-//     }
 //   };
 
-//   // Function to handle file selection
-//   const handleFileChange = async (e) => {
+//   const handleFileChange = (e) => {
 //     const newFile = e.target.files[0];
 //     if (newFile) {
 //       setFile(newFile);
-//       await handleUpload(newFile);
+//       setPreview(URL.createObjectURL(newFile));
+//       handleUpload(newFile);
 //     }
 //   };
 
@@ -145,6 +198,31 @@ export default AWSImageUploader;
 //   return (
 //     <div>
 //       <input type="file" onChange={handleFileChange} />
+//       {uploading && (
+//         <div className="progress-container">
+//           <div className="progress-bar">
+//             <div
+//               className="progress-bar-inner"
+//               style={{ width: `${progress}%` }}
+//             >
+//               {progress}%
+//             </div>
+//           </div>
+//           <div className="profilePreview">
+//             {preview ? (
+//               <img
+//                 src={preview}
+//                 alt="Profile Preview"
+//                 onClick={() => document.getElementById("fileInput").click()}
+//               />
+//             ) : (
+//               <div className="profilePreviewText">
+//                 Click to upload profile picture
+//               </div>
+//             )}
+//           </div>
+//         </div>
+//       )}
 //     </div>
 //   );
 // };

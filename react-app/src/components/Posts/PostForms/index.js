@@ -28,71 +28,81 @@ const PostForm = ({ postId, formType, onPostCreated, fetchPostDetailData }) => {
   const currentPage = useSelector(selectCurrentPage);
   const userAlbums = useSelector(selectUserAlbums);
   const sessionUser = useSelector(selectSessionUser);
-  const uploadedImageUrl = useSelector(selectUploadedImageUrl);
+  // const uploadedImageUrl = useSelector(selectUploadedImageUrl);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [uploadError, setUploadError] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [file, setFile] = useState(null);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState(null);
 
-  useEffect(() => {
-    const fetchAndSetPostData = async () => {
-      if (sessionUser && formType === "Edit") {
-        const fetchedPost = await dispatch(thunkGetPostDetails(postId));
-        if (formType === "Edit" && fetchedPost) {
-          setTitle(fetchedPost.title);
-          setDescription(fetchedPost.description);
-          dispatch(setUploadedImageUrl(fetchedPost.image));
-        }
-      }
-    };
-
-    fetchAndSetPostData();
-  }, [dispatch, postId, sessionUser, formType]);
+  const [uploadImage, setUploadImage] = useState(null);
 
 
-  const createOrUpdatePost = async (imageUrl) => {
+
+      useEffect(() => {
+        const fetchAndSetPostData = async () => {
+          if (sessionUser && formType === "Edit" && postId) {
+            try {
+              const fetchedPost = await dispatch(thunkGetPostDetails(postId));
+              if (fetchedPost) {
+                setTitle(fetchedPost.title);
+                setDescription(fetchedPost.description);
+                setUploadedImageUrl(fetchedPost.image);
+              }
+            } catch (error) {
+              console.error("Error fetching post details: ", error);
+            }
+          }
+        };
+
+        fetchAndSetPostData();
+      }, [dispatch, postId, sessionUser, formType]);
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setIsSubmitting(true);
-    const finalImageUrl = imageUrl || uploadedImageUrl;
-    const postData = { title, description, image_url: finalImageUrl };
+
     try {
-      let postResponse;
-      if (formType === "Create") {
-        postResponse = await dispatch(thunkCreatePost(postData));
-      } else if (formType === "Edit") {
-        postResponse = await dispatch(thunkUpdatePost(postId, postData));
+      let uploadedImageUrl = null;
+      if (uploadImage) {
+        uploadedImageUrl = await uploadImage();
       }
 
-      if (postResponse && postResponse.type === "SUCCESS") {
+      const postData = { title, description, image_url: uploadedImageUrl };
+      let response;
+      if (formType === "Create") {
+        response = await dispatch(thunkCreatePost(postData));
+      } else {
+        response = await dispatch(thunkUpdatePost(postId, postData));
+      }
+
+      if (response && response.data && response.data.id) {
         resetFormFields();
         closeModal();
+        if (onPostCreated) onPostCreated(response.data);
       } else {
-        setUploadError("Failed to create/update post");
+        throw new Error("Failed to create/update post.");
       }
     } catch (error) {
-      setUploadError("An error occurred");
-      console.error(error);
+      console.error("Error in handleSubmit: ", error);
+      setUploadError(error.message || "An unexpected error occurred");
+    } finally {
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
   };
 
   const resetFormFields = () => {
     setTitle("");
     setDescription("");
-    dispatch(setUploadedImageUrl(""));
+    setUploadedImageUrl(null);
     setUploadError(null);
     setIsUploading(false);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (formType === "Create" && !uploadedImageUrl) {
-        setUploadError("Please upload an image first.");
-        return;
-      }
-      await createOrUpdatePost(uploadedImageUrl);
-  };
 
   return (
     <form className="post-form" onSubmit={handleSubmit}>
@@ -115,16 +125,12 @@ const PostForm = ({ postId, formType, onPostCreated, fetchPostDetailData }) => {
         ></textarea>
       </div>
 
-      <div className="form-group">
-        <AWSImageUploader
-          onUploadSuccess={(newImageUrl) => dispatch(setUploadedImageUrl(newImageUrl))}
-          onUploadFailure={(errorMessage) => setUploadError(errorMessage)}
-          initiateUpload={isUploading}
-        />
+        <div className="form-group">
+        <AWSImageUploader setUploadImage={setUploadImage} />
       </div>
-
-      {uploadError && <div className="upload-error">{uploadError}</div>}
-      <button className="submit-button" type="submit" disabled={isSubmitting}>
+      {uploadError && <div className="error-message">{uploadError}</div>}
+      <button type="submit" disabled={isSubmitting}>
+      {/* <button type="submit" > */}
         {formType === "Create" ? "Create Post" : "Update Post"}
       </button>
 

@@ -1,18 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import Masonry from "react-masonry-css";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import Pagination from "../../Pagination";
 import Spinner from "../../Spinner";
-import { thunkGetAllPostsImages, clearPostsImageState, clearPostsData } from "../../../store/posts";
+import {thunkGetAllPosts,} from "../../../store/posts";
 import { setLoading, setError, clearUIState } from "../../../store/ui";
-import {
-  selectLoading,
-  selectAllPostsImages,
-  selectTotalPages,
-  selectCurrentPage,
-} from "../../../store/selectors";
+import { selectLoading, selectAllPostsImages,} from "../../../store/selectors";
 import "./Explore.css";
 
 const ImageItem = ({ imageUrl, postId, onClick }) => (
@@ -26,17 +21,25 @@ const Explore = () => {
   const history = useHistory();
   const loading = useSelector(selectLoading);
   const postsImages = useSelector(selectAllPostsImages);
-  console.log("🚀 ~ file: index.js:30 ~ Explore ~ postsImages:", postsImages);
-  const currentPage = useSelector(selectCurrentPage);
-  const totalPages = useSelector(selectTotalPages);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const perPage = 10;
 
+  const fetchData = async (page) => {
+    dispatch(setLoading(true));
+    const response = await dispatch(thunkGetAllPosts(page, perPage));
+
+    if (response) {
+      setCurrentPage(response.current_page);
+      setTotalPages(response.total_pages);
+    }
+
+    dispatch(setLoading(false));
+  };
+
   useEffect(() => {
-
-    dispatch(clearPostsData('allPostsImages'));
-
-    dispatch(thunkGetAllPostsImages(currentPage, perPage));
-  }, [dispatch, currentPage, perPage]);
+    fetchData(currentPage);
+  }, [currentPage, dispatch]);
 
   const breakpointColumnsObj = {
     default: 4,
@@ -72,9 +75,7 @@ const Explore = () => {
         totalItems={totalPages * perPage}
         itemsPerPage={perPage}
         currentPage={currentPage}
-        onPageChange={(newPage) =>
-          dispatch(thunkGetAllPostsImages(newPage, perPage))
-        }
+        onPageChange={(newPage) => fetchData(newPage)}
       />
     </div>
   );
