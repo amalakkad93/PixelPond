@@ -1,4 +1,4 @@
-import React, { useEffect, useState, memo } from "react";
+import React, { useEffect, useState, useCallback, useRef, memo } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useParams, useHistory, useLocation, Link } from "react-router-dom";
 import Masonry from "react-masonry-css";
@@ -14,7 +14,7 @@ import {
 } from "../../store/posts";
 import { setLoading, setError, clearUIState } from "../../store/ui";
 import {
-  selectAlbumImages,
+  selectAlbumDetails,
   selectUserPosts,
   selectPostById,
   selectUserPostsWithNoAlbumId,
@@ -23,200 +23,170 @@ import {
   selectLoading,
   selectSessionUser,
   selectAlbumInfo,
-
-
 } from "../../store/selectors";
 import defult_banner_image from "../../assets/images/defult_banner_image.png";
 import OpenModalButton from "../Modals/OpenModalButton";
 import CreatePostForm from "../Posts/PostForms/CreatePostForm";
 import UserProfileManager from "../Users/UserProfile/UserProfileManager";
-import AddToAlbumModal from "../Albums/AddToAlbumModal"
-import ImageItem from "./ImageItem";
+import AddToAlbumModal from "../Albums/AddToAlbumModal";
+import ImageItem from "./ImageItem/ImageItem";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUserCircle, faEdit, faPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faUserCircle,
+  faEdit,
+  faPlus,
+} from "@fortawesome/free-solid-svg-icons";
 import "./ImageDisplay.css";
+import ImageGrid from "./ImageGrid/ImageGrid";
 
-
-const ImageDisplay = ({ mode, albumId }) => {
+const ImageDisplay = memo(({ mode, albumId }) => {
+  // Hooks for accessing Redux state and React Router functionality
   const dispatch = useDispatch();
   const history = useHistory();
-  const location = useLocation();
-
   const { userId } = useParams();
+
+  // Selectors to retrieve data from the Redux store
   const userInfo = useSelector(selectUserInfo);
   const loading = useSelector(selectLoading);
-  const albumImages = useSelector((state) => selectAlbumImages(state, albumId));
+
+  // const albumImages = useSelector((state) => selectAlbumDetails(state, albumId));
+  const { images: albumImages, title: albumTitle } = useSelector((state) =>
+    selectAlbumDetails(state, albumId)
+  );
   const sessionUser = useSelector(selectSessionUser);
   const userPosts = useSelector(selectUserPosts);
   const userPostsIds = useSelector(selectPostById);
-
-  const userPostsWithNoAlbumId = useSelector(selectUserPostsWithNoAlbumId);
-  const userPostsWithNoAlbumIdIds = useSelector(selectPostWithNoAlbumIdById);
-
   const albumInfo = useSelector((state) => selectAlbumInfo(state, albumId));
 
+  // Ref and state hooks for managing component state and lifecycle
+  const isMounted = useRef(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [showAbout, setShowAbout] = useState(false);
   const [isEditingProfilePic, setIsEditingProfilePic] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
   const perPage = 10;
 
-  const idToFetch =
-    mode === "photoStream"
-      ? userId
-      : mode === "ownerPhotoStream"
-      ? sessionUser?.id
-      : mode === "albumImages"
-      ? albumInfo?.userId
-      : null;
+  // Function to toggle the 'about' section
+  const toggleAbout = useCallback(() => {
+    setShowAbout((prevShowAbout) => !prevShowAbout);
+  }, []);
 
-  console.log(
-    "**********************************sessionUser.id",
-    sessionUser?.id
+  // Function to fetch data based on the current mode and page
+  const fetchData = useCallback(
+    async (page) => {
+      setIsLoading(true);
+      try {
+        dispatch(setLoading(true));
+
+        // Determine the user ID based on the mode
+        const selectedUserId =
+          mode === "ownerPhotoStream" || mode === "addPostToAnAlbum"
+            ? sessionUser?.id
+            : userId;
+
+        let response;
+
+        switch (mode) {
+          case "albumImages":
+            response = await dispatch(thunkGetAlbumImages(albumId, page, perPage));
+            break;
+
+          case "ownerPhotoStream":
+          case "photoStream":
+          case "addPostToAnAlbum":
+            response = await dispatch(thunkGetPostsByUserId(selectedUserId, page, perPage));
+            break;
+          default:
+            response = null;
+            break;
+        }
+
+        if (response && isMounted.current) {
+          setCurrentPage(response.current_page);
+          setTotalPages(response.total_pages);
+        }
+      } catch (err) {
+        console.error("Fetch Data Error:", err);
+        dispatch(setError("An error occurred"));
+      } finally {
+        if (isMounted.current) {
+          dispatch(setLoading(false));
+          setIsLoading(false);
+        }
+      }
+    },
+    [dispatch, mode, albumId, userId, sessionUser?.id, perPage]
   );
-  const fetchData = async (page) => {
-    try {
-      dispatch(setLoading(true));
-      let response;
-      const targetUserId =
-        location.pathname.includes(`/owner/photostream`) ||
-        location.pathname.includes(`/owner/unassigned-posts`)
-          ? sessionUser?.id
-          : userId;
 
-      // if (location.pathname.includes(`/albums/${albumId}`)) {
-      if (albumId) {
-        // Fetch album images if an albumId is present
-        response = await dispatch(thunkGetAlbumImages(albumId, page, perPage));
-      } else if (
-        location.pathname.includes(`/users/${userId}`) ||
-        location.pathname.includes(`/owner/photostream`)
-      ) {
-        // Fetch user posts if on a user's photostream
-        response = await dispatch(
-          thunkGetPostsByUserId(targetUserId, page, perPage)
-        );
-      } else if (location.pathname.includes(`/owner/unassigned-posts`)) {
-        // Fetch posts not in any album for the logged-in user
-        // response = await dispatch(
-        //   thunkGetUserPostsNotInAlbum(sessionUser?.id, page, perPage)
-        // );
-        response = await dispatch(
-          thunkGetPostsByUserId(targetUserId, page, perPage)
-        );
-      }
-
-      if (response) {
-        setCurrentPage(response.current_page);
-        setTotalPages(response.total_pages);
-      }
-    } catch (err) {
-      dispatch(setError("An error occurred"));
-    } finally {
-      dispatch(setLoading(false));
-    }
-  };
-
+  // useEffect to fetch data when component mounts or dependencies change
   useEffect(() => {
-    console.log("Album Info:", albumInfo);
     dispatch(clearUIState());
     fetchData(currentPage);
-  }, [
-    dispatch,
-    userId,
-    albumId,
-    currentPage,
-    perPage,
-    location.pathname,
-    mode,
-  ]);
 
+    return () => (isMounted.current = false);
+  }, [dispatch, fetchData, currentPage, mode]);
+
+  // Effect to re-fetch data if the album title changes
+  useEffect(() => {
+    if (mode === "albumImages") {
+      fetchData(currentPage);
+    }
+  }, [albumTitle, fetchData, currentPage, mode]);
 
   if (isLoading) return <Spinner />;
 
-  const toggleAbout = () => setShowAbout(!showAbout);
-
-  const breakpointColumnsObj = {
-    default: 4,
-    1100: 3,
-    700: 2,
-    500: 1,
+  // Helper functions and variables to process and display images
+  const profilePhoto = userInfo?.profile_picture || null;
+  const userName = `${userInfo?.first_name || ""} ${userInfo?.last_name || ""}`;
+  const aboutMe = userInfo?.about_me || "No about me information available.";
+  const getNavigationUserId = () => {
+    return mode === "ownerPhotoStream" || mode === "addPostToAnAlbum"
+      ? sessionUser?.id
+      : userId;
   };
 
-  let profilePhoto,
-    userName,
-    aboutMe,
-    images,
-    imageLength,
-    displayedImages,
-    navigationUserId;
+  const getImagesAndDisplayedImages = () => {
+    switch (mode) {
+      case "photoStream":
+      case "ownerPhotoStream":
+      case "addPostToAnAlbum":
+        return {
+          images: userPostsIds
+            .map((id) => userPosts[id]?.image || userPosts[id]?.image_url)
+            .filter(Boolean),
+          displayedImages: userPostsIds.map((id) => ({
+            ...userPosts[id],
+            image_url: userPosts[id]?.image_url,
+          })),
+        };
+      case "albumImages":
+        return {
+          images: albumImages?.map((image) => image?.url).filter(Boolean),
+          imageLength: albumImages?.length,
+          displayedImages: albumImages?.map((image) => ({
+            image_url: image?.url,
+            imageId: image?.id,
+            post_id: image?.post_id,
+          })),
+        };
+      default:
+        return { images: [], displayedImages: [] };
+    }
+  };
 
-  profilePhoto = userInfo?.profile_picture || null;
-  userName = `${userInfo?.first_name || ""} ${userInfo?.last_name || ""}`;
-  aboutMe = userInfo?.about_me || "No about me information available.";
-
-  switch (mode) {
-    case "photoStream":
-      navigationUserId = userId;
-      images = userPostsIds
-        .map((id) => userPosts[id]?.image_url)
-        .filter(Boolean);
-      imageLength = userPostsIds.length;
-      displayedImages = userPostsIds.map((id) => ({
-        ...userPosts[id],
-        image_url: userPosts[id]?.image_url,
-      }));
-      break;
-
-    case "ownerPhotoStream":
-      navigationUserId = sessionUser?.id;
-      images = userPostsIds.map((id) => userPosts[id]?.image).filter(Boolean);
-      imageLength = userPosts?.length;
-      displayedImages = userPostsIds.map((id) => userPosts[id]);
-      break;
-
-      case "unassignedPosts":
-      navigationUserId = sessionUser?.id;
-      images = userPostsIds.map((id) => userPosts[id]?.image).filter(Boolean);
-      imageLength = userPosts?.length;
-      displayedImages = userPostsIds.map((id) => userPosts[id]);
-      break;
-
-    // case "unassignedPosts":
-    //   navigationUserId = sessionUser?.id;
-    //   images = userPostsWithNoAlbumIdIds.map((id) => userPostsWithNoAlbumIdIds[id]?.image).filter(Boolean);
-    //   imageLength = userPosts?.length;
-    //   displayedImages = userPostsWithNoAlbumIdIds.map((id) => userPostsWithNoAlbumId[id]);
-    //   break;
-
-    case "albumImages":
-      navigationUserId = albumInfo?.userId;
-      images = albumImages?.map((image) => image?.url).filter(Boolean);
-      imageLength = albumImages?.length;
-      displayedImages = albumImages?.map((image) => ({
-        image_url: image?.url,
-        imageId: image?.id,
-        post_id: image?.post_id,
-      }));
-      break;
-
-    default:
-      break;
-  }
+  // Extracting relevant data for rendering
+  const navigationUserId = getNavigationUserId();
+  const { images, imageLength, displayedImages } =
+    getImagesAndDisplayedImages();
 
   const noContentMessage =
-    mode === "ownerPhotoStream" && displayedImages?.length === 0;
-
-  console.log(
-    "**********************************displayedImages",
-    displayedImages
-  );
-
+    (mode === "ownerPhotoStream" || mode === "addPostToAnAlbum") &&
+    displayedImages?.length === 0;
 
   return (
     <div>
+      {/* Render logic based on loading state, mode, and data */}
       {loading ? (
         <Spinner />
       ) : (
@@ -328,27 +298,13 @@ const ImageDisplay = ({ mode, albumId }) => {
               </div>
             )}
 
-            {displayedImages && displayedImages?.length > 0 && (
-              <>
-                <Masonry
-                  breakpointCols={breakpointColumnsObj}
-                  className="photo-grid"
-                  columnClassName="photo-grid_column"
-                >
-                  {displayedImages.map((post) => (
-                    <ImageItem
-                      key={post?.id}
-                      imageUrl={post?.image_url}
-                      postId={post?.id || post?.post_id}
-                      onClick={() => history.push(`/posts/${post?.id || post?.post_id}`)}
-                      isUnassignedMode={mode === "unassignedPosts"}
-
-                      showRemoveIcon={sessionUser?.id === albumInfo?.userId && mode === "albumImages"}
-                    />
-
-                  ))}
-                </Masonry>
-              </>
+            {displayedImages && displayedImages.length > 0 && (
+              <ImageGrid
+                displayedImages={displayedImages}
+                mode={mode}
+                albumInfo={albumInfo}
+                sessionUser={sessionUser}
+              />
             )}
             {/* Pagination */}
             <Pagination
@@ -362,6 +318,6 @@ const ImageDisplay = ({ mode, albumId }) => {
       )}
     </div>
   );
-};
+});
 
 export default ImageDisplay;

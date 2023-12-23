@@ -60,13 +60,13 @@
 .no-albums-message p {
   margin: 0;
 }
-.unassigned-posts-button-container {
+.add-posts-to-an-album-button-container {
   margin-top: 20px;
   text-align: center;
 }
 
-.unassigned-posts-button {
-  background-color: #4CAF50; 
+.add-posts-to-an-album-button {
+  background-color: #4CAF50;
   color: white;
   padding: 10px 20px;
   border: none;
@@ -79,15 +79,15 @@
   transition: background-color 0.3s;
 }
 
-.unassigned-posts-button:hover {
+.add-posts-to-an-album-button:hover {
   background-color: #45a049;
 }
 
-.unassigned-posts-button span {
+.add-posts-to-an-album-button span {
   margin-left: 8px;
 }
 
-.unassigned-posts-button svg {
+.add-posts-to-an-album-button svg {
   font-size: 20px;
 }
 

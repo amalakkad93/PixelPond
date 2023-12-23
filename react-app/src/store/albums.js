@@ -19,13 +19,14 @@ export const actionGetAlbums = (albums) => ({
   albums,
 });
 
-export const actionGetAlbumImages = (albumId, imagesData, userId) => {
+export const actionGetAlbumImages = (albumId, imagesData, userId, albumTitle) => {
   const normalizedImages = normalizeArray(imagesData, "id");
   return {
     type: GET_ALBUM_IMAGES,
-    payload: { albumId, images: normalizedImages, userId },
+    payload: { albumId, images: normalizedImages, userId, albumTitle },
   };
 };
+
 
 export const actionGetAlbumsByUserId = (albums) => {
   const normalizedAlbums = albums.map((album) => {
@@ -79,8 +80,8 @@ export const thunkGetAlbumImages = (albumId, page, perPage) => {
     `/api/albums/${albumId}`,
     [
       (data) => {
-        const { images, user_id } = data;
-        return actionGetAlbumImages(albumId, images, user_id);
+        const { images, user_id, title } = data;
+        return actionGetAlbumImages(albumId, images, user_id, title);
       },
     ],
     page,
@@ -89,7 +90,7 @@ export const thunkGetAlbumImages = (albumId, page, perPage) => {
     {},
     null,
     [false],
-    ["images", "user_id"]
+    ["images", "user_id", "title"]
   );
 };
 
@@ -203,7 +204,7 @@ export const thunkCreateAlbum =
   };
 
 // Thunk to Update an Album
-export const thunkUpdateAlbum = (albumId, updatedData) => async (dispatch) => {
+export const thunkUpdateAlbum = (albumId, updatedData, currentPage, perPage) => async (dispatch) => {
   try {
     const response = await fetch(`/api/albums/${albumId}`, {
       method: "PUT",
@@ -214,6 +215,7 @@ export const thunkUpdateAlbum = (albumId, updatedData) => async (dispatch) => {
     if (response.ok) {
       const updatedAlbum = await response.json();
       dispatch(actionUpdateAlbum(updatedAlbum));
+      // dispatch(actionGetAlbumsByUserId(updatedAlbum.user_id, currentPage, perPage));
       return { type: "SUCCESS", data: updatedAlbum };
     } else {
       const errors = await response.json();
@@ -269,7 +271,7 @@ export default function reducer(state = initialState, action) {
       return newState;
 
     case GET_ALBUM_IMAGES:
-      const { albumId, images, userId } = action.payload;
+      const { albumId, images, userId, albumTitle } = action.payload;
       return {
         ...state,
         singleAlbum: {
@@ -280,6 +282,7 @@ export default function reducer(state = initialState, action) {
               images: images.byId,
               imageIds: images.allIds,
               userId: userId,
+              title: albumTitle,
             },
           },
           allIds: state.singleAlbum.allIds.includes(albumId)
@@ -313,23 +316,7 @@ export default function reducer(state = initialState, action) {
       }
       return newState;
     }
-    // case REMOVE_POST_FROM_ALBUM: {
-    //   const updatedPost = action.updatedPost;
 
-    //   if (updatedPost && updatedPost.album_id) {
-    //     newState = { ...state };
-
-    //     const albumId = updatedPost.album_id;
-    //     if (newState.allAlbums.byId[albumId]) {
-    //       newState.allAlbums.byId[albumId].imageIds = newState.allAlbums.byId[albumId].imageIds.filter(
-    //         (imageId) => imageId !== updatedPost.image_id
-    //       );
-    //     }
-
-    //     return newState;
-    //   }
-    //   return state;
-    // }
     case REMOVE_POST_FROM_ALBUM: {
       const updatedPost = action.updatedPost;
 
@@ -338,14 +325,12 @@ export default function reducer(state = initialState, action) {
 
         const albumId = updatedPost.album_id;
 
-        // Update allAlbums
         if (newState.allAlbums.byId[albumId]) {
           newState.allAlbums.byId[albumId].imageIds = newState.allAlbums.byId[
             albumId
           ].imageIds.filter((imageId) => imageId !== updatedPost.image_id);
         }
 
-        // Update singleAlbum if it's the same album
         if (newState.singleAlbum.byId[albumId]) {
           newState.singleAlbum.byId[albumId].imageIds =
             newState.singleAlbum.byId[albumId].imageIds.filter(
@@ -396,32 +381,6 @@ export default function reducer(state = initialState, action) {
         return newState;
       }
 
-    
-    // case DELETE_ALBUM: {
-    //   const albumId = action.albumId;
-    //   newState = { ...state };
-
-    //   // Delete album from allAlbums
-    //   delete newState.allAlbums.byId[albumId];
-    //   newState.allAlbums.allIds = newState.allAlbums.allIds.filter(
-    //     (id) => id !== albumId
-    //   );
-
-    //   // Delete album from userAlbums if exists
-    //   if (newState.userAlbums.byId[albumId]) {
-    //     delete newState.userAlbums.byId[albumId];
-    //     newState.userAlbums.allIds = newState.userAlbums.allIds.filter(
-    //       (id) => id !== albumId
-    //     );
-    //   }
-
-    //   // Reset singleAlbum if it's the deleted album
-    //   if (newState.singleAlbum.byId[albumId]) {
-    //     newState.singleAlbum = { byId: {}, allIds: [] };
-    //   }
-
-    //   return newState;
-    // }
     case DELETE_ALBUM: {
       const albumId = action.albumId;
       newState = { ...state };

@@ -8,7 +8,7 @@ import {
 import {
   selectUserAlbums,
   selectSessionUser,
-  selectAlbumImages,
+  selectAlbumDetails,
 } from "../../../store/selectors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -25,9 +25,8 @@ const AddToAlbumModal = ({ postId, onClose }) => {
   const userAlbums = useSelector(selectUserAlbums);
   const sessionUser = useSelector(selectSessionUser);
   const [selectedAlbumId, setSelectedAlbumId] = useState("");
-  const albumImages = useSelector((state) =>
-    selectAlbumImages(state, selectedAlbumId)
-  );
+  // const albumImages = useSelector((state) => selectAlbumDetails(state, selectedAlbumId));
+  const { images: albumImages, title: albumTitle } = useSelector((state) => selectAlbumDetails(state, selectedAlbumId));
   const [isImageInAlbum, setIsImageInAlbum] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);

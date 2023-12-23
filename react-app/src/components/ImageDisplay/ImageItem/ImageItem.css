@@ -16,7 +16,7 @@
   position: absolute;
   top: 10px;
   left: 10px;
-  background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent white background */
+  background-color: rgba(255, 255, 255, 0.5);
   border-radius: 50%;
   padding: 10px;
   cursor: pointer;
@@ -26,9 +26,9 @@
 }
 
 .add-to-album-modal-trigger:hover {
-  background-color: rgba(255, 255, 255, 0.7); /* Slightly more opaque on hover */
+  background-color: rgba(255, 255, 255, 0.7);
 }
 
 .add-to-album-icon {
-  color: #4caf50; /* Icon color */
+  color: #4caf50; 
 }

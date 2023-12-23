@@ -27,31 +27,54 @@ function App() {
     <>
       <Navigation isLoaded={isLoaded} />
       {isLoaded && (
-      <>
-        {/* <PageResetter /> */}
-        <Switch>
+        <>
+          {/* <PageResetter /> */}
+          <Switch>
+            <Route path="/login">
+              <LoginFormModal />
+            </Route>
+            <Route path="/signup">
+              <SignupFormModal />
+            </Route>
+            <Route path="/explore">
+              <Explore />
+            </Route>
 
-          <Route path="/login" ><LoginFormModal /></Route>
-          <Route path="/signup"><SignupFormModal /></Route>
-          <Route path="/explore"><Explore /></Route>
+            <Route path="/posts/all">
+              <GetPosts mode="all" />
+            </Route>
+            <Route path="/posts/owner">
+              <GetPosts mode="owner" />
+            </Route>
+            <Route path="/owner/photostream">
+              <ImageDisplay mode="ownerPhotoStream" key="ownerPhotoStream" />
+            </Route>
+            <Route path="/owner/albums">
+              <ImageDisplay mode="ownerAlbumImages" key="ownerAlbumImages" />
+            </Route>
+            <Route path="/owner/posts/add">
+              <ImageDisplay mode="addPostToAnAlbum" key="addPostToAnAlbum" />
+            </Route>
 
-          <Route path="/posts/all"><GetPosts mode="all" /></Route>
-          <Route path="/posts/owner"><GetPosts mode="owner" /></Route>
-          <Route path="/owner/photostream"><ImageDisplay mode="ownerPhotoStream"  /></Route>
-          <Route path="/owner/albums"><ImageDisplay mode="ownerAlbumImages"  /></Route>
-          <Route path="/owner/unassigned-posts"><ImageDisplay mode="unassignedPosts"  /></Route>
+            <Route path="/posts/users/:userId">
+              <ImageDisplay mode="photoStream" key="photoStream" />
+            </Route>
+            <Route path="/users/show">
+              <UserProfile />
+            </Route>
+            <Route path="/posts/:postId">
+              <PostDetail />
+            </Route>
+            <Route path="/albums/users/:userId">
+              <GetAlbums />
+            </Route>
+            <Route path="/albums/:albumId">
+              <ImageDisplay mode="albumImages" key="albumImages" />
+            </Route>
 
-          <Route path="/posts/users/:userId"><ImageDisplay mode="photoStream"  /></Route>
-          <Route path="/users/show"><UserProfile /></Route>
-          <Route path="/posts/:postId"><PostDetail /></Route>
-          <Route path="/albums/users/:userId"><GetAlbums /></Route>
-          <Route path="/albums/:albumId"><ImageDisplay mode="albumImages"/></Route>
-
-          <Route path="*" element={<NotFound />} />
-
-
-        </Switch>
-      </>
+            <Route path="*" element={<NotFound />} />
+          </Switch>
+        </>
       )}
     </>
   );

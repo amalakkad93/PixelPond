@@ -74,18 +74,38 @@ export const selectUserPostImages = (state) => {
 // };
 
 
-export const selectAlbumImages = (state, albumId) => {
-  const album = state.albums?.singleAlbum?.byId?.[albumId];
-  if (!album || !album?.images) return [];
+// export const selectAlbumImages = (state, albumId) => {
+//   const album = state.albums?.singleAlbum?.byId?.[albumId];
+//   if (!album || !album?.images) return [];
 
-  return album.imageIds?.map(id => {
+//   return album.imageIds?.map(id => {
+//     const image = album.images?.[id];
+//     return {
+//       ...image,
+//       post_id: image?.post_id,
+//     };
+//   });
+// };
+
+export const selectAlbumDetails = (state, albumId) => {
+  const album = state.albums?.singleAlbum?.byId?.[albumId];
+  if (!album) return { images: [], title: '' };
+
+  const images = album.imageIds?.map(id => {
     const image = album.images?.[id];
     return {
       ...image,
-      post_id: image?.post_id
+      post_id: image?.post_id,
     };
   });
+
+  return {
+    images: images || [],
+    title: album.title || 'Untitled Album',
+  };
 };
+
+
 
 export const selectAllAlbums = (state) => {
   const { userAlbums } = state?.albums;

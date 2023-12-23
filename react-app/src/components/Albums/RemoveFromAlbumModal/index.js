@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   thunkRemovePostFromAlbum,
@@ -14,7 +14,9 @@ const RemoveFromAlbumModal = ({ postId }) => {
   const dispatch = useDispatch();
   const { closeModal } = useModal();
   const sessionUser = useSelector(selectSessionUser);
-  const userAlbums = useSelector(selectUserAlbums);
+  const userAlbumsRaw = useSelector(selectUserAlbums);
+  const userAlbums = useMemo(() => userAlbumsRaw || [], [userAlbumsRaw]);
+
   console.log(
     "🚀 ~ file: index.js:14 ~ RemoveFromAlbumModal ~ userAlbums:",
     userAlbums
@@ -39,12 +41,13 @@ const RemoveFromAlbumModal = ({ postId }) => {
       const postIdInt = parseInt(postId, 10);
 
       const filteredAlbums = userAlbums.filter((album) => {
-        const imageIds = album.images.allIds;
-        return imageIds.some((imageId) => {
+        const imageIds = album.images?.allIds;
+        return imageIds?.some((imageId) => {
           const image = album.images.byId[imageId];
-          return image.post_id === postIdInt;
+          return image?.post_id === postIdInt;
         });
       });
+
 
       console.log("Filtered Albums:", filteredAlbums);
 

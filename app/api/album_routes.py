@@ -80,6 +80,7 @@ def get_album_images(id):
 
         paginated_images = hf.paginate_query(album_dict['images'], 'images', is_list=True)
         response_data = {
+            "title": album_dict.get("title"),
             "user_id": album_dict.get("user_id"),
             "images": paginated_images['images'],
             "total_images": paginated_images['total_items'],

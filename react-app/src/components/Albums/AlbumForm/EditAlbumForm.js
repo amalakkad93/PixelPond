@@ -7,6 +7,7 @@ export default function EditAlbumForm({
   albumTitle,
   currentPage,
   perPage,
+  setActiveAlbumImages,
 }) {
   return (
     <AlbumForm

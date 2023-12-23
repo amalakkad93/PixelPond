@@ -9,12 +9,17 @@ import {
 import { selectUserAlbums } from "../../../store/selectors";
 
 
-const AlbumForm = ({ formType, albumId, albumTitle: initialAlbumTitle, currentPage, perPage }) => {
+const AlbumForm = ({ formType, albumId, albumTitle: initialAlbumTitle, currentPage, perPage, setActiveAlbumImages }) => {
     const dispatch = useDispatch();
     const { closeModal } = useModal();
     const [albumTitle, setAlbumTitle] = useState(initialAlbumTitle || "");
+    const [newTitle, setNewTitle] = useState("");
     const [error, setError] = useState(null);
     let isMounted = true;
+
+    useEffect(() => {
+
+    }, [albumTitle]);
 
     useEffect(() => {
       // Update initial album title
@@ -41,6 +46,7 @@ const AlbumForm = ({ formType, albumId, albumTitle: initialAlbumTitle, currentPa
         if (formType === "Create") {
           response = await dispatch(thunkCreateAlbum({ title: albumTitle }, currentPage, perPage));
         } else {
+          // response = await dispatch(thunkUpdateAlbum(albumId, { title: albumTitle }, currentPage, perPage));
           response = await dispatch(thunkUpdateAlbum(albumId, { title: albumTitle }));
         }
 
@@ -71,7 +77,7 @@ const AlbumForm = ({ formType, albumId, albumTitle: initialAlbumTitle, currentPa
             placeholder="Album Title"
           />
         </div>
-        <button type="submit">{formType === "Create" ? "Create Album" : "Update Album"}</button>
+        <button  type="submit">{formType === "Create" ? "Create Album" : "Update Album"}</button>
         {error && <div className="error">{error}</div>}
       </form>
     );

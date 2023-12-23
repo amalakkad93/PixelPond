@@ -54,6 +54,7 @@ const UserNavigationBar = ({
           Albums {albumCount}
         </a>
         {/* {location.pathname === "/owner/photostream" && ( */}
+        <span>Create a Post</span>
         <OpenModalButton
           className="create-post-button"
           buttonText={<FontAwesomeIcon icon={faPlusSquare} />}
