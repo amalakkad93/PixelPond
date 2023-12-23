@@ -25,10 +25,10 @@ from icecream import ic
 #     }
 
 
-def paginate_query(query_or_list, data_name, process_item_callback=None, is_list=False):
+def paginate_query(query_or_list, data_name, per_page_default=10,  process_item_callback=None, is_list=False):
     ic(query_or_list)
     page = request.args.get('page', 1, type=int)
-    per_page = request.args.get('per_page', 10, type=int)
+    per_page = request.args.get('per_page', per_page_default, type=int)
 
     if page < 1 or per_page < 1:
         raise ValueError("Invalid page or per_page values")
@@ -49,7 +49,8 @@ def paginate_query(query_or_list, data_name, process_item_callback=None, is_list
             data_name: [],
             "total_items": total,
             "total_pages": total_pages,
-            "current_page": page
+            "current_page": page,
+            "per_page": per_page
         }
 
     processed_items = []
@@ -63,7 +64,8 @@ def paginate_query(query_or_list, data_name, process_item_callback=None, is_list
         data_name: processed_items,
         "total_items": total,
         "total_pages": total_pages,
-        "current_page": page
+        "current_page": page,
+        "per_page": per_page
     }
 
 # def paginate_query(query_or_list, data_name, process_item_callback=None, is_list=False):

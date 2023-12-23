@@ -79,16 +79,6 @@ npm install --save @fortawesome/react-fontawesome
 npm install @fortawesome/free-regular-svg-icons
 npm install --save @fortawesome/free-solid-svg-icons
 
-
-
-=== Image Magnification Feature ===
-✨ Add Image Magnifier:
-npm install react-image-magnify --legacy-peer-deps
-
-=== Redux State Persistence ===
-✨ Install Redux-Persist:
-npm install redux-persist
-
 === Additional UI Tools ===
 ✨ Toast Notifications:
 npm install react-toastify
@@ -97,8 +87,6 @@ npm install react-toastify
 npm install react-spinners
 npm install react-loader-spinner
 
-✨ Immutable State Management:
-npm install immer
 
 ✨ Google Login Integration:
 npm install react-google-login
@@ -106,9 +94,9 @@ npm install react-google-login
 ✨ Lazy Loading for Images:
 npm install react-lazy-load-image-component
 
-=== Clearing Redux Persist Local Storage ===
-✨ Clear Local Storage Data:
-window.persistor.purge();
+=== manage transitions ===
+✨  manage transitions between different posts:
+npm install react-transition-group
 
 
 

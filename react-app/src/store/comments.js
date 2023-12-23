@@ -48,7 +48,7 @@ export const thunkGetPostComments = (postId, page, perPage) => {
     {},
     null,
     [false],
-    "comments"
+    ["comments"]
   );
 };
 
@@ -62,7 +62,7 @@ export const thunkAddComment = (postId, content) => async (dispatch) => {
     if (response.ok) {
       const comment = await response.json();
 
-      
+
       const userInfoResponse = await fetch(`/api/users/${comment.user_id}`);
       if (userInfoResponse.ok) {
         const userInfo = await userInfoResponse.json();

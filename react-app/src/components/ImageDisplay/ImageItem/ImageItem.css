@@ -1,0 +1,34 @@
+.photo-item {
+  margin-bottom: 3px;
+  border-radius: 5px;
+  cursor: pointer;
+  position: relative;
+}
+
+.photo-item img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.add-to-album-modal-trigger {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  padding: 10px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  border: none;
+  z-index: 10;
+}
+
+.add-to-album-modal-trigger:hover {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+.add-to-album-icon {
+  color: #4caf50; 
+}
