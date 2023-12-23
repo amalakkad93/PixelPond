@@ -12,6 +12,7 @@
 .pagination-btn {
   border: none;
   background-color: #fff;
+
   color: #898989;
   cursor: pointer;
   padding: 0;
@@ -42,6 +43,7 @@
 
 .pagination-btn.disabled {
   background-color: #e0e0e0;
+
   color: #9e9e9e;
   cursor: not-allowed;
 }
@@ -60,7 +62,7 @@
 @media screen and (max-width: 600px) {
   .pagination {
     padding: 5px;
-    gap: 3px; 
+    gap: 3px;
   }
 
   .pagination-btn {

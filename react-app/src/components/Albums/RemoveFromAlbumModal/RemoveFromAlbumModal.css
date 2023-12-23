@@ -1,0 +1,47 @@
+.remove-from-album-modal {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 300px;
+  margin: auto;
+}
+
+.remove-from-album-modal h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.remove-from-album-modal select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+
+.remove-from-album-modal button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.remove-from-album-modal button:hover {
+  opacity: 0.8;
+}
+
+.remove-from-album-modal button:first-of-type {
+  background-color: #f44336;
+  color: white;
+}
+
+.remove-from-album-modal button:last-of-type {
+  background-color: #ccc;
+  color: black;
+}

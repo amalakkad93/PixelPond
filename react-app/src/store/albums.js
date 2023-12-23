@@ -9,6 +9,9 @@ export const GET_USER_INFO = "albums/GET_USER_INFO";
 export const GET_ALBUMS_BY_USER_ID = "albums/GET_ALBUMS_BY_USER_ID";
 export const CREATE_ALBUM = "albums/CREATE_ALBUM";
 export const UPDATE_ALBUM = "albums/UPDATE_ALBUM";
+export const ADD_POST_TO_ALBUM = "albums/ADD_POST_TO_ALBUM";
+export const REMOVE_POST_FROM_ALBUM = "albums/REMOVE_POST_FROM_ALBUM";
+const DELETE_ALBUM = "DELETE_ALBUM";
 
 // Action Creators
 export const actionGetAlbums = (albums) => ({
@@ -16,114 +19,192 @@ export const actionGetAlbums = (albums) => ({
   albums,
 });
 
-// Action creator for album images
-export const actionGetAlbumImages = (data) => {
-  const { images, album_info } = data;
+export const actionGetAlbumImages = (albumId, imagesData, userId, albumTitle) => {
+  const normalizedImages = normalizeArray(imagesData, "id");
   return {
     type: GET_ALBUM_IMAGES,
-    images: images.byId ? images : normalizeArray(images),
-    albumInfo: album_info,
+    payload: { albumId, images: normalizedImages, userId, albumTitle },
   };
 };
 
-// Action creator for albums by user id
+
 export const actionGetAlbumsByUserId = (albums) => {
   const normalizedAlbums = albums.map((album) => {
-    // Normalize the images for each album
     const normalizedImages = normalizeArray(album.images, "id");
-
     return {
-      ...album.album_info,
+      id: album.id,
+      title: album.title,
+      user_id: album.user_id,
       images: normalizedImages,
     };
   });
 
-  // Normalize the albums structure
   return {
     type: GET_ALBUMS_BY_USER_ID,
     albums: normalizeArray(normalizedAlbums, "id"),
   };
 };
 
-// Action Creator for user info
 export const actionGetUserInfo = (userInfo) => ({
   type: GET_USER_INFO,
   userInfo,
 });
 
+export const actionAddPostToAlbum = (updatedPost) => ({
+  type: ADD_POST_TO_ALBUM,
+  updatedPost,
+});
+
+export const actionRemovePostFromAlbum = (updatedPost) => ({
+  type: REMOVE_POST_FROM_ALBUM,
+  updatedPost,
+});
 export const actionCreateAlbum = (album) => ({
   type: CREATE_ALBUM,
   album,
 });
 
-export const actionUpdateAlbum = (album) => ({
+export const actionUpdateAlbum = (updatedAlbum) => ({
   type: UPDATE_ALBUM,
-  album,
+  updatedAlbum,
+});
+
+export const actionDeleteAlbum = (albumId) => ({
+  type: DELETE_ALBUM,
+  albumId,
 });
 
 // Thunk to fetch album images with pagination
-export const ThunkGetAlbumImages = (albumId, page, perPage) => {
+export const thunkGetAlbumImages = (albumId, page, perPage) => {
   return fetchPaginatedData(
     `/api/albums/${albumId}`,
-    [(data) => actionGetAlbumImages(data)],
+    [
+      (data) => {
+        const { images, user_id, title } = data;
+        return actionGetAlbumImages(albumId, images, user_id, title);
+      },
+    ],
     page,
     perPage,
     {},
     {},
     null,
     [false],
-    // [true],
-    "images"
+    ["images", "user_id", "title"]
   );
 };
 
 export const thunkGetAlbumsByUserId = (userId, page, perPage) => {
   return fetchPaginatedData(
     `/api/albums/user/${userId}`,
-    [(data) => actionGetAlbumsByUserId(data.albums)],
+    [
+      (data) => {
+        console.log("-----Fetching albums for data:", data);
+        return actionGetAlbumsByUserId(data.albums);
+      },
+    ],
     page,
     perPage,
     {},
     {},
     null,
     [false],
-    // [true],
-    "albums"
+    ["albums"]
   );
 };
 
-// Thunk to Create an Album
-// Thunk to Create an Album
-export const thunkCreateAlbum = (albumData) => async (dispatch) => {
+// ***************************************************************
+// Thunk to Add Post to Album
+// ***************************************************************
+export const thunkAddPostToAlbum = (postId, albumId) => async (dispatch) => {
   try {
-    const response = await fetch("/api/albums", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(albumData),
-    });
+    const response = await fetch(
+      `/api/posts/${postId}/add-to-album/${albumId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (response.ok) {
-      const newAlbum = await response.json();
-      // Check if newAlbum contains an id before dispatching
-      if (newAlbum && newAlbum.resource && newAlbum.resource.id) {
-        dispatch(actionCreateAlbum(newAlbum.resource));
-        return { type: "SUCCESS", data: newAlbum };
-      } else {
-        console.error("Invalid album data received:", newAlbum);
-        // Handle error appropriately
-      }
+      const updatedPost = await response.json();
+      dispatch(actionAddPostToAlbum(updatedPost));
+      return updatedPost;
     } else {
       const errors = await response.json();
-      throw errors;
+      throw new Error(errors.error || "Error adding post to album");
     }
   } catch (error) {
-    console.error("Exception in thunkCreateAlbum:", error); // Log the exception
-    return { type: "EXCEPTION", data: error };
+    throw error;
   }
 };
 
+// Thunk to Remove Post from Album
+export const thunkRemovePostFromAlbum =
+  (postId, albumId) => async (dispatch) => {
+    try {
+      const response = await fetch(
+        `/api/posts/${postId}/remove-from-album/${albumId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const updatedPost = await response.json();
+        dispatch(actionRemovePostFromAlbum(updatedPost));
+        return updatedPost;
+      } else {
+        const errors = await response.json();
+        throw new Error(errors.error || "Error removing post from album");
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+// Thunk to Create an Album
+export const thunkCreateAlbum =
+  (albumData, currentPage, perPage) => async (dispatch) => {
+    try {
+      const response = await fetch("/api/albums", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(albumData),
+      });
+
+      if (response.ok) {
+        const newAlbum = await response.json();
+        if (newAlbum && newAlbum.id) {
+          dispatch(actionCreateAlbum(newAlbum));
+          dispatch(
+            thunkGetAlbumsByUserId(newAlbum.user_id, currentPage, perPage)
+          );
+          return { type: "SUCCESS", data: newAlbum };
+        } else {
+          console.error("Invalid album data received:", newAlbum);
+          return { type: "FAILURE", error: "Invalid data received" };
+        }
+      } else {
+        const errors = await response.json();
+        return {
+          type: "FAILURE",
+          error: errors.message || "Error creating album",
+        };
+      }
+    } catch (error) {
+      console.error("Exception in thunkCreateAlbum:", error);
+      return { type: "EXCEPTION", error: error.toString() };
+    }
+  };
+
 // Thunk to Update an Album
-export const thunkUpdateAlbum = (albumId, updatedData) => async (dispatch) => {
+export const thunkUpdateAlbum = (albumId, updatedData, currentPage, perPage) => async (dispatch) => {
   try {
     const response = await fetch(`/api/albums/${albumId}`, {
       method: "PUT",
@@ -134,6 +215,7 @@ export const thunkUpdateAlbum = (albumId, updatedData) => async (dispatch) => {
     if (response.ok) {
       const updatedAlbum = await response.json();
       dispatch(actionUpdateAlbum(updatedAlbum));
+      // dispatch(actionGetAlbumsByUserId(updatedAlbum.user_id, currentPage, perPage));
       return { type: "SUCCESS", data: updatedAlbum };
     } else {
       const errors = await response.json();
@@ -141,6 +223,29 @@ export const thunkUpdateAlbum = (albumId, updatedData) => async (dispatch) => {
     }
   } catch (error) {
     // handle errors
+    return { type: "FAILURE", error };
+  }
+};
+
+export const thunkDeleteAlbum = (albumId) => async (dispatch) => {
+  try {
+    const response = await fetch(`/api/albums/${albumId}`, {
+      method: "DELETE",
+    });
+
+    if (response.ok) {
+      dispatch(actionDeleteAlbum(albumId));
+      return { type: "SUCCESS", data: albumId };
+    } else {
+      const errors = await response.json();
+      return {
+        type: "FAILURE",
+        error: errors.error || "Error deleting album",
+      };
+    }
+  } catch (error) {
+    console.error("Exception in thunkDeleteAlbum:", error);
+    return { type: "EXCEPTION", error: error.toString() };
   }
 };
 
@@ -165,51 +270,148 @@ export default function reducer(state = initialState, action) {
       };
       return newState;
 
-    // case GET_ALBUM_IMAGES:
-    //   newState = { ...state, singleAlbum: { byId: {}, allIds: [] } };
-    //   newState.singleAlbum = {
-    //     byId: { ...action.album.byId },
-    //     allIds: [...action.album.allIds],
-    //   };
-    //   return newState;
     case GET_ALBUM_IMAGES:
-      newState = {
+      const { albumId, images, userId, albumTitle } = action.payload;
+      return {
         ...state,
         singleAlbum: {
-          byId: { ...action.images.byId },
-          allIds: [...action.images.allIds],
+          ...state.singleAlbum,
+          byId: {
+            ...state.singleAlbum.byId,
+            [albumId]: {
+              images: images.byId,
+              imageIds: images.allIds,
+              userId: userId,
+              title: albumTitle,
+            },
+          },
+          allIds: state.singleAlbum.allIds.includes(albumId)
+            ? state.singleAlbum.allIds
+            : [...state.singleAlbum.allIds, albumId],
         },
-        albumInfo: { ...action.albumInfo },
       };
-      console.log("New state after GET_ALBUM_IMAGES:", newState);
-      return newState;
 
     case GET_ALBUMS_BY_USER_ID:
+      console.log("-----Updating state with new albums:", action.albums);
+
       return {
         ...state,
         userAlbums: action.albums,
       };
 
-    // case CREATE_ALBUM:
-    //   newState = { ...state };
-    //   newState.allAlbums.byId[action.album.id] = action.album;
-    //   newState.allAlbums.allIds.push(action.album.id);
-    //   return newState;
-    case CREATE_ALBUM:
-      newState = { ...state };
+    case ADD_POST_TO_ALBUM: {
+      // const { updatedPost } = action;
+      const updatedPost = action.updatedPost;
 
-      if (action.album && action.album.id) {
-        newState.allAlbums.byId[action.album.id] = action.album;
-        newState.allAlbums.allIds.push(action.album.id);
-      } else {
-        console.error("Album data is missing or invalid:", action.album);
+      if (!updatedPost || !updatedPost.album_id) {
+        console.error("Invalid data for ADD_POST_TO_ALBUM:", updatedPost);
+        return state;
+      }
+      newState = { ...state };
+      if (newState.allAlbums.byId[updatedPost.album_id]) {
+        newState.allAlbums.byId[updatedPost.album_id].imageIds = [
+          ...newState.allAlbums.byId[updatedPost.album_id].imageIds,
+          updatedPost.image_id,
+        ];
       }
       return newState;
+    }
 
-    case UPDATE_ALBUM:
+    case REMOVE_POST_FROM_ALBUM: {
+      const updatedPost = action.updatedPost;
+
+      if (updatedPost && updatedPost.album_id) {
+        newState = { ...state };
+
+        const albumId = updatedPost.album_id;
+
+        if (newState.allAlbums.byId[albumId]) {
+          newState.allAlbums.byId[albumId].imageIds = newState.allAlbums.byId[
+            albumId
+          ].imageIds.filter((imageId) => imageId !== updatedPost.image_id);
+        }
+
+        if (newState.singleAlbum.byId[albumId]) {
+          newState.singleAlbum.byId[albumId].imageIds =
+            newState.singleAlbum.byId[albumId].imageIds.filter(
+              (imageId) => imageId !== updatedPost.image_id
+            );
+        }
+
+        return newState;
+      }
+      return state;
+    }
+
+    case CREATE_ALBUM:
+      if (action.album && action.album.id) {
+        newState = { ...state };
+        newState.allAlbums.byId[action.album.id] = action.album;
+        newState.allAlbums.allIds = [
+          ...state.allAlbums.allIds,
+          action.album.id,
+        ];
+        return newState;
+      } else {
+        console.error("Album data is missing or invalid:", action.album);
+        return state;
+      }
+
+      case UPDATE_ALBUM: {
+        const updatedAlbum = action.updatedAlbum;
+
+        newState = { ...state };
+
+        if (newState.allAlbums.byId[updatedAlbum.id]) {
+          newState.allAlbums.byId[updatedAlbum.id] = updatedAlbum;
+        }
+
+        if (newState.ownerAlbums.byId[updatedAlbum.id]) {
+          newState.ownerAlbums.byId[updatedAlbum.id] = updatedAlbum;
+        }
+
+        if (newState.userAlbums.byId[updatedAlbum.id]) {
+          newState.userAlbums.byId[updatedAlbum.id] = updatedAlbum;
+        }
+
+        if (newState.singleAlbum.byId[updatedAlbum.id]) {
+          newState.singleAlbum.byId[updatedAlbum.id] = updatedAlbum;
+        }
+
+        return newState;
+      }
+
+    case DELETE_ALBUM: {
+      const albumId = action.albumId;
       newState = { ...state };
-      newState.allAlbums.byId[action.album.id] = action.album;
+
+      // Delete album from allAlbums
+      delete newState.allAlbums.byId[albumId];
+      newState.allAlbums.allIds = newState.allAlbums.allIds.filter(
+        (id) => id !== albumId
+      );
+
+      // Delete album from userAlbums
+      delete newState.userAlbums.byId[albumId];
+      newState.userAlbums.allIds = newState.userAlbums.allIds.filter(
+        (id) => id !== albumId
+      );
+
+      // Delete album from ownerAlbums if exists
+      delete newState.ownerAlbums.byId[albumId];
+      newState.ownerAlbums.allIds = newState.ownerAlbums.allIds.filter(
+        (id) => id !== albumId
+      );
+
+      // Reset singleAlbum if it's the deleted album
+      if (newState.singleAlbum.byId[albumId]) {
+        delete newState.singleAlbum.byId[albumId];
+        newState.singleAlbum.allIds = newState.singleAlbum.allIds.filter(
+          (id) => id !== albumId
+        );
+      }
       return newState;
+    }
 
     case GET_USER_INFO:
       newState = { ...state, userInfo: {} };

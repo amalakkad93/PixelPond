@@ -1,0 +1,108 @@
+.add-to-album-modal-main {
+  height: 470px;
+  width: 379px;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.add-to-album-modal {
+  max-width: 300px;
+  margin: auto;
+}
+
+.add-to-album-modal h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.add-to-album-modal select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  background-color: white;
+}
+
+.add-to-album-modal button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.add-to-album-modal button:hover {
+  opacity: 0.8;
+}
+
+.album-thumbnails-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-top: 10px;
+}
+
+.album-thumbnails-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 1px;
+}
+
+
+
+
+.pagination-control-left, .pagination-control-right {
+  position: absolute;
+  cursor: pointer;
+  font-size: 24px;
+  color: black;
+}
+
+.pagination-control-left {
+  left: 10px;
+}
+
+.pagination-control-right {
+  right: 10px;
+}
+
+.album-add-cancel-btns {
+  margin-top: 32px;
+}
+.thumbnail.in-album::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.5); 
+  z-index: 1;
+}
+
+.thumbnail {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.thumbnail img {
+  width: 100%;
+  height: 50px;
+  max-width: 100px;
+}
+
+.checkmark-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  color: black;
+  z-index: 2;
+}

@@ -25,6 +25,17 @@ def user(id):
     return user.to_dict()
 
 
+@user_routes.route('/<int:id>/info')
+def user_info(id):
+    """
+    Query for a user by id and returns that user in a dictionary
+    """
+    user = User.query.get(id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    return jsonify(user.to_dict())
+
+
 @user_routes.route('/update-profile-pic', methods=['PUT'])
 @login_required
 def update_profile_pic():
