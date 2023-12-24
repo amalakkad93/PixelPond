@@ -20,9 +20,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     owner_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod('users.id'), ondelete='CASCADE'), nullable=False)
     image_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod('images.id'), ondelete='CASCADE'), nullable=False)
-    # album_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod('albums.id'), ondelete='CASCADE'), nullable=True)
     title = db.Column(db.String(255), nullable=False)
-    # photo_url = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -33,7 +31,6 @@ class Post(db.Model):
         return {
             'id': self.id,
             'owner_id': self.owner_id,
-            # 'album_id': self.album_id,
             'image_id': self.image_id,
             'title': self.title,
             'description': self.description,
