@@ -20,7 +20,7 @@ import {
   clearPostDetails,
 } from "../../../store/posts";
 import { fetchUserInfoById } from "../../../store/session";
-import { thunkGetPostComments } from "../../../store/comments";
+import { thunkGetPostComments, actionAddComment } from "../../../store/comments";
 import { setLoading, setError, clearUIState } from "../../../store/ui";
 import {
   selectSinglePost,
@@ -59,9 +59,8 @@ export default function PostDetail() {
       dispatch(setLoading(true));
       await Promise.all([
         dispatch(thunkGetPostDetails(postId)),
-        // dispatch(fetchUserInfoById(userId)),
         dispatch(thunkGetNeighborPosts(postId, userId)),
-        dispatch(thunkGetPostComments(postId, 1, 10)),
+        // dispatch(thunkGetPostComments(postId, 1, 10)),
       ]);
     } catch (err) {
       dispatch(setError("An error occurred"));
@@ -198,7 +197,8 @@ export default function PostDetail() {
         {/* Comments Section */}
         <div className="comments-section">
           <CommentsList postId={postId} />
-          <CreateCommentForm postId={postId} />
+          {/* <CommentsList postId={postId} onCommentSuccess={fetchData} /> */}
+          {/* <CreateCommentForm postId={postId} onCommentSuccess={fetchData} /> */}
         </div>
       </div>
     </CSSTransition>

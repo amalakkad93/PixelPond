@@ -1,87 +1,95 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
-import { thunkAddComment, thunkEditComment } from '../../../store/comments';
-import './CommentForm.css';
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
+import { useModal } from "../../../context/Modal";
+import { thunkAddComment, thunkEditComment, thunkGetCommentDetail } from "../../../store/comments";
+import { selectSessionUser } from "../../../store/selectors";
+import AWSImageUploader from "../../Aws/AWSImageUploader";
+import "./CommentForm.css";
 
-export default function CommentForm({ postId, formType, commentId, onCommentPost }) {
-  console.log("🚀 ~ file: index.js:8 ~ CommentForm ~ formType:", formType)
+export default function CommentForm({
+  postId,
+  formType,
+  commentId,
+  onCommentPost,
+  onCommentSuccess,
+}) {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const { closeModal } = useModal();
+  const [content, setContent] = useState("");
+  const [uploadImage, setUploadImage] = useState(null);
+  const [existingImageUrl, setExistingImageUrl] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [content, setContent] = useState('');
-  const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
-  const [errors, setErrors] = useState({});
-  const [message, setMessage] = useState('');
+  const sessionUser = useSelector(selectSessionUser);
 
   useEffect(() => {
-    setSubmitButtonDisabled(!(content.length >= 10));
-  }, [content]);
+    const fetchAndSetCommentData = async () => {
+      if (sessionUser && formType === "Edit" && postId && commentId) {
+        try {
 
-  const handleSubmit = (e) => {
+          const fetchedComment = await dispatch(thunkGetCommentDetail(postId, commentId));
+          if (fetchedComment) {
+            setContent(fetchedComment.comment);
+            setExistingImageUrl(fetchedComment.image_url);
+          }
+        } catch (error) {
+          console.error("Error fetching comment details: ", error);
+        }
+      }
+    };
+
+    fetchAndSetCommentData();
+  }, [dispatch, postId, commentId, sessionUser, formType]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formType === 'Create') {
-      dispatch(thunkAddComment(postId, content))
-        .then(() => {
-          console.log('Comment added, redirecting...');
-          setContent('');
-          history.push(`/posts/${postId}`);
-          if (onCommentPost) {
-            onCommentPost();
+    setIsSubmitting(true);
+
+    let uploadedImageUrl = null;
+    if (uploadImage) {
+      uploadedImageUrl = await uploadImage();
+    }
+
+    const commentData = { comment: content, image_url: uploadedImageUrl || existingImageUrl };
+
+    try {
+      if (formType === "Create") {
+        await dispatch(thunkAddComment(postId, commentData));
+        if (onCommentSuccess) {
+          onCommentSuccess();
+        }
+      } else if (formType === "Edit") {
+        const response = await dispatch(thunkEditComment(postId, commentId, commentData));
+        if (response) {
+          if (onCommentSuccess) {
+            onCommentSuccess();
           }
-        })
-        .catch((error) => {
-          console.error(error);
-          if (error.message) {
-            setMessage(error.message);
-          } else {
-            setMessage('An unexpected error occurred.');
-          }
-        });
-    } else if (formType === 'Edit') {
-      dispatch(thunkEditComment(commentId, { content }))
-        .then(() => {
-          if (onCommentPost) {
-            onCommentPost();
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-          if (error.message) {
-            setMessage(error.message);
-          } else {
-            setMessage('An unexpected error occurred.');
-          }
-        });
+          closeModal();
+        }
+      }
+    } catch (error) {
+      console.error("Error submitting comment: ", error);
+    } finally {
+      setContent("");
+      setUploadImage(null);
+      setIsSubmitting(false);
     }
   };
 
   return (
     <div className="comment-form-container">
-      <form onSubmit={handleSubmit} className="comment-form" id="form-comment">
-        <h2 className="comment-form-h2">
-          {formType === 'Create' ? 'Add a Comment' : 'Edit Comment'}
-        </h2>
-        <div>{message && <div className="error">{message}</div>}</div>
+      <form onSubmit={handleSubmit} className="comment-form">
         <textarea
-          className="comment-textarea"
-          placeholder="Add a comment..."
-          type="text"
-          name="comment"
           value={content}
           onChange={(e) => setContent(e.target.value)}
+          placeholder="Add a comment..."
         />
-        {errors.comment && <div className="error">{errors.comment}</div>}
-        <button
-          className="comment-submit-button"
-          id="submit-comment-btn"
-          type="submit"
-          disabled={submitButtonDisabled}
-        >
-          {formType === 'Create' ? 'Post Comment' : 'Update Comment'}
+        <AWSImageUploader className="aws-image-uploader" setUploadImage={setUploadImage} />
+        <button className="comment-create-edit-btn" type="submit" disabled={isSubmitting}>
+          {formType === "Create" ? "Post Comment" : "Update Comment"}
         </button>
       </form>
     </div>
   );
-
 }
