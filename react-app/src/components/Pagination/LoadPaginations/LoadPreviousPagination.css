@@ -1,0 +1,14 @@
+.load-previous-btn {
+  background-color: #f0f0f0;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.load-previous-btn i {
+  margin-right: 5px;
+}

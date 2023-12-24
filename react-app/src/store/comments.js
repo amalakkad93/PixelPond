@@ -8,10 +8,13 @@ import { setLoading, setError } from "./ui";
 
 // Action types for fetching comments
 const GET_COMMENTS = " comments/GET_COMMENTS";
-
 const ADD_COMMENT = "comments/ADD_COMMENT";
 const EDIT_COMMENT = "comments/EDIT_COMMENT";
-/** Action type to handle errors during post operations */
+const GET_COMMENT_DETAIL = "comments/GET_COMMENT_DETAIL";
+const DELETE_COMMENT = "comments/DELETE_COMMENT";
+
+const CLEAR_SINGLE_COMMENT = "comments/CLEAR_SINGLE_COMMENT";
+
 const SET_COMMENT_ERROR = "comments/SET_COMMENT_ERROR";
 
 // Action creator to set comments in the store
@@ -21,7 +24,7 @@ const actionGetComments = (comments, postId) => ({
   postId,
 });
 
-const actionAddComment = (comment) => ({
+export const actionAddComment = (comment) => ({
   type: ADD_COMMENT,
   comment,
 });
@@ -31,7 +34,20 @@ const actionEditComment = (comment) => ({
   comment,
 });
 
-/** Creates an action to handle errors during comments operations */
+const actionGetCommentDetail = (comment) => ({
+  type: GET_COMMENT_DETAIL,
+  comment,
+});
+
+const actionDeleteComment = (commentId) => ({
+  type: DELETE_COMMENT,
+  commentId,
+});
+
+const actionClearSingleComment = () => ({
+  type: CLEAR_SINGLE_COMMENT,
+});
+
 const actionSetPostError = (errorMessage) => ({
   type: SET_COMMENT_ERROR,
   payload: errorMessage,
@@ -52,68 +68,111 @@ export const thunkGetPostComments = (postId, page, perPage) => {
   );
 };
 
-export const thunkAddComment = (postId, content) => async (dispatch) => {
+export const thunkAddComment = (postId, commentData) => async (dispatch) => {
   try {
     const response = await fetch(`/api/posts/${postId}/comments`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ comment: content })
+      body: JSON.stringify(commentData),
     });
+
     if (response.ok) {
-      const comment = await response.json();
-
-
-      const userInfoResponse = await fetch(`/api/users/${comment.user_id}`);
-      if (userInfoResponse.ok) {
-        const userInfo = await userInfoResponse.json();
-        comment.user_info = userInfo;
-      }
-
-      dispatch(actionAddComment(comment));
+      const newComment = await response.json();
+      dispatch(actionAddComment(newComment));
+      return newComment;
     } else {
       const errors = await response.json();
       dispatch(actionSetPostError(errors.error || "Error creating comment."));
       throw errors;
     }
   } catch (error) {
-    dispatch(actionSetPostError("An error occurred while creating the comment."));
+    dispatch(
+      actionSetPostError("An error occurred while creating the comment.")
+    );
     throw error;
   }
 };
 
-
-
-
-
-
 export const thunkEditComment =
-  (commentId, commentData) => async (dispatch) => {
+  (postId, commentId, commentData) => async (dispatch) => {
     try {
-      const response = await fetch(`/api/comments/${commentId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(commentData),
-      });
+      const response = await fetch(
+        `/api/posts/${postId}/comments/${commentId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(commentData),
+        }
+      );
+
       if (response.ok) {
         const comment = await response.json();
         dispatch(actionEditComment(comment));
+        return comment;
       } else {
         const errors = await response.json();
-        dispatch(actionSetPostError(errors.error || "Error creating post."));
+        dispatch(actionSetPostError(errors.error || "Error updating comment."));
         throw errors;
       }
     } catch (error) {
       dispatch(
-        actionSetPostError("An error occurred while creating the post.")
+        actionSetPostError("An error occurred while updating the comment.")
       );
       throw error;
     }
   };
 
-const initialState = {
-  // comments: {},
-  allCommentsOfPost: { byId: {}, allIds: [] },
+export const thunkGetCommentDetail =
+  (postId, commentId) => async (dispatch) => {
+    try {
+      const response = await fetch(
+        `/api/posts/${postId}/comments/${commentId}`
+      );
+
+      if (response.ok) {
+        const commentDetail = await response.json();
+        dispatch(actionGetCommentDetail(commentDetail));
+        return commentDetail;
+      } else {
+        const error = await response.json();
+        dispatch(
+          actionSetPostError(error.message || "Error fetching comment detail.")
+        );
+      }
+    } catch (error) {
+      dispatch(
+        actionSetPostError("An error occurred while fetching comment detail.")
+      );
+    }
+  };
+
+export const thunkDeleteComment = (postId, commentId) => async (dispatch) => {
+  try {
+    const response = await fetch(`/api/posts/${postId}/comments/${commentId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      dispatch(actionDeleteComment(commentId));
+    } else {
+      const error = await response.json();
+      dispatch(actionSetPostError(error.error || "Error deleting comment."));
+    }
+  } catch (error) {
+    dispatch(
+      actionSetPostError("An error occurred while deleting the comment.")
+    );
+  }
 };
+
+const initialState = {
+  allCommentsOfPost: { byId: {}, allIds: [] },
+  singleComment: null,
+};
+
 export default function reducer(state = initialState, action) {
   let newState;
   switch (action.type) {
@@ -132,13 +191,41 @@ export default function reducer(state = initialState, action) {
 
     case ADD_COMMENT:
       newState = { ...state };
-      newState.allCommentsOfPost.byId[action.comment.id] = action.comment;
-      newState.allCommentsOfPost.allIds.push(action.comment.id);
+      const commentId = String(action.comment.id);
+      if (!newState.allCommentsOfPost.byId[commentId]) {
+        newState.allCommentsOfPost.byId[commentId] = action.comment;
+
+        if (!newState.allCommentsOfPost.allIds.includes(commentId)) {
+          newState.allCommentsOfPost.allIds.unshift(commentId);
+        }
+      }
       return newState;
+
     case EDIT_COMMENT:
       newState = { ...state };
       newState.allCommentsOfPost.byId[action.comment.id] = action.comment;
       return newState;
+
+    case GET_COMMENT_DETAIL:
+      return {
+        ...state,
+        singleComment: action.comment,
+      };
+
+    case DELETE_COMMENT:
+      newState = { ...state };
+      delete newState.allCommentsOfPost.byId[action.commentId];
+      newState.allCommentsOfPost.allIds =
+        newState.allCommentsOfPost.allIds.filter(
+          (id) => id !== action.commentId
+        );
+      return newState;
+
+    case CLEAR_SINGLE_COMMENT:
+      return {
+        ...state,
+        singleComment: null,
+      };
     default:
       return state;
   }

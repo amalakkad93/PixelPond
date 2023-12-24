@@ -440,6 +440,7 @@ def delete_post(id):
         logging.error(f"Error deleting post (ID: {id}): {e}")
         db.session.rollback()
         return jsonify(error=f"Error deleting post: {e}"), 500
+
 # ***************************************************************
 # Endpoint to Get Comments of a Post by Id with Pagination
 # ***************************************************************
@@ -452,12 +453,14 @@ def get_post_comments(post_id):
 
         comments_query = Comment.query.filter(Comment.post_id == post_id)
 
-        paginated_comments = hf.paginate_query(
+        paginated_comments = hf.paginate_query_desc(
             comments_query,
             'comments',
+            sort_by='created_at',
             process_item_callback=lambda comment, comment_dict: {
                 **comment_dict,
-                'user_info': User.query.get(comment.user_id).to_dict() if User.query.get(comment.user_id) else None
+                'user_info': User.query.get(comment.user_id).to_dict() if User.query.get(comment.user_id) else None,
+                'image_url': Image.query.get(comment.image_id).url if comment.image_id else None  # Add this line
             }
         )
 
@@ -468,43 +471,159 @@ def get_post_comments(post_id):
         return jsonify({"error": "An error occurred while fetching the comments."}), 500
 
 # ***************************************************************
+# Endpoint to Get Comment Detail of a Post by Id and Comment Id
+# ***************************************************************
+@post_routes.route('/<int:post_id>/comments/<int:comment_id>', methods=['GET'])
+def get_comment_detail(post_id, comment_id):
+    try:
+        comment = Comment.query.get(comment_id)
+        if comment is None:
+            return jsonify({"error": "Comment not found."}), 404
+        return jsonify(comment.to_dict())
+    except Exception as e:
+        return jsonify({"error": "An error occurred while fetching comment detail."}), 500
+
+
+# ***************************************************************
 # Endpoint to Create a Comment for a Post
 # ***************************************************************
-
 @post_routes.route('/<int:post_id>/comments', methods=['POST'])
 @login_required
 def create_comment(post_id):
-    data = request.get_json()
-    current_app.logger.info(f"Received data: {data}")
-
-    comment_text = data.get('comment')
-    if not comment_text:
-        return jsonify({"error": "Comment text is required"}), 400
-
-    comment = Comment(
-        user_id=current_user.id,
-        post_id=post_id,
-        comment=comment_text
-    )
-    db.session.add(comment)
+    """
+    Create a new comment for a post. Only accessible by authenticated users.
+    Parameters:
+        - post_id (int): The ID of the post to comment on.
+    Returns:
+        Response: A JSON object with the newly created comment details or an error message.
+    """
     try:
+        data = request.get_json()
+        comment_text = data.get('comment')
+        image_url = data.get('image_url')
+
+        if not comment_text:
+            return jsonify({'error': 'Comment text is required'}), 400
+
+        image_id = None
+        if image_url:
+            new_image = Image(url=image_url)
+            db.session.add(new_image)
+            db.session.flush()
+            image_id = new_image.id
+
+        comment = Comment(user_id=current_user.id, post_id=post_id, comment=comment_text, image_id=image_id)
+        db.session.add(comment)
         db.session.commit()
-        return comment.to_dict(), 201
+
+        return jsonify(comment.to_dict()), 201
+
     except Exception as e:
-        current_app.logger.error(f"Error saving comment: {e}")
-        return jsonify({"error": "An error occurred while saving the comment"}), 500
+        db.session.rollback()
+        print(f"Error in create_comment: {e}")
+        return jsonify({'error': 'An unexpected error occurred'}), 500
 
 # ***************************************************************
 # Endpoint to Edit a Comment for a Post
 # ***************************************************************
-@post_routes.route('/comments/<int:comment_id>', methods=['PUT'])
+@post_routes.route('/<int:post_id>/comments/<int:comment_id>', methods=['PUT'])
 @login_required
-def edit_comment(comment_id):
-    comment = Comment.query.get(comment_id)
-    if comment and comment.user_id == current_user.id:
-        data = request.json
-        comment.comment = data['comment']
+def update_comment(post_id, comment_id):
+    """
+    Update a specific comment. Only accessible by the comment owner.
+    Parameters:
+        - post_id (int): The ID of the post to comment on.
+        - comment_id (int): The ID of the comment to update.
+    Returns:
+        Response: A JSON object with the updated comment or an error message.
+    """
+    try:
+        comment_to_update = Comment.query.get(comment_id)
+        if not comment_to_update:
+            return jsonify({"error": "Comment not found"}), 404
+
+        if comment_to_update.post_id != post_id:
+            return jsonify({"error": "Comment does not belong to the specified post"}), 400
+
+        if comment_to_update.user_id != current_user.id:
+            return jsonify({"error": "Unauthorized"}), 403
+
+        data = request.get_json()
+        for key, value in data.items():
+            if key != 'image_url':
+                setattr(comment_to_update, key, value)
+
+        if 'image_url' in data and data['image_url']:
+            image_to_update = Image.query.get(comment_to_update.image_id)
+            if image_to_update:
+                image_to_update.url = data['image_url']
+            else:
+                new_image = Image(url=data['image_url'])
+                db.session.add(new_image)
+                db.session.flush()
+                comment_to_update.image_id = new_image.id
+
         db.session.commit()
-        return jsonify(comment.to_dict()), 200
-    else:
-        return jsonify({"error": "Comment not found or unauthorized"}), 404
+
+        # Fetch user details
+        user = User.query.get(comment_to_update.user_id)
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        user_info = {
+            'id': user.id,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'age': user.age,
+            'username': user.username,
+            'email': user.email,
+            'profile_picture': user.profile_picture,
+            'about_me': user.about_me,
+            'country': user.country,
+        }
+
+        response_data = comment_to_update.to_dict()
+        response_data['user_info'] = user_info
+
+        return jsonify(response_data), 200
+    except Exception as e:
+        logging.error(f"Error updating comment (ID: {comment_id}): {e}")
+        db.session.rollback()
+        return jsonify({"error": "An error occurred while updating the comment."}), 500
+
+# ***************************************************************
+# Endpoint to Delete a Comment for a Post
+# ***************************************************************
+@post_routes.route('/<int:post_id>/comments/<int:comment_id>', methods=['DELETE'])
+@login_required
+def delete_comment(post_id, comment_id):
+    """
+    Delete a specific comment. Only accessible by the comment owner.
+    Parameters:
+        - post_id (int): The ID of the post the comment belongs to.
+        - comment_id (int): The ID of the comment to delete.
+    Returns:
+        Response: A success message or an error message.
+    """
+    try:
+        comment_to_delete = Comment.query.get(comment_id)
+
+        # Check if the comment exists and belongs to the current user
+        if not comment_to_delete:
+            return jsonify({"error": "Comment not found"}), 404
+
+        if comment_to_delete.post_id != post_id:
+            return jsonify({"error": "Comment does not belong to the specified post"}), 400
+
+        if comment_to_delete.user_id != current_user.id:
+            return jsonify({"error": "Unauthorized"}), 403
+
+        # Delete the comment
+        db.session.delete(comment_to_delete)
+        db.session.commit()
+
+        return jsonify({"message": "Comment deleted successfully"}), 200
+    except Exception as e:
+        logging.error(f"Error deleting comment (ID: {comment_id}): {e}")
+        db.session.rollback()
+        return jsonify({"error": "An error occurred while deleting the comment."}), 500

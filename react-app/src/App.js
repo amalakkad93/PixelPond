@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Route, Switch } from "react-router-dom";
 
-import PageResetter from "./components/Pagination/PageResetter";
+
 
 import SignupFormModal from "./components/SignupFormModal";
 import LoginFormModal from "./components/LoginFormModal";
