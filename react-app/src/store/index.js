@@ -15,7 +15,6 @@ const rootReducer = combineReducers({
   comments,
   aws,
   ui
-  // paginations,
 });
 
 

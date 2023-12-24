@@ -12,56 +12,6 @@ const AWSImageUploader =  ({ setUploadImage }) => {
   const [preview, setPreview] = useState(null);
 
   const [fileForUpload, setFileForUpload] = useState(null);
-
-
-  // const uploadImage = async () => {
-  //   if (!file) {
-  //     throw new Error("No file selected for upload.");
-  //   }
-
-  //   setUploading(true);
-  //   setProgress(0);
-
-  //   try {
-  //     const presignedData = await dispatch(getPresignedUrl(file.name, file.type));
-  //     if (!presignedData) throw new Error("Failed to get presigned URL");
-
-  //     const xhr = new XMLHttpRequest();
-  //     xhr.open("PUT", presignedData.presignedUrl);
-  //     xhr.setRequestHeader("Content-Type", file.type);
-
-  //     return new Promise((resolve, reject) => {
-  //       xhr.upload.onprogress = (event) => {
-  //         if (event.lengthComputable) {
-  //           const percentComplete = Math.round((event.loaded / event.total) * 100);
-  //           setProgress(percentComplete);
-  //         }
-  //       };
-
-  //       xhr.onload = () => {
-  //         if (xhr.status === 200) {
-  //           setUploading(false);
-  //           resolve(presignedData.fileUrl + "?t=" + new Date().getTime());
-  //         } else {
-  //           setUploading(false);
-  //           reject("Failed to upload image");
-  //         }
-  //       };
-
-  //       xhr.onerror = () => {
-  //         setUploading(false);
-  //         reject("Error during the upload");
-  //       };
-
-  //       xhr.send(file);
-  //     });
-  //   } catch (error) {
-  //     setUploading(false);
-  //     throw error;
-  //   }
-  // };
-
-
   useEffect(() => {
     if (file) {
       const upload = async () => {
@@ -119,6 +69,56 @@ const AWSImageUploader =  ({ setUploadImage }) => {
 };
 
 export default AWSImageUploader;
+
+  // const uploadImage = async () => {
+  //   if (!file) {
+  //     throw new Error("No file selected for upload.");
+  //   }
+
+  //   setUploading(true);
+  //   setProgress(0);
+
+  //   try {
+  //     const presignedData = await dispatch(getPresignedUrl(file.name, file.type));
+  //     if (!presignedData) throw new Error("Failed to get presigned URL");
+
+  //     const xhr = new XMLHttpRequest();
+  //     xhr.open("PUT", presignedData.presignedUrl);
+  //     xhr.setRequestHeader("Content-Type", file.type);
+
+  //     return new Promise((resolve, reject) => {
+  //       xhr.upload.onprogress = (event) => {
+  //         if (event.lengthComputable) {
+  //           const percentComplete = Math.round((event.loaded / event.total) * 100);
+  //           setProgress(percentComplete);
+  //         }
+  //       };
+
+  //       xhr.onload = () => {
+  //         if (xhr.status === 200) {
+  //           setUploading(false);
+  //           resolve(presignedData.fileUrl + "?t=" + new Date().getTime());
+  //         } else {
+  //           setUploading(false);
+  //           reject("Failed to upload image");
+  //         }
+  //       };
+
+  //       xhr.onerror = () => {
+  //         setUploading(false);
+  //         reject("Error during the upload");
+  //       };
+
+  //       xhr.send(file);
+  //     });
+  //   } catch (error) {
+  //     setUploading(false);
+  //     throw error;
+  //   }
+  // };
+
+
+
 
 // const AWSImageUploader = ({
 //   onUploadSuccess,

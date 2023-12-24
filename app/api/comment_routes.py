@@ -36,54 +36,6 @@ def get_comment_detail(id):
     except Exception as e:
         return jsonify({"error": "An error occurred while fetching comment detail."}), 500
 
-# *******************************Edit a Comment*******************************
-@comment_routes.route('/<int:id>', methods=["PUT"])
-def update_comment(id):
-    try:
-        comment_to_update = Comment.query.get(id)
-        if comment_to_update is None:
-            return jsonify({"error": "Comment not found."}), 404
-
-        if not current_user.is_authenticated:
-            return jsonify(message="You need to be logged in"), 401
-
-        if comment_to_update.owner_id != current_user.id:
-            return jsonify(message="Unauthorized"), 403
-
-        data = request.get_json()
-        for key, value in data.items():
-            setattr(comment_to_update, key, value)
-
-        db.session.commit()
-        return jsonify(comment_to_update.to_dict())
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": "An error occurred while updating the comment."}), 500
-
-# *******************************Create a Comment*******************************
-@comment_routes.route('/', methods=["POST"])
-def create_comment():
-    try:
-        data = request.get_json()
-        if not data:
-            return jsonify(errors="Invalid data"), 400
-
-        if not current_user.is_authenticated:
-            return jsonify(message="You need to be logged in"), 401
-
-        new_comment = Comment(**data)
-        new_comment.owner_id = current_user.id
-
-        db.session.add(new_comment)
-        db.session.commit()
-
-        return jsonify({
-            "message": "Comment successfully created",
-            "comment": new_comment.to_dict()
-        }), 201
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": "An error occurred while creating the comment."}), 500
 
 # *******************************Delete a Comment*******************************
 @comment_routes.route('/<int:id>', methods=['DELETE'])
