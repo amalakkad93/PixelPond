@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { logout } from "../../store/session";
 import OpenModalButton from "../Modals/OpenModalButton";
 import OpenModalMenuItem from "./OpenModalMenuItem";
@@ -11,6 +12,7 @@ import "./ProfileButton.css";
 
 function ProfileButton({ user }) {
   const dispatch = useDispatch();
+  const history = useHistory();
   const [showMenu, setShowMenu] = useState(false);
   const ulRef = useRef();
 
@@ -39,6 +41,7 @@ function ProfileButton({ user }) {
   const handleLogout = (e) => {
     e.preventDefault();
     dispatch(logout());
+    history.push("/");
   };
 
   const ulClassName = "profile-dropdown" + (showMenu ? "" : " hidden");
@@ -53,34 +56,83 @@ function ProfileButton({ user }) {
         {user ? (
           <>
             <li className="profile-info">
-              <span className="username">{user.username}</span>
-              <span className="email">{user.email}</span>
+              <div className="username">{user.username}</div>
+              <div className="email">{user.email}</div>
             </li>
+            <li className="divider"></li>
             <li className="logout">
-              <button onClick={handleLogout}>Log Out</button>
+              <button className="logout-btn" onClick={handleLogout}>Log Out</button>
             </li>
           </>
         ) : (
           <>
-            <OpenModalButton
-              className="center-menu"
+          <li className="profile-info">
+
+            <OpenModalMenuItem
+              // className="center-menu black-text-button"
+              className="login-modal"
               itemText="Log In"
               onItemClick={closeMenu}
               modalComponent={<LoginFormModal />}
             />
+          </li>
+          <li className="profile-info">
+            <li className="divider"></li>
 
-            <OpenModalButton
-              className="center-menu"
+          </li>
+            <li className="profile-info">
+            <OpenModalMenuItem
+              // className="center-menu black-text-button"
+              className="signup-modal"
               itemText="Sign Up"
               onItemClick={closeMenu}
               modalComponent={<SignupFormModal />}
             />
+            </li>
           </>
         )}
       </ul>
     </div>
   );
 }
+//   return (
+//     <div className="profile-button-container">
+//       <button onClick={openMenu} className="profile-button">
+//         <FontAwesomeIcon icon={faUserCircle} className="profile-icon" />
+//       </button>
+
+//       <ul className={ulClassName} ref={ulRef}>
+//         {user ? (
+//           <>
+//             <li className="profile-info">
+//               <span className="username">{user.username}</span>
+//               <span className="email">{user.email}</span>
+//             </li>
+//             <li className="logout">
+//               <button onClick={handleLogout}>Log Out</button>
+//             </li>
+//           </>
+//         ) : (
+//           <>
+//             <OpenModalMenuItem
+//               className="center-menu black-text-button"
+//               itemText="Log In"
+//               onItemClick={closeMenu}
+//               modalComponent={<LoginFormModal />}
+//             />
+//             <div className="divider"></div>
+//             <OpenModalMenuItem
+//               className="center-menu black-text-button"
+//               itemText="Sign Up"
+//               onItemClick={closeMenu}
+//               modalComponent={<SignupFormModal />}
+//             />
+//           </>
+//         )}
+//       </ul>
+//     </div>
+//   );
+// }
 
 export default ProfileButton;
 

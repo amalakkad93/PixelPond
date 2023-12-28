@@ -1,24 +1,26 @@
-import React, { useEffect, useState, useCallback, useRef, memo } from "react";
+import React, {
+  memo,
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+} from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useParams, useHistory, useLocation, Link } from "react-router-dom";
-import Masonry from "react-masonry-css";
+
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import Pagination from "../Pagination";
 import UserNavigationBar from "../Navigation/UserNavigationBar";
 import Spinner from "../Spinner";
 import { thunkGetAlbumImages } from "../../store/albums";
-import { fetchUserInfoById } from "../../store/session";
 import {
   thunkGetPostsByUserId,
-  thunkGetUserPostsNotInAlbum,
 } from "../../store/posts";
 import { setLoading, setError, clearUIState } from "../../store/ui";
 import {
   selectAlbumDetails,
   selectUserPosts,
   selectPostById,
-  selectUserPostsWithNoAlbumId,
-  selectPostWithNoAlbumIdById,
   selectUserInfo,
   selectLoading,
   selectSessionUser,
@@ -28,8 +30,10 @@ import defult_banner_image from "../../assets/images/defult_banner_image.png";
 import OpenModalButton from "../Modals/OpenModalButton";
 import CreatePostForm from "../Posts/PostForms/CreatePostForm";
 import UserProfileManager from "../Users/UserProfile/UserProfileManager";
+import ProfilePictureUpdater from "../Users/UserProfile/ProfilePictureUpdater";
 import AddToAlbumModal from "../Albums/AddToAlbumModal";
 import ImageItem from "./ImageItem/ImageItem";
+import {thunkFetchAllFavorites} from "../../store/favorites";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUserCircle,
@@ -42,14 +46,13 @@ import ImageGrid from "./ImageGrid/ImageGrid";
 const ImageDisplay = memo(({ mode, albumId }) => {
   // Hooks for accessing Redux state and React Router functionality
   const dispatch = useDispatch();
-  const history = useHistory();
   const { userId } = useParams();
+
 
   // Selectors to retrieve data from the Redux store
   const userInfo = useSelector(selectUserInfo);
   const loading = useSelector(selectLoading);
 
-  // const albumImages = useSelector((state) => selectAlbumDetails(state, albumId));
   const { images: albumImages, title: albumTitle } = useSelector((state) =>
     selectAlbumDetails(state, albumId)
   );
@@ -72,6 +75,8 @@ const ImageDisplay = memo(({ mode, albumId }) => {
     setShowAbout((prevShowAbout) => !prevShowAbout);
   }, []);
 
+
+
   // Function to fetch data based on the current mode and page
   const fetchData = useCallback(
     async (page) => {
@@ -89,13 +94,17 @@ const ImageDisplay = memo(({ mode, albumId }) => {
 
         switch (mode) {
           case "albumImages":
-            response = await dispatch(thunkGetAlbumImages(albumId, page, perPage));
+            response = await dispatch(
+              thunkGetAlbumImages(albumId, page, perPage)
+            );
             break;
 
           case "ownerPhotoStream":
           case "photoStream":
           case "addPostToAnAlbum":
-            response = await dispatch(thunkGetPostsByUserId(selectedUserId, page, perPage));
+            response = await dispatch(
+              thunkGetPostsByUserId(selectedUserId, page, perPage)
+            );
             break;
           default:
             response = null;
@@ -125,14 +134,23 @@ const ImageDisplay = memo(({ mode, albumId }) => {
     fetchData(currentPage);
 
     return () => (isMounted.current = false);
+
   }, [dispatch, fetchData, currentPage, mode]);
 
   // Effect to re-fetch data if the album title changes
   useEffect(() => {
     if (mode === "albumImages") {
       fetchData(currentPage);
+
     }
   }, [albumTitle, fetchData, currentPage, mode]);
+
+  useEffect(() => {
+    if (sessionUser?.id) {
+      dispatch(thunkFetchAllFavorites(sessionUser?.id));
+    }
+  }, [dispatch, sessionUser?.id]);
+
 
   if (isLoading) return <Spinner />;
 
@@ -170,6 +188,7 @@ const ImageDisplay = memo(({ mode, albumId }) => {
             post_id: image?.post_id,
           })),
         };
+
       default:
         return { images: [], displayedImages: [] };
     }
@@ -238,19 +257,7 @@ const ImageDisplay = memo(({ mode, albumId }) => {
                         className="profile-picture"
                       />
                     )}
-
-                    {mode === "ownerPhotoStream" && (
-                      <div className="edit-icon-overlay">
-                        <FontAwesomeIcon icon={faEdit} className="edit-icon" />
-                      </div>
-                    )}
                   </div>
-
-                  {isEditingProfilePic && (
-                    <UserProfileManager
-                      setIsEditingProfilePic={setIsEditingProfilePic}
-                    />
-                  )}
 
                   <div className="user-name">
                     <h1>{userName || "User Name"}</h1>
@@ -292,12 +299,34 @@ const ImageDisplay = memo(({ mode, albumId }) => {
                 />
               </nav>
             )}
+
             {showAbout && (
               <div className="about-section">
                 <p>{aboutMe}</p>
               </div>
             )}
-
+            {/* <div className="Images-and-create-btn"> */}
+            {mode === "ownerPhotoStream" && (
+              <div className="create-post-container">
+                <OpenModalButton
+                  className="create-post-button"
+                  buttonText="Create Post"
+                  modalComponent={
+                    <CreatePostForm
+                      onPostCreated={() =>
+                        dispatch(
+                          thunkGetPostsByUserId(
+                            sessionUser?.id,
+                            currentPage,
+                            10
+                          )
+                        )
+                      }
+                    />
+                  }
+                />
+              </div>
+            )}
             {displayedImages && displayedImages.length > 0 && (
               <ImageGrid
                 displayedImages={displayedImages}
@@ -306,6 +335,16 @@ const ImageDisplay = memo(({ mode, albumId }) => {
                 sessionUser={sessionUser}
               />
             )}
+            {/* {mode === "favoritesPost" && (
+              <ImageGrid
+                displayedImages={displayedImages}
+                mode={mode}
+                albumInfo={albumInfo}
+                sessionUser={sessionUser?.id}
+
+              />
+            )} */}
+            {/* </div> */}
             {/* Pagination */}
             <Pagination
               totalItems={totalPages * perPage}

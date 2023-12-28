@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from flask_login import login_required, current_user
+from werkzeug.security import generate_password_hash
 from app.models import User, db
 
 user_routes = Blueprint('users', __name__)
@@ -52,3 +53,24 @@ def update_profile_pic():
         return jsonify(user.to_dict()), 200
     else:
         return jsonify({"error": "No profile picture URL provided"}), 400
+
+@user_routes.route('/update', methods=['PUT'])
+@login_required
+def update_user():
+    data = request.json
+    user = current_user
+
+    user.first_name = data.get('first_name', user.first_name)
+    user.last_name = data.get('last_name', user.last_name)
+    user.username = data.get('username', user.username)
+    user.email = data.get('email', user.email)
+    user.profile_picture = data.get('profile_picture', user.profile_picture)
+    user.about_me = data.get('about_me', user.about_me)
+    user.country = data.get('country', user.country)
+
+    if 'password' in data:
+        hashed_password = generate_password_hash(data['password'])
+        user.hashed_password = hashed_password
+
+    db.session.commit()
+    return jsonify(user.to_dict())

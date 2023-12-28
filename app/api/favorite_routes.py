@@ -1,116 +1,139 @@
+# from flask import Blueprint, request
+# from ..models import Favorite, db
+# from flask_login import login_required, current_user
+
+# from datetime import date
+# from .auth_routes import validation_errors_to_error_messages
+
+# favorite_routes = Blueprint('favorites', __name__)
+
+
+# @favorite_routes.route('/<int:id>', methods=["POST"])
+# @login_required
+# def create_favorite(id):
+
+#     new_form = Favorite(
+#         user_id = current_user.id,
+#         post_id = id,
+#         created_at = date.today()
+#     )
+
+#     db.session.add(new_form)
+#     db.session.commit()
+#     return new_form.to_dict()
+
+
+
+# @favorite_routes.route('/delete/<int:id>', methods=['DELETE'])
+# @login_required
+# def delete_favorite(id):
+#     fave_to_delete = Favorite.query.get(id)
+
+#     if (fave_to_delete):
+
+#         db.session.delete(fave_to_delete)
+#         db.session.commit()
+#         return {"message": "Favorite Deleted!"}
+#     else:
+#         return {'errors': "No favorite to delete"}
+
+
+# @favorite_routes.route('/')
+# def get_all_favorites():
+#     favorites = Favorite.query.all()
+
+#     return [favorite.to_dict() for favorite in favorites]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 from flask import Blueprint, jsonify, request
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import Favorite, db
 from .. import helper_functions as hf
+from icecream import ic
 
 favorite_routes = Blueprint('favorites', __name__)
 
 # ***************************************************************
-# Endpoint to Get All Favorites
+# Endpoint to Create or Delete a Favorite
 # ***************************************************************
-@favorite_routes.route('/')
-def get_all_favorites():
+@favorite_routes.route('', methods=['POST'])
+def create_or_delete_favorite():
+    data = request.json
+    if not data.get('user_id') or not data.get('post_id'):
+        return {"error": "Missing required fields"}, 400
+
+    user_id = data['user_id']
+    post_id = data['post_id']
+
+    existing_favorite = Favorite.query.filter_by(user_id=user_id, post_id=post_id).first()
+    if existing_favorite:
+        try:
+            db.session.delete(existing_favorite)
+            db.session.commit()
+            return {"action": "removed", "favorite": existing_favorite.to_dict()}, 200
+        except Exception as e:
+            db.session.rollback()
+            return {"error": f"Favorite deletion failed: {str(e)}"}, 500
+
+    new_favorite = Favorite(
+        user_id=user_id,
+        post_id=post_id
+    )
+
     try:
-        favorites = db.session.query(Favorite).all()
-        return jsonify([favorite.to_dict() for favorite in favorites])
-    except Exception as e:
-        return jsonify({"error": "An error occurred while fetching the favorites."}), 500
-
-# ***************************************************************
-# Endpoint to Get Favorites of Current User
-# ***************************************************************
-@favorite_routes.route('/current')
-def get_favorites_of_current_user():
-    try:
-        favorites = (db.session.query(Favorite)
-                     .filter(Favorite.owner_id == current_user.id)
-                     .all())
-        return jsonify([favorite.to_dict() for favorite in favorites])
-    except Exception as e:
-        return jsonify({"error": "An error occurred while fetching the favorites."}), 500
-
-# ***************************************************************
-# Endpoint to Get Details of a Favorite by Id
-# ***************************************************************
-@favorite_routes.route('/<int:id>')
-def get_favorite_detail(id):
-    try:
-        favorite = Favorite.query.get(id)
-        if favorite is None:
-            return jsonify({"error": "Favorite not found."}), 404
-        return jsonify(favorite.to_dict())
-    except Exception as e:
-        return jsonify({"error": "An error occurred while fetching favorite detail."}), 500
-
-# ***************************************************************
-# Endpoint to Edit a Favorite
-# ***************************************************************
-@favorite_routes.route('/<int:id>', methods=["PUT"])
-def update_favorite(id):
-    try:
-        favorite_to_update = Favorite.query.get(id)
-        if favorite_to_update is None:
-            return jsonify({"error": "Favorite not found."}), 404
-
-        if not current_user.is_authenticated:
-            return jsonify(message="You need to be logged in"), 401
-
-        if favorite_to_update.owner_id != current_user.id:
-            return jsonify(message="Unauthorized"), 403
-
-        data = request.get_json()
-        for key, value in data.items():
-            setattr(favorite_to_update, key, value)
-
-        db.session.commit()
-        return jsonify(favorite_to_update.to_dict())
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": "An error occurred while updating the favorite."}), 500
-
-# ***************************************************************
-# Endpoint to Create a Favorite
-# ***************************************************************
-@favorite_routes.route('/', methods=["POST"])
-def create_favorite():
-    try:
-        data = request.get_json()
-        if not data:
-            return jsonify(errors="Invalid data"), 400
-
-        if not current_user.is_authenticated:
-            return jsonify(message="You need to be logged in"), 401
-
-        new_favorite = Favorite(**data)
-        new_favorite.owner_id = current_user.id
-
         db.session.add(new_favorite)
         db.session.commit()
-
-        return jsonify({
-            "message": "Favorite successfully created",
-            "favorite": new_favorite.to_dict()
-        }), 201
+        return {"action": "added", "favorite": new_favorite.to_dict()}, 201
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": "An error occurred while creating the favorite."}), 500
+        return {"error": f"Favorite creation failed: {str(e)}"}, 500
+
 
 # ***************************************************************
-# Endpoint to Delete a Favorite
+# Endpoint to Retrieve All Favorites for a User
 # ***************************************************************
-@favorite_routes.route('/<int:id>', methods=['DELETE'])
-def delete_favorite(id):
-    favorite = Favorite.query.get(id)
+@favorite_routes.route('/')
+def get_favorites():
+    user_id = request.args.get('user_id')
 
-    if not favorite:
-        return jsonify(error="Favorite not found"), 404
-    if current_user.id != favorite.owner_id:
-        return jsonify(error="Unauthorized to delete this favorite"), 403
+    if not user_id:
+        return jsonify(error="User ID is required"), 400
 
-    try:
-        db.session.delete(favorite)
-        db.session.commit()
-        return jsonify(message="Favorite deleted successfully"), 200
-    except Exception as e:
-        db.session.rollback()
-        return jsonify(error=f"Error deleting favorite: {e}"), 500
+    favorites = Favorite.query.filter_by(user_id=user_id).all()
+    ic(favorites)
+    results = [favorite.to_dict() for favorite in favorites]
+    ic(results)
+    return jsonify(results)
+    # return jsonify([favorite.to_dict() for favorite in favorites])
+
+
+# ***************************************************************
+# Endpoint to Check if a Favorite Exists
+# ***************************************************************
+@favorite_routes.route('/check', methods=['GET'])
+def check_favorite():
+    user_id = request.args.get('user_id')
+    post_id = request.args.get('post_id')
+
+    favorite = Favorite.query.filter_by(user_id=user_id, post_id=post_id).first()
+
+    if favorite:
+        return {"exists": True}
+    else:
+        return {"exists": False}

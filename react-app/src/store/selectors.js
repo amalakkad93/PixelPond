@@ -144,14 +144,43 @@ export const selectPostComments1 = (state, postId) => {
 // =========================================================
 //               ****Aws UseSelectors****
 // =========================================================
-export const selectUploadedImageUrl = (state) => state.aws.uploadedImageUrl;
+export const selectUploadedImageUrl = (state) => state.aws?.uploadedImageUrl;
 
 // =========================================================
 //               ****Favorite UseSelectors****
 // =========================================================
+// export const selectFavoritePosts = (state) => state.favorites?.allFavorites || {};
+export const selectFavoritePosts = (state) => {
+
+  return state.favorites.allFavorites;
+};
+
+// export const selectFavoriteById =  (state) => state.favorites?.favoritesById || {};
 
 
 
+
+// Selector to get all favorites
+export const selectAllFavorites = (state) => {
+  return Object.values(state.favorites.favoritesById);
+};
+
+
+// Selector to check if a post is favorited
+export const isPostFavorited = (state, postId) => {
+  const favorites = Object.values(state.favorites.favoritesById);
+  return favorites.some(favorite => favorite.post_id === postId);
+};
+
+// Selector to get a favorite by ID
+export const selectFavoriteById = (state, favoriteId) => {
+  return state.favorites.favoritesById[favoriteId];
+};
+
+// =========================================================
+//               ****Tags UseSelectors****
+// =========================================================
+export const selectAllTags = (state) => state.posts?.tags || [];
 // =========================================================
 //               ****Paginations UseSelectors****
 // =========================================================

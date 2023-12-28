@@ -1,0 +1,62 @@
+.sign-up-container{
+ /* height:100%; */
+}
+#modal-content {
+  position: absolute;
+  background-color: white;
+  border-radius: 10px;
+  height: 750px;
+}
+
+.google-auth-btn {
+  width: 300px;
+  height: 40px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.sign-up-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+
+  margin-top: -50px;
+}
+
+.sign-up-input {
+  width: 300px;
+  height: 40px;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.sign-up-btn {
+  width: 300px;
+  height: 40px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.sign-up-btn:hover {
+  background-color: #0056b3;
+}
+
+.sign-up-ul {
+  list-style-type: none;
+  padding: 0;
+  color: red;
+}
+
+.sign-up-h1 {
+  text-align: center;
+}

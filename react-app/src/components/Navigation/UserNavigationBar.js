@@ -1,20 +1,7 @@
-import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlusSquare } from "@fortawesome/free-solid-svg-icons";
-import {
-  selectAlbumImages,
-  selectAlbumUserInfo,
-  selectSessionUser,
-  selectCurrentPage,
-} from "../../store/selectors";
-import {
-  thunkGetPostsByUserId,
-  thunkGetLoggedInUserPosts,
-} from "../../store/posts";
-import OpenModalButton from "../Modals/OpenModalButton";
-import CreatePostForm from "../Posts/PostForms/CreatePostForm";
+import React from "react";
+import { useSelector } from "react-redux";
+import { useLocation, useHistory } from "react-router-dom";
+import { selectSessionUser } from "../../store/selectors";
 import "./UserNavigationBar.css";
 
 const UserNavigationBar = ({
@@ -23,13 +10,19 @@ const UserNavigationBar = ({
   albumCount,
   onAboutClick,
   showAbout,
-  currentPage,
 }) => {
   const location = useLocation();
-  const dispatch = useDispatch();
+  const history = useHistory();
   const sessionUser = useSelector(selectSessionUser);
   const isActive = (path) => location.pathname.startsWith(path);
-  // const currentPage = useSelector(selectCurrentPage);
+
+  const photosUrl =
+    sessionUser?.id == id ? "/owner/photostream" : `/posts/users/${id}`;
+
+  const handlePhotosClick = (e) => {
+    e.preventDefault();
+    history.push(photosUrl);
+  };
 
   return (
     <div className="user-navigation-bar">
@@ -42,10 +35,11 @@ const UserNavigationBar = ({
           About
         </a>
         <a
-          href={`/posts/users/${id}`}
-          className={isActive(`/posts/users/${id}`) ? "active" : ""}
+          href={photosUrl}
+          onClick={handlePhotosClick}
+          className={isActive(photosUrl) ? "active" : ""}
         >
-          Photos {photoCount}
+          PhotoStream {photoCount}
         </a>
         <a
           href={`/albums/users/${id}`}
@@ -53,27 +47,81 @@ const UserNavigationBar = ({
         >
           Albums {albumCount}
         </a>
-        {/* {location.pathname === "/owner/photostream" && ( */}
-        <span>Create a Post</span>
-        <OpenModalButton
-          className="create-post-button"
-          buttonText={<FontAwesomeIcon icon={faPlusSquare} />}
-          modalComponent={
-            <CreatePostForm
-              onPostCreated={() =>
-                dispatch(thunkGetPostsByUserId(sessionUser.id, currentPage, 10))
-              }
-            />
-          }
-        />
-
-        {/* )} */}
+        <a
+          href={`/user/favorites-post`}
+          className={isActive(`/user/favorites-post`) ? "active" : ""}
+        >
+          View Favorites
+        </a>
       </div>
     </div>
   );
 };
 
 export default UserNavigationBar;
+
+// import React, { useState } from "react";
+// import { useDispatch, useSelector } from "react-redux";
+// import { useLocation } from "react-router-dom";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faPlusSquare } from "@fortawesome/free-solid-svg-icons";
+// import {
+//   selectAlbumImages,
+//   selectAlbumUserInfo,
+//   selectSessionUser,
+//   selectCurrentPage,
+// } from "../../store/selectors";
+// import {
+//   thunkGetPostsByUserId,
+//   thunkGetLoggedInUserPosts,
+// } from "../../store/posts";
+// import OpenModalButton from "../Modals/OpenModalButton";
+// import CreatePostForm from "../Posts/PostForms/CreatePostForm";
+// import "./UserNavigationBar.css";
+
+// const UserNavigationBar = ({
+//   id,
+//   photoCount,
+//   albumCount,
+//   onAboutClick,
+//   showAbout,
+//   currentPage,
+// }) => {
+//   const location = useLocation();
+//   const dispatch = useDispatch();
+//   const sessionUser = useSelector(selectSessionUser);
+//   const isActive = (path) => location.pathname.startsWith(path);
+//   // const currentPage = useSelector(selectCurrentPage);
+
+//   return (
+//     <div className="user-navigation-bar">
+//       <div className="navigation-links">
+//         <a
+//           href="#!"
+//           onClick={onAboutClick}
+//           className={showAbout ? "active" : ""}
+//         >
+//           About
+//         </a>
+//         <a
+//           href={`/posts/users/${id}`}
+//           className={isActive(`/posts/users/${id}`) ? "active" : ""}
+//         >
+//           Photos {photoCount}
+//         </a>
+//         <a
+//           href={`/albums/users/${id}`}
+//           className={isActive(`/albums/users/${id}`) ? "active" : ""}
+//         >
+//           Albums {albumCount}
+//         </a>
+
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default UserNavigationBar;
 
 // const UserNavigationBar = ({
 //   id,

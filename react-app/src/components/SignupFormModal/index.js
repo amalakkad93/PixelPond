@@ -6,9 +6,9 @@ import "./SignupForm.css";
 
 function SignupFormModal() {
   const dispatch = useDispatch();
-	const [firstName, setFirstName] = useState("");
+  const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-	const [age, setAge] = useState("");
+  const [age, setAge] = useState("");
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -16,10 +16,18 @@ function SignupFormModal() {
   const [errors, setErrors] = useState([]);
   const { closeModal } = useModal();
 
+  const backendBaseUrl = process.env.NODE_ENV === "development"
+  ? "http://localhost:5000"
+  : "https://gotham-eat.onrender.com";
+
+const oauthLoginUrl = `${backendBaseUrl}/api/auth/oauth_login`;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (password === confirmPassword) {
-      const data = await dispatch(signUp(firstName,lastName, age, username, email, password));
+      const data = await dispatch(
+        signUp(firstName, lastName, age, username, email, password)
+      );
       if (data) {
         setErrors(data);
       } else {
@@ -34,34 +42,46 @@ function SignupFormModal() {
 
   return (
     <>
-      <h1>Sign Up</h1>
-      <form onSubmit={handleSubmit}>
-        <ul>
-          {errors.map((error, idx) => (
-            <li key={idx}>{error}</li>
-          ))}
-        </ul>
-        <label>
-          <input
-            type="text"
-            value={email}
-            placeholder="Email"
-            onChange={(e) => setEmail(e.target.value)}
-            required
+      <div className="sign-up-container">
+        <h1 className="sign-up-h1">Sign Up</h1>
+        <button className="google-auth-btn" onClick={() => (window.location.href = oauthLoginUrl)}>
+          <img
+            className="google-login-icon"
+            src="https://img.icons8.com/color/48/000000/google-logo.png"
+            alt="Google logo"
           />
-        </label>
-        <label>
-          <input
-            type="text"
-            value={username}
-            placeholder="Username"
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </label>
-        <label>
+          <span className="google-login-text">Login with Google</span>
+        </button>
+        <form className="sign-up-form" onSubmit={handleSubmit}>
+          <ul className="sign-up-ul">
+            {errors.map((error, idx) => (
+              <li key={idx}>{error}</li>
+            ))}
+          </ul>
           <label>
             <input
+              className="sign-up-input"
+              type="text"
+              value={email}
+              placeholder="Email"
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </label>
+          <label>
+            <input
+              className="sign-up-input"
+              type="text"
+              value={username}
+              placeholder="Username"
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </label>
+
+          <label>
+            <input
+              className="sign-up-input"
               type="text"
               value={firstName}
               placeholder="First Name"
@@ -71,6 +91,7 @@ function SignupFormModal() {
           </label>
           <label>
             <input
+              className="sign-up-input"
               type="text"
               value={lastName}
               placeholder="Last Name"
@@ -78,34 +99,40 @@ function SignupFormModal() {
               required
             />
           </label>
-					<label>
-						<input
-							type="text"
-							value={age}
-							placeholder="Age"
-							onChange={(e) => setAge(e.target.value)}
-							required
-						/>
-					</label>
+          <label>
+            <input
+              className="sign-up-input"
+              type="text"
+              value={age}
+              placeholder="Age"
+              onChange={(e) => setAge(e.target.value)}
+              required
+            />
+          </label>
           <input
+            className="sign-up-input"
             type="password"
             value={password}
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-        </label>
-        <label>
-          <input
-            type="password"
-            value={confirmPassword}
-            placeholder="Confirm Password"
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-        </label>
-        <button type="submit">Sign Up</button>
-      </form>
+
+          <label>
+            <input
+              className="sign-up-input"
+              type="password"
+              value={confirmPassword}
+              placeholder="Confirm Password"
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+          </label>
+          <button className="sign-up-btn" type="submit">
+            Sign Up
+          </button>
+        </form>
+      </div>
     </>
   );
 }

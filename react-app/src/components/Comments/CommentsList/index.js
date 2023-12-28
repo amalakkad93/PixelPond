@@ -98,7 +98,7 @@ const CommentsList = ({ postId }) => {
                     }
                   />
                   <OpenModalButton
-                    className="delete-comment-button"
+                    className="delete-modal"
                     buttonText={
                       <i className="fas fa-trash" aria-hidden="true"></i>
                     }

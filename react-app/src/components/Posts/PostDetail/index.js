@@ -150,6 +150,7 @@ export default function PostDetail() {
                     }
                   />
                   <OpenModalButton
+                  className="delete-modal"
                     buttonText={
                       <FontAwesomeIcon icon={faTrash} className="trash-icon" />
                     }

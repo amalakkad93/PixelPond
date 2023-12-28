@@ -5,6 +5,7 @@ from sqlalchemy import func
 from .db import db, environment, SCHEMA, add_prefix_for_prod
 from .user import User
 from .image import Image
+from .tag import Tag
 
 class Post(db.Model):
     __tablename__ = 'posts'
@@ -28,6 +29,9 @@ class Post(db.Model):
         image = Image.query.get(self.image_id)
         image_url = image.url if image else None
 
+        tags = Tag.query.filter(Tag.post_id == self.id).all()
+        tag_list = [{'id': tag.id, 'name': tag.name} for tag in tags]
+
         return {
             'id': self.id,
             'owner_id': self.owner_id,
@@ -36,4 +40,5 @@ class Post(db.Model):
             'description': self.description,
             'created_at': self.created_at.isoformat(),
             'image_url': image_url,
+            'tags': tag_list
         }
