@@ -38,22 +38,32 @@ export function ModalProvider({ children }) {
   );
 }
 
-export function Modal() {
+export function Modal({ className }) {
   const { modalRef, modalContent, closeModal } = useContext(ModalContext);
   // If there is no div referenced by the modalRef or modalContent is not a
   // truthy value, render nothing:
   if (!modalRef || !modalRef.current || !modalContent) return null;
 
-  // Render the following component to the div referenced by the modalRef
+//   Render the following component to the div referenced by the modalRef
   return ReactDOM.createPortal(
-    <div id="modal">
+    <div id="modal" className={className}>
       <div id="modal-background" onClick={closeModal} />
-      <div id="modal-content">
+      <div id="modal-content" className={className}>
         {modalContent}
       </div>
     </div>,
     modalRef.current
   );
 }
+//   return ReactDOM.createPortal(
+//     <div className="modal">
+//       <div className="modal-background" onClick={closeModal} />
+//       <div className="modal-content">
+//         {modalContent}
+//       </div>
+//     </div>,
+//     modalRef.current
+//   );
+// }
 
 export const useModal = () => useContext(ModalContext);

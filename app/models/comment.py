@@ -28,18 +28,6 @@ class Comment(db.Model):
     def to_dict(self):
         image = Image.query.get(self.image_id)
         image_url = image.url if image else None
-        # user = User.query.get(self.user_id)
-        # user_info = {
-        #     'id': user.id,
-        #     'first_name': user.first_name,
-        #     'last_name': user.last_name,
-        #     'age': user.age,
-        #     'username': user.username,
-        #     'email': user.email,
-        #     'profile_image_url': user.profile_image_url,
-        #     'about_me': user.about_me,
-        #     'country': user.country,
-        # }
         return {
             'id': self.id,
             'user_id': self.user_id,
@@ -50,5 +38,4 @@ class Comment(db.Model):
             'created_at_display': format_review_date(self.created_at),
             'updated_at': format_review_date(self.updated_at),
             'image_url': image_url,
-            # 'user_info': user_info,
         }

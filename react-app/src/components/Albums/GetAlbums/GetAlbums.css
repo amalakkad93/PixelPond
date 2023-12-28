@@ -1,3 +1,11 @@
+
+.delete-modal #modal-content {
+  position: absolute;
+  background-color: white;
+  border-radius: 10px;
+  height: 237px;
+}
+
 /* Navigation Bar Styles */
 .album-navigation {
   background-color: #fff;

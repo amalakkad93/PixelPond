@@ -19,9 +19,9 @@ const setUserInfoById = (userInfo) => ({
   payload: userInfo,
 });
 
-const updateUserProfile = (user) => ({
-  type: UPDATE_USER_PROFILE,
-  payload: user,
+const actionUpdateUserProfile = (updatedUser) => ({
+  type: SET_USER,
+  payload: updatedUser,
 });
 
 export const authenticate = () => async (dispatch) => {
@@ -132,7 +132,7 @@ export const fetchUserInfoById = (userId) => async (dispatch, getState) => {
     const response = await fetch(`/api/users/${userId}/info`);
     if (response.ok) {
       const userInfo = await response.json();
-      dispatch({ type: 'SET_USER_INFO', payload: userInfo });
+      dispatch({ type: "SET_USER_INFO", payload: userInfo });
     } else {
       // Handle error response
     }
@@ -141,7 +141,6 @@ export const fetchUserInfoById = (userId) => async (dispatch, getState) => {
     // Handle network error
   }
 };
-
 
 // Thunk action to update user profile picture
 // Thunk action to update user profile picture
@@ -165,6 +164,29 @@ export const updateUserProfilePic = (newProfilePicUrl) => async (dispatch) => {
   } catch (error) {
     console.error("Error updating profile picture:", error);
     throw error;
+  }
+};
+
+// Update user profile action
+export const updateUserProfile = (userData) => async (dispatch) => {
+  try {
+    const response = await fetch("/api/users/update", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData),
+    });
+
+    if (response.ok) {
+      const updatedUser = await response.json();
+      dispatch(actionUpdateUserProfile(updatedUser));
+    } else {
+      // handle errors
+    }
+  } catch (error) {
+    console.error("Error updating user profile:", error);
+    // Handle error
   }
 };
 
@@ -197,11 +219,11 @@ export default function reducer(state = initialState, action) {
         },
         userInfoForDisplay: action.payload,
       };
-      case SET_USER_INFO:
-        return {
-          ...state,
-          byId: { ...state.byId, [action.payload.id]: action.payload },
-        };
+    case SET_USER_INFO:
+      return {
+        ...state,
+        byId: { ...state.byId, [action.payload.id]: action.payload },
+      };
 
     case UPDATE_USER_PROFILE:
       return { user: action.payload };

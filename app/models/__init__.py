@@ -4,5 +4,6 @@ from .album import Album
 from .image import Image
 from .post import Post
 from .comment import Comment
-from .favorite import Favorite
 from .post_album import  PostAlbum
+from .favorite import Favorite
+from .tag import Tag

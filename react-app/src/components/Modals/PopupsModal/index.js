@@ -34,6 +34,19 @@ export default function PopupsModal({ showModal, onClose }) {
             <button
               className="btn-photo-stream"
               onClick={() => {
+                history.push(`/user/profile`);
+                // setModalVisible(false);
+                onClose();
+              }}
+            >
+
+              <FontAwesomeIcon icon={faUserCircle} />
+              <span>Profile</span>
+            </button>
+
+            <button
+              className="btn-photo-stream"
+              onClick={() => {
                 history.push(`/owner/photostream`);
                 // setModalVisible(false);
                 onClose();
@@ -61,24 +74,7 @@ export default function PopupsModal({ showModal, onClose }) {
               <FontAwesomeIcon icon={faCameraRetro} />
               <span>Explore</span>
             </button>
-            <OpenModalButton
-              className="btn-create-post"
-              buttonText={
-                <>
-                  <FontAwesomeIcon icon={faPlusSquare} />
-                  <span className="btn-create-post-span">Create a Post</span>
-                </>
-              }
-              modalComponent={
-                <CreatePostForm
-                  // onPostCreated={() =>
-                  //   dispatch(
-                  //     thunkGetPostsByUserId(sessionUser.id, currentPage, 10)
-                  //   )
-                  // }
-                />
-              }
-            />
+
           </div>
         </div>
       </div>

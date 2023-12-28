@@ -1,0 +1,41 @@
+.Header {
+  background-color: #333;
+  color: white;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Header ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.Header li {
+  display: inline;
+  margin-right: 20px;
+}
+
+.Banner {
+  background-color: #5d3b8b;
+  color: white;
+  padding: 20px;
+}
+
+.Banner h2 {
+  font-size: 2em;
+}
+
+.Banner button {
+  background-color: #ffcc00;
+  color: black;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.ContentSection {
+  margin: 20px 0;
+}

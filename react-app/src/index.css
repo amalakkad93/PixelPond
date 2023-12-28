@@ -22,8 +22,11 @@ time, mark, audio, video {
   font-size: 100%;
   font: inherit;
   vertical-align: baseline;
+ 
 }
-
+ul, li {
+  cursor: pointer;
+}
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
@@ -39,9 +42,14 @@ ol, ul {
   list-style: none;
 }
 
-/* Set a background that covers the entire window with a fallback color */
-html {
+html, body {
   height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  /* height: 100%; */
   /* background: #f0f0f0 url('path-to-your-default-background.jpg') no-repeat center center fixed; */
   -webkit-background-size: cover;
   -moz-background-size: cover;
@@ -52,9 +60,8 @@ html {
 /* Ensure the root div fills the entire window */
 #root {
   min-height: 100vh;
-  /* min-height: 100%; */
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
-  /* background-color: #faf8f8; */
+  /* overflow-x: hidden; */
+
 }
