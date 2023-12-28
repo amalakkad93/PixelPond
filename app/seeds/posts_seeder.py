@@ -91,6 +91,8 @@ def undo_posts():
     if environment == "production":
         db.session.execute(f"TRUNCATE {SCHEMA}.post_albums RESTART IDENTITY CASCADE;")
         db.session.execute(f"TRUNCATE {SCHEMA}.posts RESTART IDENTITY CASCADE;")
+        db.session.execute(f"TRUNCATE {SCHEMA}.tags RESTART IDENTITY CASCADE;")
+        db.session.execute(f"TRUNCATE {SCHEMA}.images RESTART IDENTITY CASCADE;")
     else:
         db.session.execute("DELETE FROM post_albums;")
         db.session.execute("DELETE FROM posts;")

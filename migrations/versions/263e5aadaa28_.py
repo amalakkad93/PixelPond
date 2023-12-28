@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: cf5a4fbf071c
+Revision ID: 263e5aadaa28
 Revises:
-Create Date: 2023-12-27 21:38:06.592355
+Create Date: 2023-12-27 23:38:41.977965
 
 """
 import os
@@ -11,8 +11,9 @@ import sqlalchemy as sa
 environment = os.getenv("FLASK_ENV")
 SCHEMA = os.environ.get("SCHEMA")
 
+
 # revision identifiers, used by Alembic.
-revision = 'cf5a4fbf071c'
+revision = '263e5aadaa28'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -119,7 +120,7 @@ def upgrade():
     )
     if environment == "production":
         op.execute(f"ALTER TABLE tags SET SCHEMA {SCHEMA};")
-        
+
     # ### end Alembic commands ###
 
 
