@@ -5,7 +5,7 @@ from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect, generate_csrf
 from flask_login import LoginManager
 from .models import db, User
-from .api import user_routes, auth_routes, album_routes, comment_routes, post_routes, s3_routes, favorite_routes
+from .api import user_routes, auth_routes, album_routes, comment_routes, post_routes, s3_routes, favorite_routes, google_auth_routes
 from .seeds import seed_commands
 from .config import Config
 
@@ -34,6 +34,7 @@ base_url = app.config['BASE_URL']
 
 app.register_blueprint(user_routes, url_prefix='/api/users')
 app.register_blueprint(auth_routes, url_prefix='/api/auth')
+app.register_blueprint(google_auth_routes, url_prefix='/api/google_auth')
 app.register_blueprint(album_routes, url_prefix="/api/albums")
 app.register_blueprint(comment_routes, url_prefix="/api/comments")
 app.register_blueprint(post_routes, url_prefix="/api/posts")
