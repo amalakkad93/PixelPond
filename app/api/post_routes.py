@@ -551,6 +551,33 @@ def delete_comment(post_id, comment_id):
         return jsonify({"error": "An error occurred while deleting the comment."}), 500
 
 # ***************************************************************
+# Endpoint to Get Posts by Tag
+# ***************************************************************
+@post_routes.route('/by_tag/<tag_name>')
+def get_posts_by_tag(tag_name):
+    try:
+        tag = Tag.query.filter_by(name=tag_name).first()
+        if not tag:
+            return jsonify({"error": "Tag not found"}), 404
+
+        posts_query = Post.query.join(Tag).filter(Tag.name == tag_name)
+        paginated_posts = hf.paginate_query(posts_query, 'posts', process_item_callback=lambda post, _: post.to_dict())
+
+
+        owner_ids = set(post['owner_id'] for post in paginated_posts['posts'])
+        users = User.query.filter(User.id.in_(owner_ids)).all()
+        users_dict = {user.id: user.to_dict() for user in users}
+
+        for post in paginated_posts['posts']:
+            post['user_info'] = users_dict.get(post['owner_id'])
+
+        return jsonify(paginated_posts)
+    except Exception as e:
+        logging.error(f"Error fetching posts by tag {tag_name}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+# ***************************************************************
 # Endpoint to Get Tags of a Post by Id
 # ***************************************************************
 @post_routes.route('/posts/<int:post_id>/tags')

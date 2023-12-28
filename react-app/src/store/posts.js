@@ -42,8 +42,6 @@ const GET_POSTS_NOT_IN_ALBUM = "posts/GET_POSTS_NOT_IN_ALBUM";
 /** Action type to handle fetching neighbor post IDs */
 const SET_NEIGHBOR_POSTS = "posts/SET_NEIGHBOR_POSTS";
 
-
-
 /** Action type to handle errors during post operations */
 const SET_POST_ERROR = "posts/SET_POST_ERROR";
 
@@ -60,6 +58,10 @@ const CLEAR_POSTS_DATA = "CLEAR_POSTS_DATA";
 export const CLEAR_POST_DETAILS = "posts/CLEAR_POST_DETAILS";
 
 export const SET_TAGS = "posts/tags/SET_TAGS";
+
+export const GET_POSTS_BY_TAG = "posts/GET_POSTS_BY_TAG";
+
+
 // Action Creators
 
 /** Creates an action to set all available posts in the store */
@@ -173,6 +175,10 @@ const actionSetTags = (tags) => ({
   tags,
 });
 
+const actionGetPostsByTag = (posts) => ({
+  type: GET_POSTS_BY_TAG,
+  posts,
+});
 
 /** Creates an action to handle errors during post operations */
 const actionSetPostError = (errorMessage) => ({
@@ -319,8 +325,6 @@ export const thunkCreatePost = (postData) => async (dispatch, getState) => {
 
       dispatch(actionCreatePost(post));
 
-
-
       return { type: "SUCCESS", data: post };
     } else {
       const errors = await response.json();
@@ -407,8 +411,6 @@ export const thunkDeletePost = (postId) => async (dispatch) => {
   }
 };
 
-
-
 // ***************************************************************
 //  Thunk to Fetch Posts Not in Album for the Logged-In User With Pagination
 // ***************************************************************
@@ -418,7 +420,7 @@ export const thunkGetUserPostsNotInAlbum = (userId, page, perPage) => {
     [
       // (posts, userInfo) => actionGetPostsByUserId(posts, userInfo)
       (normalizedPosts, data) =>
-      actionGetPostsNotInAlbum(normalizedPosts, data.user_info),
+        actionGetPostsNotInAlbum(normalizedPosts, data.user_info),
       // actionGetPostsByUserId(normalizedPosts),
     ],
     page,
@@ -434,18 +436,35 @@ export const thunkGetUserPostsNotInAlbum = (userId, page, perPage) => {
 // Thunk to Fetch All Tags
 export const thunkGetAllTags = () => async (dispatch) => {
   try {
-    const response = await fetch('/api/posts/tags');
+    const response = await fetch("/api/posts/tags");
     if (response.ok) {
       const data = await response.json();
+      console.log("🚀 ~ file: posts.js:440 ~ thunkGetAllTags ~ data:", data);
       dispatch(actionSetTags(data.tags));
+      return data.tags;
     } else {
       const error = await response.json();
       throw new Error(error.message);
     }
   } catch (error) {
     console.error("Error fetching tags:", error);
-    // Handle error - you can dispatch another action here if needed
   }
+};
+
+export const thunkGetPostsByTag = (tag, page, perPage) => {
+  console.log("thunkGetPostsByTag called", { tag, page, perPage });
+  return fetchPaginatedData(
+    `/api/posts/by_tag/${tag}`,
+    [actionGetPostsByTag],
+    page,
+    perPage,
+    {},
+    {},
+    null,
+    [true],
+    ["posts"],
+    "postsByTag"
+  );
 };
 
 // =========================================================
@@ -486,6 +505,11 @@ const initialState = {
   pagination: {
     currentPage: 1,
     totalPages: 1,
+  },
+  postsByTag: {
+    byId: {},
+    allIds: [],
+    pagination: { currentPage: 1, totalPages: 1 },
   },
   tags: [],
 };
@@ -562,7 +586,10 @@ export default function reducer(state = initialState, action) {
       newState.userPostsNoAlbum = {
         byId: { ...newState.userPostsNoAlbum.byId, ...action.posts.byId },
         allIds: [
-          ...new Set([...newState.userPostsNoAlbum.allIds, ...action.posts.allIds]),
+          ...new Set([
+            ...newState.userPostsNoAlbum.allIds,
+            ...action.posts.allIds,
+          ]),
         ],
       };
 
@@ -732,6 +759,16 @@ export default function reducer(state = initialState, action) {
         ...state,
         tags: action.tags,
       };
+
+    case GET_POSTS_BY_TAG:
+      newState = { ...state, postsByTag: { byId: {}, allIds: [] } };
+      newState.postsByTag = {
+        byId: { ...newState.postsByTag.byId, ...action.posts.byId },
+        allIds: [
+          ...new Set([...newState.postsByTag.allIds, ...action.posts.allIds]),
+        ],
+      };
+      return newState;
     default:
       return state;
   }

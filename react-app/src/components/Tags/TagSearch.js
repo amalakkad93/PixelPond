@@ -1,30 +1,36 @@
-// TagSearch.js
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { thunkGetAllTags } from "../../store/posts";
-import {selectAllTags} from '../../store/selectors';
+import { selectAllTags } from "../../store/selectors";
 import "./TagSearch.css";
 
 const TagSearch = ({ onTagSelected, allTags }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
 
   const handleSearchChange = (e) => {
     const term = e.target.value;
     setSearchTerm(term);
     setShowDropdown(term.trim().length > 0);
+
+    if (e.key === "Enter" && term.trim()) {
+      handleTagClick(term);
+    }
   };
 
   const handleTagClick = (tag) => {
-    onTagSelected(tag); // Directly use the tag string here
-    setSearchTerm('');
+    onTagSelected(tag);
+    setSearchTerm("");
     setShowDropdown(false);
   };
 
   // Filter tags based on the search term
-  const filteredTags = searchTerm.trim() && Array.isArray(allTags)
-    ? allTags.filter(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-    : [];
+  const filteredTags =
+    searchTerm.trim() && Array.isArray(allTags)
+      ? allTags.filter((tag) =>
+          tag.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      : [];
 
   return (
     <div className="tag-search-container">
@@ -34,11 +40,16 @@ const TagSearch = ({ onTagSelected, allTags }) => {
         placeholder="Search tags..."
         value={searchTerm}
         onChange={handleSearchChange}
+        onKeyDown={handleSearchChange}
       />
       {showDropdown && filteredTags.length > 0 && (
         <div className="tag-search-dropdown">
           {filteredTags.map((tag, index) => (
-            <div key={index} className="tag-search-item" onClick={() => handleTagClick(tag)}>
+            <div
+              key={index}
+              className="tag-search-item"
+              onClick={() => handleTagClick(tag)}
+            >
               {tag}
             </div>
           ))}
@@ -49,20 +60,38 @@ const TagSearch = ({ onTagSelected, allTags }) => {
 };
 
 export default TagSearch;
+
+// import React, { useState, useEffect } from "react";
+// import { useDispatch, useSelector } from "react-redux";
+// import { thunkGetAllTags } from "../../store/posts";
+// import {selectAllTags} from '../../store/selectors';
+// import "./TagSearch.css";
+
 // const TagSearch = ({ onTagSelected, allTags }) => {
-//   const dispatch = useDispatch();
 //   const [searchTerm, setSearchTerm] = useState('');
-//   const [filteredTags, setFilteredTags] = useState([]);
-//   // const allTags = useSelector(selectAllTags);
-//   useEffect(() => {
-//     dispatch(thunkGetAllTags());
-//   }, [dispatch]);
+//   const [showDropdown, setShowDropdown] = useState(false);
 
 //   const handleSearchChange = (e) => {
 //     const term = e.target.value;
 //     setSearchTerm(term);
-//     setFilteredTags(term.trim() ? allTags.filter(tag => tag.toLowerCase().startsWith(term.toLowerCase())) : []);
+//     setShowDropdown(term.trim().length > 0);
+
+//     if (e.key === 'Enter' && term.trim()) {
+//       onTagSelected(term);
+//       setShowDropdown(false);
+//     }
 //   };
+
+//   const handleTagClick = (tag) => {
+//     onTagSelected(tag);
+//     setSearchTerm('');
+//     setShowDropdown(false);
+//   };
+
+//   // Filter tags based on the search term
+//   const filteredTags = searchTerm.trim() && Array.isArray(allTags)
+//     ? allTags.filter(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+//     : [];
 
 //   return (
 //     <div className="tag-search-container">
@@ -73,10 +102,10 @@ export default TagSearch;
 //         value={searchTerm}
 //         onChange={handleSearchChange}
 //       />
-//       {filteredTags.length > 0 && (
+//       {showDropdown && filteredTags.length > 0 && (
 //         <div className="tag-search-dropdown">
 //           {filteredTags.map((tag, index) => (
-//             <div key={index} className="tag-search-item" onClick={() => onTagSelected(tag)}>
+//             <div key={index} className="tag-search-item" onClick={() => handleTagClick(tag)}>
 //               {tag}
 //             </div>
 //           ))}
