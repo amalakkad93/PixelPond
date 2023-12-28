@@ -5,7 +5,7 @@ from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect, generate_csrf
 from flask_login import LoginManager
 from .models import db, User
-from .api import user_routes, auth_routes, album_routes, comment_routes, post_routes, favorite_routes, s3_routes
+from .api import user_routes, auth_routes, album_routes, comment_routes, post_routes, s3_routes, favorite_routes
 from .seeds import seed_commands
 from .config import Config
 

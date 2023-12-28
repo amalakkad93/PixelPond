@@ -41,16 +41,17 @@ function Navigation({ isLoaded }) {
 
           {sessionUser && (
             <li className="pop-modal-trigger" onClick={toggleModal}>
-                <span  className="white-icon">You</span>
-
+              <span className="white-icon">You</span>
 
               {/* <FontAwesomeIcon icon={faUserCircle} className="white-icon" /> */}
 
               {/* <span>{sessionUser.username}</span> */}
-              <PopupsModal
-                showModal={showModal}
-                onClose={() => setShowModal(false)}
-              />
+              {showModal && (
+                <PopupsModal
+                  showModal={showModal}
+                  onClose={() => setShowModal(false)}
+                />
+              )}
             </li>
           )}
 

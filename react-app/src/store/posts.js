@@ -59,6 +59,7 @@ const CLEAR_POSTS_DATA = "CLEAR_POSTS_DATA";
 
 export const CLEAR_POST_DETAILS = "posts/CLEAR_POST_DETAILS";
 
+export const SET_TAGS = "posts/tags/SET_TAGS";
 // Action Creators
 
 /** Creates an action to set all available posts in the store */
@@ -165,6 +166,13 @@ export const actionAddPostToAlbum = (post) => ({
   type: ADD_POST_TO_ALBUM,
   post,
 });
+
+// Action to set tags in the Redux store
+const actionSetTags = (tags) => ({
+  type: SET_TAGS,
+  tags,
+});
+
 
 /** Creates an action to handle errors during post operations */
 const actionSetPostError = (errorMessage) => ({
@@ -311,7 +319,7 @@ export const thunkCreatePost = (postData) => async (dispatch, getState) => {
 
       dispatch(actionCreatePost(post));
 
-    
+
 
       return { type: "SUCCESS", data: post };
     } else {
@@ -423,6 +431,23 @@ export const thunkGetUserPostsNotInAlbum = (userId, page, perPage) => {
   );
 };
 
+// Thunk to Fetch All Tags
+export const thunkGetAllTags = () => async (dispatch) => {
+  try {
+    const response = await fetch('/api/posts/tags');
+    if (response.ok) {
+      const data = await response.json();
+      dispatch(actionSetTags(data.tags));
+    } else {
+      const error = await response.json();
+      throw new Error(error.message);
+    }
+  } catch (error) {
+    console.error("Error fetching tags:", error);
+    // Handle error - you can dispatch another action here if needed
+  }
+};
+
 // =========================================================
 //                   ****Reducer****
 // =========================================================
@@ -462,6 +487,7 @@ const initialState = {
     currentPage: 1,
     totalPages: 1,
   },
+  tags: [],
 };
 
 /**
@@ -701,6 +727,11 @@ export default function reducer(state = initialState, action) {
         // neighborPosts: {},
       };
 
+    case SET_TAGS:
+      return {
+        ...state,
+        tags: action.tags,
+      };
     default:
       return state;
   }

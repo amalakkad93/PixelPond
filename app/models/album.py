@@ -23,7 +23,6 @@ class Album(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod('users.id'), ondelete='CASCADE'), nullable=False)
-    # post_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod('posts.id'), ondelete='CASCADE'), nullable=False)
     title = db.Column(db.String(255), nullable=False)
 
     def to_dict(self):
@@ -47,22 +46,3 @@ class Album(db.Model):
             'title': self.title,
             'images': album_images
         }
-    # def to_dict(self):
-    #     posts = Post.query.filter_by(album_id=self.id).all()
-    #     album_images = []
-    #     for post in posts:
-    #         image = Image.query.get(post.image_id)
-    #         if image:
-    #             album_images.append({
-    #                 'album_id': self.id,
-    #                 'id': image.id,
-    #                 'url': image.url,
-    #                 'post_id': post.id
-    #             })
-
-    #     return {
-    #         'id': self.id,
-    #         'user_id': self.user_id,
-    #         'title': self.title,
-    #         'images': album_images
-    #     }

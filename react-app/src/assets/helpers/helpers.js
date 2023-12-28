@@ -1,16 +1,20 @@
 import React, { useState, useEffect, useMemo } from "react";
-import image1 from "../image1.png";
-import image2 from "../image2.jpg";
-import image3 from "../image3.jpg";
-import image4 from "../image4.jpg";
-import image5 from "../image5.jpg";
-import image6 from "../image6.jpg";
-import image7 from "../image7.jpg";
-import image8 from "../image8.jpg";
-import image9 from "../image9.jpg";
-import image10 from "../image10.jpg";
+import image1 from "../images/image1.jpg";
+import image2 from "../images/image2.jpg";
+import image3 from "../images/image3.jpg";
+import image4 from "../images/image4.jpg";
+import image5 from "../images/image5.jpg";
+import image6 from "../images/image6.jpg";
+import image7 from "../images/image7.jpg";
+import image8 from "../images/image8.jpg";
+import image9 from "../images/image9.jpg";
+import image10 from "../images/image10.jpg";
+import image11 from "../images/image11.jpg";
+import image12 from "../images/image12.jpg";
+import image13 from "../images/image13.jpg";
 
-export const useDynamicBackground = () => {
+
+export const useDynamicBackground = (bgContainerRef) => {
   const [bgImageIndex, setBgImageIndex] = useState(0);
   const images = useMemo(
     () => [
@@ -24,29 +28,30 @@ export const useDynamicBackground = () => {
       image8,
       image9,
       image10,
+      image11,
+      image12,
+      image13,
     ],
     []
   );
 
   useEffect(() => {
-    // Change the background image every 60 seconds
+    // Change the background image every 10 seconds
     const interval = setInterval(() => {
       setBgImageIndex(prevIndex => (prevIndex + 1) % images.length);
-    }, 60000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [images.length]);
 
   useEffect(() => {
-    // Apply the background image
-    document.documentElement.style.backgroundImage = `url(${images[bgImageIndex]})`;
+    if (bgContainerRef.current) {
+      bgContainerRef.current.style.backgroundImage = `url(${images[bgImageIndex]})`;
+      bgContainerRef.current.style.backgroundSize = 'cover';
+      bgContainerRef.current.style.backgroundPosition = 'center';
+    }
 
-    return () => {
-      // Revert to default background when the component unmounts
-      document.documentElement.style.background = "white";
-      document.documentElement.style.backgroundImage = "none";
-    };
-  }, [bgImageIndex, images]);
+  }, [bgImageIndex, images, bgContainerRef]);
 
   return images[bgImageIndex]; // This line is optional, only if you need to use the current image elsewhere
 
@@ -80,25 +85,26 @@ export const useDynamicBackground = () => {
 
 
 
+
 // Custom hook to generate a dynamic greeting based on the time of day
-// export const useDynamicGreeting = () => {
-//   const [greeting, setGreeting] = useState('');
+export const useDynamicGreeting = () => {
+  const [greeting, setGreeting] = useState('');
 
-//   useEffect(() => {
-//     const now = new Date();
-//     const hour = now.getHours();
+  useEffect(() => {
+    const now = new Date();
+    const hour = now.getHours();
 
-//     if (hour < 12) {
-//       setGreeting('Good Morning! Order breakfast near you');
-//     } else if (hour < 18) {
-//       setGreeting('Good Afternoon! Order lunch near you');
-//     } else {
-//       setGreeting('Good Evening! Order dinner near you');
-//     }
+    if (hour < 12) {
+      setGreeting('Good Morning! Discover inspiring photos to start your day');
+    } else if (hour < 18) {
+      setGreeting('Good Afternoon! Explore our photography collections');
+    } else {
+      setGreeting('Good Evening! Relax with stunning evening shots');
+    }
 
-//     // Set document title
-//     document.title = greeting;
-//   }, [greeting]);
+    // Update document title only when greeting changes
+    document.title = `Pixel Pond - ${greeting}`;
+  }, [greeting]);
 
-//   return greeting;
-// };
+  return greeting;
+};

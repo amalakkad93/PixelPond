@@ -1,5 +1,5 @@
 
-  #modal-content {
+  .delete-modal #modal-content {
     position: absolute;
     background-color: white;
     border-radius: 10px;

@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Route, Switch } from "react-router-dom";
-
-
 
 import SignupFormModal from "./components/SignupFormModal";
 import LoginFormModal from "./components/LoginFormModal";
@@ -15,13 +13,20 @@ import UserProfile from "./components/Users/UserProfile/UserProfile";
 import ImageDisplay from "./components/ImageDisplay";
 import Explore from "./components/Posts/Explore";
 import NotFound from "./components/NotFound";
+import HomePage from "./components/Home/HomePage";
+import UserProfileManager from "./components/Users/UserProfile/UserProfileManager";
+import FavoritesPosts from "./components/Favorites";
 
 function App() {
   const dispatch = useDispatch();
   const [isLoaded, setIsLoaded] = useState(false);
+
+  const sessionUser = useSelector(state => state.session.user);
+
   useEffect(() => {
     dispatch(authenticate()).then(() => setIsLoaded(true));
   }, [dispatch]);
+
 
   return (
     <>
@@ -30,6 +35,10 @@ function App() {
         <>
           {/* <PageResetter /> */}
           <Switch>
+
+          <Route exact path="/">
+            {sessionUser ? <GetPosts mode="all" /> : <HomePage />}
+          </Route>
             <Route path="/login">
               <LoginFormModal />
             </Route>
@@ -59,8 +68,14 @@ function App() {
             <Route path="/posts/users/:userId">
               <ImageDisplay mode="photoStream" key="photoStream" />
             </Route>
-            <Route path="/users/show">
+            <Route path="/user/profile/edit">
+              <UserProfileManager />
+            </Route>
+            <Route path="/user/profile">
               <UserProfile />
+            </Route>
+            <Route path="/user/favorites-post">
+              <FavoritesPosts  />
             </Route>
             <Route path="/posts/:postId">
               <PostDetail />

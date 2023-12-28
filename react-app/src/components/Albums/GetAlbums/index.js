@@ -176,6 +176,7 @@ const GetAlbums = () => {
                         }
                       />
                       <OpenModalButton
+                        className="delete-modal"
                         buttonText={<FontAwesomeIcon icon={faTrashAlt} />}
                         modalComponent={
                           <DeleteAlbum
