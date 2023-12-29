@@ -466,6 +466,28 @@ export const thunkGetPostsByTag = (tag, page, perPage) => {
     "postsByTag"
   );
 };
+export const thunkGetPostsByTags = (tags, page, perPage) => {
+  console.log("thunkGetPostsByTag called", { tags, page, perPage });
+
+
+  const queryParams = new URLSearchParams();
+  tags.forEach(tag => queryParams.append('tags', tag));
+  queryParams.append('page', page);
+  queryParams.append('per_page', perPage);
+
+  return fetchPaginatedData(
+    `/api/posts/by_tags?${queryParams.toString()}`,
+    [actionGetPostsByTag],
+    page,
+    perPage,
+    {},
+    {},
+    null,
+    [true],
+    ["posts"],
+    "postsByTag"
+  );
+};
 
 // =========================================================
 //                   ****Reducer****

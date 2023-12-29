@@ -1,4 +1,4 @@
-from app.models import db, User, Post, Image, PostAlbum, Tag, environment, SCHEMA
+from app.models import db, User, Post, Image, PostAlbum, Tag, PostTag, environment, SCHEMA
 from datetime import datetime
 from sqlalchemy.sql import text
 
@@ -131,7 +131,7 @@ def seed_posts():
             "title": "Himeji Castle ",
             "description": "Himeji Castle is a UNESCO World Heritage site.",
             "url": "https://cdn.pixabay.com/photo/2020/07/23/01/16/heritage-5430081_1280.jpg",
-            "tags": ["Historical", "Castles", "Japan", "UNESCO"],
+            "tags": ["Historical", "Castles", "Japan", "UNESCO", "Architecture"],
         },
         {
             "owner_id": 2,
@@ -159,7 +159,7 @@ def seed_posts():
             "title": "Elephant in the wild",
             "description": "This elephant is a masterpiece of nature.",
             "url": "https://cdn.pixabay.com/photo/2013/05/17/07/12/elephant-111695_640.jpg",
-            "tags": ["Wildlife", "Elephants", "Nature", "Safari"],
+            "tags": ["Wildlife", "Elephants", "Nature", "Safari", "Animal", "Africa"],
         },
         {
             "owner_id": 3,
@@ -168,7 +168,7 @@ def seed_posts():
             "title": "lion in the wild",
             "description": "King of the jungle",
             "url": "https://cdn.pixabay.com/photo/2013/08/10/16/58/lion-171311_1280.jpg",
-            "tags": ["Wildlife", "Lions", "Nature", "Safari"],
+            "tags": ["Wildlife", "Lions", "Nature", "Safari", "Animal", "Africa"],
         },
         {
             "owner_id": 3,
@@ -177,7 +177,7 @@ def seed_posts():
             "title": "Zebra",
             "description": "Zebra's are beautiful animals with their unique stripes.",
             "url": "https://cdn.pixabay.com/photo/2018/04/15/20/54/zebra-3322846_1280.jpg",
-            "tags": ["Wildlife", "Zebras", "Nature", "Safari"],
+            "tags": ["Wildlife", "Zebras", "Nature", "Safari", "Animal", "Africa"],
         },
         {
             "owner_id": 3,
@@ -186,7 +186,7 @@ def seed_posts():
             "title": "Warthog",
             "description": "Bomba in the wild",
             "url": "https://cdn.pixabay.com/photo/2021/09/08/06/41/warthog-6605830_640.jpg",
-            "tags": ["Wildlife", "Warthogs", "Nature", "Safari"],
+            "tags": ["Wildlife", "Warthogs", "Nature", "Safari", "Animal", "Africa"],
         },
         {
             "owner_id": 3,
@@ -195,7 +195,7 @@ def seed_posts():
             "title": "Leopard",
             "description": "Leopard is a beautiful animal with its unique spots.",
             "url": "https://images.squarespace-cdn.com/content/v1/5f493cff22bf2e6278c00067/1618241766799-K5JATU4LCIYQI95HEXEE/IMG_8199.JPG",
-            "tags": ["Wildlife", "Leopards", "Nature", "Safari"],
+            "tags": ["Wildlife", "Leopards", "Nature", "Safari", "Animal", "Africa"],
         },
         {
             "owner_id": 3,
@@ -204,7 +204,7 @@ def seed_posts():
             "title": "Sleepy Lion",
             "description": "Just a sleepy lion enjoying his nap.",
             "url": "https://cdn.pixabay.com/photo/2020/07/12/13/17/lion-5397215_1280.jpg",
-            "tags": ["Wildlife", "Lions", "Nature", "Safari"],
+            "tags": ["Wildlife", "Lions", "Nature", "Safari", "Animal", "Africa"],
         },
         {
             "owner_id": 3,
@@ -213,7 +213,7 @@ def seed_posts():
             "title": "Beautiful Cheetah",
             "description": "Cheetah is a beautiful animal with its unique spots.",
             "url": "https://cdn.pixabay.com/photo/2022/04/19/21/22/cheetah-7143835_1280.jpg",
-            "tags": ["Wildlife", "Cheetahs", "Nature", "Safari"],
+            "tags": ["Wildlife", "Cheetahs", "Nature", "Safari", "Animal", "Africa"],
         },
         {
             "owner_id": 3,
@@ -222,7 +222,7 @@ def seed_posts():
             "title": "Hot air balloon",
             "description": "Hot air balloon in the sky of the savannah.",
             "url": "https://cdn.pixabay.com/photo/2023/03/13/04/49/hot-air-balloon-7848426_1280.jpg",
-            "tags": ["Adventure", "Hot Air Balloons", "Sky", "Travel"],
+            "tags": ["Adventure", "Hot Air Balloons", "Sky", "Travel", "Africa", "Savannah"],
         },
         # Owner ID: 4
         {
@@ -232,7 +232,7 @@ def seed_posts():
             "title": "Lemon butterflyfish",
             "description": "Lemon butterflyfish, also known as the Milletseed Butterflyfish, is a beautiful fish.",
             "url": "https://cdn.pixabay.com/photo/2014/06/30/08/02/zitronenfalter-fish-380037_1280.jpg",
-            "tags": ["Marine Life", "Fish", "Tropical", "Aquarium"],
+            "tags": ["Marine Life", "Fish", "Tropical", "Aquarium", "Ocean"],
         },
         {
             "owner_id": 4,
@@ -241,7 +241,7 @@ def seed_posts():
             "title": "Great White Shark",
             "description": "strong and powerful jaws",
             "url": "https://www.science.org/do/10.1126/science.aaz3311/full/shark_1280p-1644902865557.jpg",
-            "tags": ["Marine Life", "Sharks", "Ocean", "Predators"],
+            "tags": ["Marine Life", "Sharks", "Ocean", "Predators", "Aquarium"],
         },
         {
             "owner_id": 4,
@@ -250,7 +250,7 @@ def seed_posts():
             "title": "Blue Whale",
             "description": "Blue Whale are so majestic.",
             "url": "https://images.rawpixel.com/image_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIzLTEwL3Jhd3BpeGVsb2ZmaWNlNV9waG90b3JlYWxpc2l0Y19zaG90X29mX2FfYmx1ZV93aGFsZV9qdW1waW5nX291dF9lZWUyZjZmYS0yZjA5LTQ2YjgtOTcyMC01OWUzNGJhZGYwMzJfMS5qcGc.jpg",
-            "tags": ["Marine Life", "Whales", "Ocean", "Majestic"],
+            "tags": ["Marine Life", "Whales", "Ocean", "Majestic", "Aquarium"],
         },
         {
             "owner_id": 4,
@@ -259,7 +259,7 @@ def seed_posts():
             "title": "Killer Whales",
             "description": "Killer Whales are so majestic.",
             "url": "https://img.freepik.com/premium-photo/group-killer-whales-are-swimming-ocean_900101-15702.jpg",
-            "tags": ["Marine Life", "Orcas", "Ocean", "Predators"],
+            "tags": ["Marine Life", "Orcas", "Ocean", "Predators", "Whales"],
         },
         {
             "owner_id": 4,
@@ -286,7 +286,7 @@ def seed_posts():
             "title": "Sukiyaki",
             "description": "Sukiyaki is a delicious Japanese dish.",
             "url": "https://lindseyeatsla.com/wp-content/uploads/2020/07/Lindseyeatsla_Sukiyaki-12.jpg",
-            "tags": ["Cuisine", "Japanese", "Hot Pot", "Food"],
+            "tags": ["Cuisine", "Japanese", "Japan", "Hot Pot", "Food"],
         },
         {
             "owner_id": 4,
@@ -308,6 +308,8 @@ def seed_posts():
 
     posts_and_images = []
     post_album_links = []
+    tag_map = {}
+    post_tags = []
 
     for data in post_data:
         image_id = image_id_map.get(data["url"])
@@ -315,7 +317,7 @@ def seed_posts():
             post = Post(
                 owner_id=data["owner_id"],
                 # album_id=data['album_id'],
-                image_id=image_id, 
+                image_id=image_id,
                 title=data["title"],
                 description=data["description"],
                 created_at=datetime.utcnow(),
@@ -326,22 +328,50 @@ def seed_posts():
             post_album = PostAlbum(post_id=post.id, album_id=data["album_id"])
             post_album_links.append(post_album)
 
-            for tag in data["tags"]:
-                tag_entity = Tag(name=tag, post_id=post.id)
-                db.session.add(tag_entity)
+            # for tag in data["tags"]:
+            #     tag_entity = Tag(name=tag, post_id=post.id)
+            #     db.session.add(tag_entity)
+
+            for tag_name in data["tags"]:
+                # Check if tag already exists
+                if tag_name not in tag_map:
+                    tag = Tag(name=tag_name)
+                    db.session.add(tag)
+                    db.session.flush()
+                    tag_map[tag_name] = tag.id
+
+                # Create PostTag entry
+                post_tag = PostTag(post_id=post.id, tag_id=tag_map[tag_name])
+                post_tags.append(post_tag)
 
     # db.session.add_all(posts_and_images)
+    db.session.add_all(post_tags)
     db.session.add_all(post_album_links)
     db.session.commit()
 
 
+# def undo_posts():
+#     if environment == "production":
+#         db.session.execute(f"TRUNCATE {SCHEMA}.post_albums RESTART IDENTITY CASCADE;")
+#         db.session.execute(f"TRUNCATE {SCHEMA}.tags RESTART IDENTITY CASCADE;")
+#         db.session.execute(f"TRUNCATE {SCHEMA}.posts RESTART IDENTITY CASCADE;")
+#         db.session.execute(f"TRUNCATE {SCHEMA}.images RESTART IDENTITY CASCADE;")
+#     else:
+#         db.session.execute("DELETE FROM post_albums;")
+#         db.session.execute("DELETE FROM tags;")
+#         db.session.execute("DELETE FROM posts;")
+#         db.session.execute("DELETE FROM images;")
+#     db.session.commit()
+
 def undo_posts():
     if environment == "production":
+        db.session.execute(f"TRUNCATE {SCHEMA}.post_tags RESTART IDENTITY CASCADE;")
         db.session.execute(f"TRUNCATE {SCHEMA}.post_albums RESTART IDENTITY CASCADE;")
         db.session.execute(f"TRUNCATE {SCHEMA}.tags RESTART IDENTITY CASCADE;")
         db.session.execute(f"TRUNCATE {SCHEMA}.posts RESTART IDENTITY CASCADE;")
         db.session.execute(f"TRUNCATE {SCHEMA}.images RESTART IDENTITY CASCADE;")
     else:
+        db.session.execute("DELETE FROM post_tags;")
         db.session.execute("DELETE FROM post_albums;")
         db.session.execute("DELETE FROM tags;")
         db.session.execute("DELETE FROM posts;")

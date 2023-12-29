@@ -1,14 +1,28 @@
+/**
+ * Explore Component
+ *
+ * This component is responsible for displaying the main content of the Explore page.
+ * It handles the logic for fetching posts based on the selected tag, pagination,
+ * and managing the state for the current page, total pages, and selected tag.
+ *
+ * The component uses Redux thunks for data fetching and selectors for accessing
+ * the Redux state. It includes the TagSearch component for tag-based searching
+ * and ImageGrid for displaying the posts.
+ */
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
-import Masonry from "react-masonry-css";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 import Pagination from "../../Pagination";
 import Spinner from "../../Spinner";
 import ImageGrid from "../../ImageDisplay/ImageGrid/ImageGrid";
-import { thunkGetAllPosts, thunkGetAllTags, thunkGetPostsByTag } from "../../../store/posts";
-import { thunkFetchAllFavorites } from "../../../store/favorites";
-import { setLoading, setError, clearUIState } from "../../../store/ui";
+import TagSearch from "../../Tags/TagSearch";
+import {
+  thunkGetAllPosts,
+  thunkGetAllTags,
+  thunkGetPostsByTag,
+  thunkGetPostsByTags,
+} from "../../../store/posts";
+import {thunkFetchAllFavorites} from "../../../store/favorites";
+import { setLoading } from "../../../store/ui";
 import {
   selectLoading,
   selectAllPostsImages,
@@ -16,17 +30,15 @@ import {
   selectAllTags,
   selectPostsByTag,
 } from "../../../store/selectors";
-import TagSearch from "../../Tags/TagSearch";
 import "./Explore.css";
 
 const Explore = () => {
   const dispatch = useDispatch();
-  const history = useHistory();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [selectedTag, setSelectedTag] = useState("");
-  const [filteredPosts, setFilteredPosts] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]); // Changed to an array
 
+  // Redux store state
   const loading = useSelector(selectLoading);
   const postsImages = useSelector(selectAllPostsImages);
   const postsByTag = useSelector(selectPostsByTag);
@@ -34,27 +46,14 @@ const Explore = () => {
   const allTags = useSelector(selectAllTags);
   const perPage = 10;
 
-  // const fetchData = async (page) => {
-  //   dispatch(setLoading(true));
-  //   const response = await dispatch(thunkGetAllPosts(page, perPage));
-
-  //   if (response) {
-  //     setCurrentPage(response.current_page);
-  //     setTotalPages(response.total_pages);
-  //   }
-
-  //   dispatch(setLoading(false));
-  // };
-
-  const fetchData = async (page, tag = "") => {
+  // Fetches posts based on the current page and selected tags
+  const fetchData = async (page, tags = []) => {
     dispatch(setLoading(true));
     try {
       let response;
-      if (tag) {
-
-        response = await dispatch(thunkGetPostsByTag(tag, page, perPage));
+      if (tags.length > 0) {
+        response = await dispatch(thunkGetPostsByTags(tags, page, perPage));
       } else {
-
         response = await dispatch(thunkGetAllPosts(page, perPage));
       }
 
@@ -67,10 +66,13 @@ const Explore = () => {
     }
   };
 
-
-  const onTagSelected = (tag) => {
-    setSelectedTag(tag);
-    fetchData(1, tag);
+  // Update tag selection
+  const updateTagSelection = (tag) => {
+    const updatedTags = selectedTags.includes(tag)
+      ? selectedTags.filter(t => t !== tag)
+      : [...selectedTags, tag];
+    setSelectedTags(updatedTags);
+    fetchData(1, updatedTags);
   };
 
   useEffect(() => {
@@ -80,21 +82,29 @@ const Explore = () => {
   }, [dispatch, sessionUser?.id]);
 
   useEffect(() => {
-    fetchData(currentPage, selectedTag);
-  }, [currentPage, selectedTag, dispatch]);
+    fetchData(currentPage, selectedTags);
+  }, [currentPage, selectedTags, dispatch]);
 
   useEffect(() => {
     dispatch(thunkGetAllTags());
   }, [dispatch]);
 
+  if (loading) return <Spinner />;
 
-  if (loading) {
-    return <Spinner />;
-  }
-  const displayPosts = selectedTag ? postsByTag : postsImages;
+  // Decide which posts to display: by selected tags or all posts
+  const displayPosts = selectedTags.length > 0 ? postsByTag : postsImages;
+
   return (
     <div className="explore-container">
-      <TagSearch allTags={allTags} onTagSelected={onTagSelected} />
+      <TagSearch
+        allTags={allTags}
+        selectedTags={selectedTags}
+        onTagSelected={updateTagSelection}
+        onClearTag={() => {
+          setSelectedTags([]);
+          fetchData(currentPage);
+        }}
+      />
 
       <ImageGrid displayedImages={displayPosts} />
 
@@ -102,91 +112,112 @@ const Explore = () => {
         totalItems={totalPages * perPage}
         itemsPerPage={perPage}
         currentPage={currentPage}
-        onPageChange={(newPage) => fetchData(newPage, selectedTag)}
+        onPageChange={(newPage) => fetchData(newPage, selectedTags)}
       />
     </div>
   );
 };
+
 export default Explore;
 
 // import React, { useEffect, useState } from "react";
 // import { useDispatch, useSelector } from "react-redux";
-// import { useHistory } from "react-router-dom";
-// import Masonry from "react-masonry-css";
-// import { LazyLoadImage } from "react-lazy-load-image-component";
 // import Pagination from "../../Pagination";
 // import Spinner from "../../Spinner";
-// import {thunkGetAllPosts,} from "../../../store/posts";
-// import { setLoading, setError, clearUIState } from "../../../store/ui";
-// import { selectLoading, selectAllPostsImages,} from "../../../store/selectors";
+// import ImageGrid from "../../ImageDisplay/ImageGrid/ImageGrid";
+// import TagSearch from "../../Tags/TagSearch";
+// import {
+//   thunkGetAllPosts,
+//   thunkGetAllTags,
+//   thunkGetPostsByTag,
+// } from "../../../store/posts";
+// import {thunkFetchAllFavorites} from "../../../store/favorites";
+// import { setLoading } from "../../../store/ui";
+// import {
+//   selectLoading,
+//   selectAllPostsImages,
+//   selectSessionUser,
+//   selectAllTags,
+//   selectPostsByTag,
+// } from "../../../store/selectors";
 // import "./Explore.css";
-
-// const ImageItem = ({ imageUrl, postId, onClick }) => (
-//   <div className="photo-item" onClick={() => onClick(postId)}>
-//     <LazyLoadImage src={imageUrl} alt="Photo" effect="blur" />
-//   </div>
-// );
 
 // const Explore = () => {
 //   const dispatch = useDispatch();
-//   const history = useHistory();
-//   const loading = useSelector(selectLoading);
-//   const postsImages = useSelector(selectAllPostsImages);
 //   const [currentPage, setCurrentPage] = useState(1);
 //   const [totalPages, setTotalPages] = useState(0);
+//   const [selectedTag, setSelectedTag] = useState("");
+
+//   // Loading and posts state from Redux store
+//   const loading = useSelector(selectLoading);
+//   const postsImages = useSelector(selectAllPostsImages);
+//   const postsByTag = useSelector(selectPostsByTag);
+//   const sessionUser = useSelector(selectSessionUser);
+//   const allTags = useSelector(selectAllTags);
 //   const perPage = 10;
 
-//   const fetchData = async (page) => {
+//   // Fetches posts based on the current page and selected tag.
+//   const fetchData = async (page, tag = "") => {
 //     dispatch(setLoading(true));
-//     const response = await dispatch(thunkGetAllPosts(page, perPage));
+//     try {
+//       let response;
+//       response = tag
+//         ? await dispatch(thunkGetPostsByTag(tag, page, perPage))
+//         : await dispatch(thunkGetAllPosts(page, perPage));
 
-//     if (response) {
-//       setCurrentPage(response.current_page);
-//       setTotalPages(response.total_pages);
+//       if (response) {
+//         setCurrentPage(response.current_page);
+//         setTotalPages(response.total_pages);
+//       }
+//     } finally {
+//       dispatch(setLoading(false));
 //     }
-
-//     dispatch(setLoading(false));
 //   };
 
+//   // Fetch user favorites if a session user exists.
 //   useEffect(() => {
-//     fetchData(currentPage);
-//   }, [currentPage, dispatch]);
+//     if (sessionUser?.id) {
+//       dispatch(thunkFetchAllFavorites(sessionUser?.id));
+//     }
+//   }, [dispatch, sessionUser?.id]);
 
-//   const breakpointColumnsObj = {
-//     default: 4,
-//     1100: 3,
-//     700: 2,
-//     500: 1,
-//   };
+//   // Fetch posts whenever currentPage or selectedTag changes.
+//   useEffect(() => {
+//     fetchData(currentPage, selectedTag);
+//   }, [currentPage, selectedTag, dispatch]);
 
-//   if (loading) {
-//     return <Spinner />;
-//   }
+//   // Fetch all tags for the tag search functionality.
+//   useEffect(() => {
+//     dispatch(thunkGetAllTags());
+//   }, [dispatch]);
+
+//   if (loading) return <Spinner />;
+
+//   // Decides which posts to display: by tag or all posts.
+//   const displayPosts = selectedTag ? postsByTag : postsImages;
 
 //   return (
-//     <div className="all-posts-images">
-//       {postsImages && postsImages.length > 0 && (
-//         <Masonry
-//           breakpointCols={breakpointColumnsObj}
-//           className="photo-grid"
-//           columnClassName="photo-grid_column"
-//         >
-//           {postsImages.map((post) => (
-//             <ImageItem
-//               key={post.post_id}
-//               imageUrl={post.image_url}
-//               postId={post.post_id}
-//               onClick={() => history.push(`/posts/${post.post_id}`)}
-//             />
-//           ))}
-//         </Masonry>
-//       )}
+//     <div className="explore-container">
+//       <TagSearch
+//         allTags={allTags}
+//         selectedTag={selectedTag}
+//         onTagSelected={(tag) => {
+//           setSelectedTag(tag);
+//           fetchData(1, tag);
+//         }}
+//         onClearTag={() => {
+//           setSelectedTag("");
+//           fetchData(currentPage);
+//         }}
+//       />
+
+//       <ImageGrid displayedImages={displayPosts} />
 
 //       <Pagination
 //         totalItems={totalPages * perPage}
 //         itemsPerPage={perPage}
 //         currentPage={currentPage}
-//         onPageChange={(newPage) => fetchData(newPage)}
+//         onPageChange={(newPage) => fetchData(newPage, selectedTag)}
 //       />
 //     </div>
 //   );
