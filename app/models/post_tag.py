@@ -6,8 +6,10 @@ from .db import db, environment, SCHEMA, add_prefix_for_prod
 from .user import User
 from .image import Image
 
-class Tag(db.Model):
-    __tablename__ = 'tags'
+
+class PostTag(db.Model):
+    __tablename__ = "post_tags"
+
     def add_prefix_for_prod(attr):
         if environment == "production":
             return f"{SCHEMA}.{attr}"
@@ -15,14 +17,23 @@ class Tag(db.Model):
             return attr
 
     if environment == "production":
-        __table_args__ = {'schema': SCHEMA}
+        __table_args__ = {"schema": SCHEMA}
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
-    # post_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod('posts.id')))
+    post_id = db.Column(
+        db.Integer,
+        db.ForeignKey(add_prefix_for_prod("posts.id"), ondelete="CASCADE"),
+        nullable=False,
+    )
+    tag_id = db.Column(
+        db.Integer,
+        db.ForeignKey(add_prefix_for_prod("tags.id"), ondelete="CASCADE"),
+        nullable=True,
+    )
 
     def to_dict(self):
-            return {
-                'id': self.id,
-                'name': self.name
-            }
+        return {
+            "id": self.id,
+            "post_id": self.post_id,
+            "tag_id": self.tag_id,
+        }

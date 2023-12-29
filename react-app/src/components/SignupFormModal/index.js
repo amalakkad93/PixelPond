@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useModal } from "../../context/Modal";
 import { signUp } from "../../store/session";
+import GoogleAuthButton from "../GoogleAuthButton"
 import "./SignupForm.css";
 
 function SignupFormModal() {
@@ -15,12 +16,6 @@ function SignupFormModal() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState([]);
   const { closeModal } = useModal();
-
-  const backendBaseUrl = process.env.NODE_ENV === "development"
-  ? "http://localhost:5000"
-  : "https://gotham-eat.onrender.com";
-
-const oauthLoginUrl = `${backendBaseUrl}/api/auth/oauth_login`;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,14 +39,7 @@ const oauthLoginUrl = `${backendBaseUrl}/api/auth/oauth_login`;
     <>
       <div className="sign-up-container">
         <h1 className="sign-up-h1">Sign Up</h1>
-        <button className="google-auth-btn" onClick={() => (window.location.href = oauthLoginUrl)}>
-          <img
-            className="google-login-icon"
-            src="https://img.icons8.com/color/48/000000/google-logo.png"
-            alt="Google logo"
-          />
-          <span className="google-login-text">Login with Google</span>
-        </button>
+        <GoogleAuthButton />
         <form className="sign-up-form" onSubmit={handleSubmit}>
           <ul className="sign-up-ul">
             {errors.map((error, idx) => (

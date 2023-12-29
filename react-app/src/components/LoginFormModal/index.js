@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { login } from "../../store/session";
 import { useDispatch } from "react-redux";
 import { useModal } from "../../context/Modal";
+import GoogleAuthButton from "../GoogleAuthButton"
 import "./LoginForm.css";
 
 function LoginFormModal() {
@@ -10,13 +11,6 @@ function LoginFormModal() {
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState([]);
   const { closeModal } = useModal();
-
-  const backendBaseUrl =
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:5000"
-      : "https://gotham-eat.onrender.com";
-
-  const oauthLoginUrl = `${backendBaseUrl}/api/auth/oauth_login`;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -71,14 +65,7 @@ function LoginFormModal() {
           Demo User
         </button>
 
-        <button onClick={() => (window.location.href = oauthLoginUrl)}>
-          <img
-            className="google-login-icon"
-            src="https://img.icons8.com/color/48/000000/google-logo.png"
-            alt="Google logo"
-          />
-          <span className="google-login-text">Login with Google</span>
-        </button>
+        <GoogleAuthButton />
       </form>
     </>
   );
