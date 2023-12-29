@@ -1,31 +1,116 @@
 .tag-search-container {
   position: relative;
+  font-family: Arial, sans-serif;
+  max-width: 300px;
+  margin: auto;
+  margin-top: 20px;
 }
 
 .tag-search-input {
   width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 10px 15px;
+  border-radius: 20px;
+  border: 2px solid #5d3b8b;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  outline: none;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.tag-search-input:focus {
+  border-color: #b39ddb;
 }
 
 .tag-search-dropdown {
   position: absolute;
+  top: 100%;
+  left: 0;
   width: 100%;
-  border: 1px solid #ccc;
-  background-color: white;
-  z-index: 10;
-  border-radius: 4px;
-  max-height: 200px;
-  overflow-y: auto;
+  background-color: #ffffff;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+  z-index: 100;
 }
 
 .tag-search-item {
-  padding: 8px;
+  padding: 10px 15px;
   cursor: pointer;
-  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s;
 }
 
 .tag-search-item:hover {
-  background-color: #f0f0f0;
+  background-color: #ffcc00;
+  color: #303030;
+}
+
+.tag-selected-button {
+  background-color: #ffcc00;
+  color: #303030;
+  border: none;
+  padding: 6px 12px;
+  margin-top: 10px;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.tag-selected-button:hover {
+  background-color: #e6b800;
+}
+
+.tag-selected-button span {
+  margin-left: 5px;
+  font-weight: bold;
+}
+
+
+.tag-search-input::placeholder {
+  color: #5d3b8b;
+  opacity: 1;
+}
+
+.tag-search-input:focus::placeholder {
+  color: transparent;
+}
+
+/* Media query for tablets */
+@media (max-width: 768px) {
+  .tag-search-container {
+    max-width: 250px;
+  }
+
+  .tag-search-input,
+  .tag-search-dropdown {
+    font-size: 14px;
+  }
+
+  .tag-search-item,
+  .tag-selected-button {
+    padding: 8px 12px;
+  }
+}
+
+/* Media query for mobile phones */
+@media (max-width: 480px) {
+  .tag-search-container {
+    max-width: 100%;
+    margin: 0 10px;
+  }
+
+  .tag-search-input {
+    padding: 8px 10px;
+    border-radius: 15px;
+  }
+
+  .tag-search-item {
+    padding: 6px 10px;
+  }
+
+  .tag-selected-button {
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 12px;
+  }
+
 }

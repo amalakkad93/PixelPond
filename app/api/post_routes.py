@@ -2,8 +2,9 @@ from flask import Blueprint, jsonify, request, current_app
 from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import joinedload
+from sqlalchemy.sql import func
 from http import HTTPStatus
-from app.models import Post, User, Image, Comment, Album, PostAlbum, Tag, db
+from app.models import Post, User, Image, Comment, Album, PostAlbum, Tag, PostTag, db
 from .. import helper_functions as hf
 from icecream import ic
 import requests
@@ -551,6 +552,71 @@ def delete_comment(post_id, comment_id):
         return jsonify({"error": "An error occurred while deleting the comment."}), 500
 
 # ***************************************************************
+# Endpoint to Get Posts by Tag
+# ***************************************************************
+@post_routes.route('/by_tag/<tag_name>')
+def get_posts_by_tag(tag_name):
+    try:
+        tag = Tag.query.filter_by(name=tag_name).first()
+        if not tag:
+            return jsonify({"error": "Tag not found"}), 404
+
+        posts_query = Post.query \
+            .join(PostTag, PostTag.post_id == Post.id) \
+            .join(Tag, Tag.id == PostTag.tag_id) \
+            .filter(Tag.name == tag_name)
+
+        paginated_posts = hf.paginate_query(posts_query, 'posts', process_item_callback=lambda post, _: post.to_dict())
+
+        owner_ids = set(post['owner_id'] for post in paginated_posts['posts'])
+        users = User.query.filter(User.id.in_(owner_ids)).all()
+        users_dict = {user.id: user.to_dict() for user in users}
+
+        for post in paginated_posts['posts']:
+            post['user_info'] = users_dict.get(post['owner_id'])
+
+        return jsonify(paginated_posts)
+    except Exception as e:
+        logging.error(f"Error fetching posts by tag {tag_name}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+# ***************************************************************
+# Endpoint to Get Posts by Multiple Tags
+# ***************************************************************
+@post_routes.route('/by_tags')
+def get_posts_by_tags():
+    try:
+        tag_names = request.args.getlist('tags')
+
+        if not tag_names:
+            return jsonify({"error": "No tags provided"}), 400
+
+        subquery = db.session.query(PostTag.post_id)\
+            .join(Tag, PostTag.tag_id == Tag.id)\
+            .filter(Tag.name.in_(tag_names))\
+            .group_by(PostTag.post_id)\
+            .having(func.count(PostTag.tag_id) == len(tag_names)).subquery()
+
+        posts_query = Post.query\
+            .join(subquery, Post.id == subquery.c.post_id)
+
+        paginated_posts = hf.paginate_query(posts_query, 'posts', process_item_callback=lambda post, _: post.to_dict())
+
+        owner_ids = set(post['owner_id'] for post in paginated_posts['posts'])
+        users = User.query.filter(User.id.in_(owner_ids)).all()
+        users_dict = {user.id: user.to_dict() for user in users}
+
+        for post in paginated_posts['posts']:
+            post['user_info'] = users_dict.get(post['owner_id'])
+
+        return jsonify(paginated_posts)
+    except Exception as e:
+        logging.error(f"Error fetching posts by tags {tag_names}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+# ***************************************************************
 # Endpoint to Get Tags of a Post by Id
 # ***************************************************************
 @post_routes.route('/posts/<int:post_id>/tags')
@@ -560,13 +626,18 @@ def get_tags_by_post(post_id):
         if not post:
             return jsonify({"error": "Post not found."}), 404
 
-        tags = Tag.query.filter(Tag.post_id == post_id).all()
+        tags_query = Tag.query \
+            .join(PostTag, PostTag.tag_id == Tag.id) \
+            .filter(PostTag.post_id == post_id)
+
+        tags = tags_query.all()
         tag_list = [{'id': tag.id, 'name': tag.name} for tag in tags]
 
         return jsonify({'tags': tag_list})
     except Exception as e:
         logging.error(f"Error fetching tags for post (ID: {post_id}): {e}")
         return jsonify({"error": str(e)}), 500
+
 
 # ***************************************************************
 # Endpoint to Get All Tags

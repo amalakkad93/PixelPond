@@ -7,3 +7,4 @@ from .comment import Comment
 from .post_album import  PostAlbum
 from .favorite import Favorite
 from .tag import Tag
+from .post_tag import PostTag

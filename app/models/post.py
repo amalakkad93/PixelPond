@@ -6,6 +6,7 @@ from .db import db, environment, SCHEMA, add_prefix_for_prod
 from .user import User
 from .image import Image
 from .tag import Tag
+from .post_tag import PostTag
 
 class Post(db.Model):
     __tablename__ = 'posts'
@@ -29,8 +30,10 @@ class Post(db.Model):
         image = Image.query.get(self.image_id)
         image_url = image.url if image else None
 
-        tags = Tag.query.filter(Tag.post_id == self.id).all()
-        tag_list = [{'id': tag.id, 'name': tag.name} for tag in tags]
+        # tags = Tag.query.filter(Tag.post_id == self.id).all()
+        # tag_list = [{'id': tag.id, 'name': tag.name} for tag in tags]
+        post_tags = PostTag.query.filter(PostTag.post_id == self.id).all()
+        tag_list = [Tag.query.get(post_tag.tag_id).to_dict() for post_tag in post_tags if post_tag.tag_id]
 
         return {
             'id': self.id,
