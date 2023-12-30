@@ -1,18 +1,32 @@
 .photo-stream-container {
   max-width: 1000px;
   margin: 0 auto;
+  /* margin-top: 20px; */
+  /* margin-top: 163px; */
 }
 
 .banner-container {
   /* height: auto; */
+   height: 200px;
+   position: relative;
 }
 
 .banner {
   /* height: 200px;
   position: relative; */
+  position: relative;
 
 }
-
+.user-details-container {
+  position: absolute;
+  /* top: 50%; */
+  left: 0;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  /* align-items: center; */
+  padding-left: 20px;
+}
 .banner-image {
   width: 100%;
   height: 200px;
@@ -33,7 +47,8 @@
 }
 
 .user-details {
-  margin-top: -218px;
+  /* margin-top: -200px; */
+  margin-top: -161px;
 }
 
 .owner-details {
@@ -66,7 +81,8 @@
 }
 
 .edit-icon {
-  color: #000;
+  /* color: #000; */
+  color: #2d545e;
 
 }
 
@@ -78,6 +94,7 @@
 .user-name h1 {
   margin: 0;
   font-size: 1.5em;
+  color: black
 
 }
 
@@ -89,7 +106,8 @@
 
 .album-navigation a {
   text-decoration: none;
-  color: #333;
+  /* color: #333; */
+  color: #2d545e;
   margin: 0 20px;
   padding: 10px;
   font-weight: bold;
@@ -98,8 +116,8 @@
 
 .album-navigation a.active,
 .album-navigation a:hover {
-  color: #0063dc;
-  border-bottom: 2px solid #0063dc;
+  color: #2d545e;
+  border-bottom: 2px solid #c89666;
 }
 
 .photo-grid {
@@ -116,17 +134,12 @@
 }
 
 
-.no-content-message {
-  text-align: center;
-  margin-top: 20px;
-}
-
 .create-post-button {
   display: inline-block;
   margin-top: 10px;
   padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
+  background-color: #2d545e;
+  color: #fff;
   border: none;
   border-radius: 4px;
   text-decoration: none;
@@ -134,9 +147,31 @@
   cursor: pointer;
   margin-bottom:10px;
 }
+.create-post-button:hover {
+  background-color: #12343b;
+}
 
 .Images-and-create-btn{
   /* display: flex;
   justify-content: space-between;
   align-items: center; */
+}
+
+.no-content-message {
+  text-align: center;
+  margin-top: 20px;
+  background-color: #e1b382;
+  color: #2d545e;
+}
+.no-content-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #333;
+  font-size: 1.2rem;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  flex-direction: column;
 }

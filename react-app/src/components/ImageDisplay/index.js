@@ -1,10 +1,4 @@
-import React, {
-  memo,
-  useEffect,
-  useState,
-  useRef,
-  useCallback,
-} from "react";
+import React, { memo, useEffect, useState, useRef, useCallback } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useParams, useHistory, useLocation, Link } from "react-router-dom";
 
@@ -13,9 +7,7 @@ import Pagination from "../Pagination";
 import UserNavigationBar from "../Navigation/UserNavigationBar";
 import Spinner from "../Spinner";
 import { thunkGetAlbumImages } from "../../store/albums";
-import {
-  thunkGetPostsByUserId,
-} from "../../store/posts";
+import { thunkGetPostsByUserId } from "../../store/posts";
 import { setLoading, setError, clearUIState } from "../../store/ui";
 import {
   selectAlbumDetails,
@@ -33,7 +25,7 @@ import UserProfileManager from "../Users/UserProfile/UserProfileManager";
 import ProfilePictureUpdater from "../Users/UserProfile/ProfilePictureUpdater";
 import AddToAlbumModal from "../Albums/AddToAlbumModal";
 import ImageItem from "./ImageItem/ImageItem";
-import {thunkFetchAllFavorites} from "../../store/favorites";
+import { thunkFetchAllFavorites } from "../../store/favorites";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUserCircle,
@@ -42,12 +34,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import "./ImageDisplay.css";
 import ImageGrid from "./ImageGrid/ImageGrid";
+import BannerNavbar from "../Navigation/BannerNavbar";
 
 const ImageDisplay = memo(({ mode, albumId }) => {
   // Hooks for accessing Redux state and React Router functionality
   const dispatch = useDispatch();
   const { userId } = useParams();
-
 
   // Selectors to retrieve data from the Redux store
   const userInfo = useSelector(selectUserInfo);
@@ -74,8 +66,6 @@ const ImageDisplay = memo(({ mode, albumId }) => {
   const toggleAbout = useCallback(() => {
     setShowAbout((prevShowAbout) => !prevShowAbout);
   }, []);
-
-
 
   // Function to fetch data based on the current mode and page
   const fetchData = useCallback(
@@ -134,14 +124,12 @@ const ImageDisplay = memo(({ mode, albumId }) => {
     fetchData(currentPage);
 
     return () => (isMounted.current = false);
-
   }, [dispatch, fetchData, currentPage, mode]);
 
   // Effect to re-fetch data if the album title changes
   useEffect(() => {
     if (mode === "albumImages") {
       fetchData(currentPage);
-
     }
   }, [albumTitle, fetchData, currentPage, mode]);
 
@@ -151,8 +139,7 @@ const ImageDisplay = memo(({ mode, albumId }) => {
     }
   }, [dispatch, sessionUser?.id]);
 
-
-  if (isLoading) return <Spinner />;
+  if (loading) return <Spinner />;
 
   // Helper functions and variables to process and display images
   const profilePhoto = userInfo?.profile_picture || null;
@@ -211,62 +198,63 @@ const ImageDisplay = memo(({ mode, albumId }) => {
       ) : (
         <>
           {mode !== "albumImages" && (
-            <div className="banner-container">
-              <div className="banner">
-                {images && images[0] ? (
-                  <LazyLoadImage
-                    src={images[0]}
-                    effect="blur"
-                    className="banner-image"
-                    width={"100%"}
-                    height={"300px"}
-                  />
+        <div className="banner-container">
+        <div className="banner">
+          {images && images[0] ? (
+            <LazyLoadImage
+              src={images[0]}
+              effect="blur"
+              className="banner-image"
+              width={"100%"}
+              height={"200px"}
+            />
+          ) : (
+            <LazyLoadImage
+              src={defult_banner_image}
+              effect="blur"
+              className="banner-image"
+              width={"100%"}
+              height={"300px"}
+            />
+          )}
+
+          <div className="user-details-container">
+            <div className={mode === "ownerPhotoStream" ? "owner-details" : "user-details"}>
+              <div className="profile-picture-container">
+                {profilePhoto ? (
+                  <img src={profilePhoto} alt="Profile" className="profile-picture" />
                 ) : (
-                  <LazyLoadImage
-                    src={defult_banner_image}
-                    effect="blur"
-                    className="banner-image"
-                    width={"100%"}
-                    height={"300px"}
-                  />
+                  <FontAwesomeIcon icon={faUserCircle} className="profile-picture" />
                 )}
-
-                <div
-                  className={
-                    mode === "ownerPhotoStream"
-                      ? "owner-details"
-                      : "user-details"
-                  }
-                >
-                  <div
-                    className="profile-picture-container"
-                    onClick={() =>
-                      mode === "ownerPhotoStream" &&
-                      setIsEditingProfilePic(true)
-                    }
-                  >
-                    {profilePhoto && profilePhoto ? (
-                      <img
-                        src={profilePhoto}
-                        alt="Profile"
-                        className="profile-picture"
-                      />
-                    ) : (
-                      <FontAwesomeIcon
-                        icon={faUserCircle}
-                        className="profile-picture"
-                      />
-                    )}
-                  </div>
-
-                  <div className="user-name">
-                    <h1>{userName || "User Name"}</h1>
-                  </div>
-                </div>
+              </div>
+              <div className="user-name">
+                <h1>{userName || "User Name"}</h1>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+            // <BannerNavbar
+            //   userInfo={userInfo}
+            //   images={images}
+            //   profilePhoto={profilePhoto}
+            //   userName={userName}
+            //   mode={mode}
+            //   setIsEditingProfilePic={setIsEditingProfilePic}
+            // />
           )}
           <div className="photo-stream-container">
+            {mode !== "albumImages" && (
+              <nav className="album-navigation">
+                <UserNavigationBar
+                  id={navigationUserId}
+                  onAboutClick={toggleAbout}
+                  photoCount={imageLength}
+                  currentPage={currentPage}
+                />
+              </nav>
+            )}
             {noContentMessage && (
               <div className="no-content-message">
                 <h1>You have no public photos.</h1>
@@ -289,16 +277,6 @@ const ImageDisplay = memo(({ mode, albumId }) => {
                 />
               </div>
             )}
-            {mode !== "albumImages" && (
-              <nav className="album-navigation">
-                <UserNavigationBar
-                  id={navigationUserId}
-                  onAboutClick={toggleAbout}
-                  photoCount={imageLength}
-                  currentPage={currentPage}
-                />
-              </nav>
-            )}
 
             {showAbout && (
               <div className="about-section">
@@ -306,7 +284,7 @@ const ImageDisplay = memo(({ mode, albumId }) => {
               </div>
             )}
             {/* <div className="Images-and-create-btn"> */}
-            {mode === "ownerPhotoStream" && (
+            {mode === "ownerPhotoStream" && displayedImages.length > 0 && (
               <div className="create-post-container">
                 <OpenModalButton
                   className="create-post-button"
@@ -335,17 +313,6 @@ const ImageDisplay = memo(({ mode, albumId }) => {
                 sessionUser={sessionUser}
               />
             )}
-            {/* {mode === "favoritesPost" && (
-              <ImageGrid
-                displayedImages={displayedImages}
-                mode={mode}
-                albumInfo={albumInfo}
-                sessionUser={sessionUser?.id}
-
-              />
-            )} */}
-            {/* </div> */}
-            {/* Pagination */}
             <Pagination
               totalItems={totalPages * perPage}
               itemsPerPage={perPage}

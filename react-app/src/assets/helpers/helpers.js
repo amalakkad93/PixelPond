@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useDispatch } from "react-redux";
+import { getPresignedUrl } from "../../store/aws";
+
 import image1 from "../images/image1.jpg";
 import image2 from "../images/image2.jpg";
 import image3 from "../images/image3.jpg";
@@ -107,4 +110,49 @@ export const useDynamicGreeting = () => {
   }, [greeting]);
 
   return greeting;
+};
+
+export const uploadImageToAWS = async (file, dispatch) => {
+  if (!file) {
+      throw new Error("No file selected");
+  }
+
+  try {
+      const presignedData = await dispatch(getPresignedUrl(file.name, file.type));
+      if (!presignedData) {
+          throw new Error("Failed to get presigned URL");
+      }
+
+      const xhr = new XMLHttpRequest();
+      xhr.open("PUT", presignedData.presignedUrl);
+      xhr.setRequestHeader("Content-Type", file.type);
+      xhr.send(file);
+
+      return new Promise((resolve, reject) => {
+          xhr.onload = () => {
+              if (xhr.status === 200) {
+                  resolve(presignedData.fileUrl + "?t=" + new Date().getTime());
+              } else {
+                  reject("Failed to upload image");
+              }
+          };
+          xhr.onerror = () => reject("Error during the upload");
+      });
+  } catch (error) {
+      console.error("Error uploading file:", error);
+      throw error;
+  }
+};
+
+
+export const createInputChangeHandler = (setterFunction, setValidationObj, validationField) => (e) => {
+  // Update the value using the provided setter function
+  setterFunction(e.target.value);
+
+  // Clear the validation error for the specific field
+  setValidationObj((prev) => {
+    const newObj = { ...prev };
+    delete newObj[validationField];
+    return newObj;
+  });
 };

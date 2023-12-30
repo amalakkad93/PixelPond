@@ -17,11 +17,17 @@ import ImageGrid from "../../ImageDisplay/ImageGrid/ImageGrid";
 import TagSearch from "../../Tags/TagSearch";
 import {
   thunkGetAllPosts,
+  // thunkGetAllTags,
+  // thunkGetPostsByTag,
+  // thunkGetPostsByTags,
+} from "../../../store/posts";
+import {
   thunkGetAllTags,
   thunkGetPostsByTag,
   thunkGetPostsByTags,
-} from "../../../store/posts";
-import {thunkFetchAllFavorites} from "../../../store/favorites";
+} from "../../../store/tags";
+
+import { thunkFetchAllFavorites } from "../../../store/favorites";
 import { setLoading } from "../../../store/ui";
 import {
   selectLoading,
@@ -36,14 +42,16 @@ const Explore = () => {
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [selectedTags, setSelectedTags] = useState([]); // Changed to an array
+  const [selectedTags, setSelectedTags] = useState([]);
 
   // Redux store state
   const loading = useSelector(selectLoading);
   const postsImages = useSelector(selectAllPostsImages);
   const postsByTag = useSelector(selectPostsByTag);
+  console.log("🚀 ~ file: index.js:51 ~ Explore ~ postsByTag :", postsByTag )
   const sessionUser = useSelector(selectSessionUser);
   const allTags = useSelector(selectAllTags);
+  console.log("🚀 ~ file: index.js:47 ~ Explore ~ allTags:", allTags);
   const perPage = 10;
 
   // Fetches posts based on the current page and selected tags
@@ -69,7 +77,7 @@ const Explore = () => {
   // Update tag selection
   const updateTagSelection = (tag) => {
     const updatedTags = selectedTags.includes(tag)
-      ? selectedTags.filter(t => t !== tag)
+      ? selectedTags.filter((t) => t !== tag)
       : [...selectedTags, tag];
     setSelectedTags(updatedTags);
     fetchData(1, updatedTags);
@@ -105,9 +113,12 @@ const Explore = () => {
           fetchData(currentPage);
         }}
       />
-
-      <ImageGrid displayedImages={displayPosts} />
-
+      <div className="explor-photo-grid">
+        <ImageGrid
+          className="explor-photo-grid"
+          displayedImages={displayPosts}
+        />
+      </div>
       <Pagination
         totalItems={totalPages * perPage}
         itemsPerPage={perPage}

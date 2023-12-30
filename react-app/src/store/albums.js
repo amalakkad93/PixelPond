@@ -36,6 +36,7 @@ export const actionGetAlbumsByUserId = (albums) => {
       title: album.title,
       user_id: album.user_id,
       images: normalizedImages,
+      user_info: album.user_info,
     };
   });
 
@@ -95,6 +96,7 @@ export const thunkGetAlbumImages = (albumId, page, perPage) => {
 };
 
 export const thunkGetAlbumsByUserId = (userId, page, perPage) => {
+  console.log("🚀 ~ file: albums.js:99 ~ thunkGetAlbumsByUserId ~ userId:", userId)
   return fetchPaginatedData(
     `/api/albums/user/${userId}`,
     [

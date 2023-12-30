@@ -4,14 +4,13 @@ import { getPresignedUrl, deleteImage } from "../../store/aws";
 
 import "./AWSImageUploader.css";
 
-const AWSImageUploader =  ({ setUploadImage }) => {
+const AWSImageUploader =  ({ setUploadImage, setImageError, onUploadSuccess }) => {
   const dispatch = useDispatch();
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [preview, setPreview] = useState(null);
 
-  const [fileForUpload, setFileForUpload] = useState(null);
   useEffect(() => {
     if (file) {
       const upload = async () => {
@@ -26,8 +25,10 @@ const AWSImageUploader =  ({ setUploadImage }) => {
         return new Promise((resolve, reject) => {
           xhr.onload = () => {
             if (xhr.status === 200) {
+              onUploadSuccess(true);
               resolve(presignedData.fileUrl + "?t=" + new Date().getTime());
             } else {
+              onUploadSuccess(false);
               reject("Failed to upload image");
             }
           };
@@ -38,14 +39,24 @@ const AWSImageUploader =  ({ setUploadImage }) => {
 
       setUploadImage(() => upload);
     }
-  }, [file, dispatch, setUploadImage]);
+  }, [file, dispatch, setUploadImage, onUploadSuccess]);
 
   const handleFileChange = (e) => {
     const newFile = e.target.files[0];
     if (newFile) {
+      if (!newFile.type.startsWith("image/")) {
+        setImageError("Please select an image file");
+        return;
+      }
+
+      if (newFile.size > 5242880) {
+        setImageError("File size must be less than 5MB");
+        return;
+      }
+
+      setImageError("");
       setFile(newFile);
       setPreview(URL.createObjectURL(newFile));
-      setFileForUpload(newFile);
     }
   };
 
@@ -64,6 +75,7 @@ const AWSImageUploader =  ({ setUploadImage }) => {
           </div>
         </div>
       )}
+       { setImageError && <p className="error">{setImageError}</p> }
     </div>
   );
 };

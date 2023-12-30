@@ -1,5 +1,6 @@
 // import { normalizeArray, fetchPaginatedData } from "../assets/helpers/storesHelpers";
 import { normalizeArray } from "../assets/helpers/storesHelpers";
+import {getPresignedUrl} from "./aws";
 import {
   fetchPaginatedData,
   actionSetCurrentPage,
@@ -57,9 +58,6 @@ const CLEAR_POSTS_DATA = "CLEAR_POSTS_DATA";
 
 export const CLEAR_POST_DETAILS = "posts/CLEAR_POST_DETAILS";
 
-export const SET_TAGS = "posts/tags/SET_TAGS";
-
-export const GET_POSTS_BY_TAG = "posts/GET_POSTS_BY_TAG";
 
 
 // Action Creators
@@ -169,16 +167,6 @@ export const actionAddPostToAlbum = (post) => ({
   post,
 });
 
-// Action to set tags in the Redux store
-const actionSetTags = (tags) => ({
-  type: SET_TAGS,
-  tags,
-});
-
-const actionGetPostsByTag = (posts) => ({
-  type: GET_POSTS_BY_TAG,
-  posts,
-});
 
 /** Creates an action to handle errors during post operations */
 const actionSetPostError = (errorMessage) => ({
@@ -312,41 +300,72 @@ export const thunkGetNeighborPosts = (postId, userId) => async (dispatch) => {
 // ***************************************************************
 //  Thunk to Create a New Post
 // ***************************************************************
-export const thunkCreatePost = (postData) => async (dispatch, getState) => {
-  try {
-    const response = await fetch("/api/posts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(postData),
-    });
+export const thunkCreatePost = (postData, image) => {
+  return async (dispatch) => {
+    try {
+      if (image) {
+        const { presignedUrl, fileUrl } = await dispatch(getPresignedUrl(image.name, image.type));
+        if (!presignedUrl) {
+          throw new Error('Failed to upload image');
+        }
 
-    if (response.ok) {
-      const post = await response.json();
+        await fetch(presignedUrl, {
+          method: "PUT",
+          body: image,
+          headers: {
+            "Content-Type": image.type,
+          },
+        });
 
-      dispatch(actionCreatePost(post));
+        postData.image_url = fileUrl;
+      }
 
-      return { type: "SUCCESS", data: post };
-    } else {
-      const errors = await response.json();
-      dispatch(actionSetPostError(errors.error || "Error creating post."));
-      return { type: "FAILURE", error: errors };
+      const postResponse = await fetch('/api/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(postData),
+      });
+
+      if (!postResponse.ok) {
+        const errorData = await postResponse.json();
+        throw new Error(errorData.error);
+      }
+
+      const postDataResult = await postResponse.json();
+      return postDataResult;
+    } catch (error) {
+      dispatch(setError(error.message || 'An unexpected error occurred while creating the post'));
+      throw error;
     }
-  } catch (error) {
-    console.error("Error in thunkCreatePost: ", error);
-    dispatch(actionSetPostError("An error occurred while creating the post."));
-    return { type: "ERROR", error };
-  }
+  };
 };
 
 // ***************************************************************
 //  Thunk to Update a Post
 // ***************************************************************
-export const thunkUpdatePost = (postId, updatedData) => async (dispatch) => {
+export const thunkUpdatePost = (postId, updatedData, image) => async (dispatch) => {
   if (!postId) {
     return { type: "ERROR", error: { message: "Invalid post ID" } };
   }
 
   try {
+    if (image) {
+      const { presignedUrl, fileUrl } = await dispatch(getPresignedUrl(image.name, image.type));
+      if (!presignedUrl) {
+        throw new Error('Failed to upload image');
+      }
+
+      await fetch(presignedUrl, {
+        method: "PUT",
+        body: image,
+        headers: {
+          "Content-Type": image.type,
+        },
+      });
+
+      updatedData.image_url = fileUrl;
+    }
+
     const response = await fetch(`/api/posts/${postId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -355,12 +374,9 @@ export const thunkUpdatePost = (postId, updatedData) => async (dispatch) => {
 
     if (response.ok) {
       const data = await response.json();
-
       dispatch(actionUpdatePost(data));
-
       dispatch(thunkGetPostDetails(postId));
-
-      return { type: "SUCCESS", data };
+      return data;
     } else {
       const errors = await response.json();
       console.error("Update Post Error: ", errors);
@@ -385,7 +401,6 @@ export const thunkUpdatePost = (postId, updatedData) => async (dispatch) => {
 // ***************************************************************
 //  Thunk to Delete a Post
 // ***************************************************************
-
 export const thunkDeletePost = (postId) => async (dispatch) => {
   try {
     const response = await fetch(`/api/posts/${postId}`, {
@@ -433,61 +448,7 @@ export const thunkGetUserPostsNotInAlbum = (userId, page, perPage) => {
   );
 };
 
-// Thunk to Fetch All Tags
-export const thunkGetAllTags = () => async (dispatch) => {
-  try {
-    const response = await fetch("/api/posts/tags");
-    if (response.ok) {
-      const data = await response.json();
-      console.log("🚀 ~ file: posts.js:440 ~ thunkGetAllTags ~ data:", data);
-      dispatch(actionSetTags(data.tags));
-      return data.tags;
-    } else {
-      const error = await response.json();
-      throw new Error(error.message);
-    }
-  } catch (error) {
-    console.error("Error fetching tags:", error);
-  }
-};
 
-export const thunkGetPostsByTag = (tag, page, perPage) => {
-  console.log("thunkGetPostsByTag called", { tag, page, perPage });
-  return fetchPaginatedData(
-    `/api/posts/by_tag/${tag}`,
-    [actionGetPostsByTag],
-    page,
-    perPage,
-    {},
-    {},
-    null,
-    [true],
-    ["posts"],
-    "postsByTag"
-  );
-};
-export const thunkGetPostsByTags = (tags, page, perPage) => {
-  console.log("thunkGetPostsByTag called", { tags, page, perPage });
-
-
-  const queryParams = new URLSearchParams();
-  tags.forEach(tag => queryParams.append('tags', tag));
-  queryParams.append('page', page);
-  queryParams.append('per_page', perPage);
-
-  return fetchPaginatedData(
-    `/api/posts/by_tags?${queryParams.toString()}`,
-    [actionGetPostsByTag],
-    page,
-    perPage,
-    {},
-    {},
-    null,
-    [true],
-    ["posts"],
-    "postsByTag"
-  );
-};
 
 // =========================================================
 //                   ****Reducer****
@@ -775,22 +736,6 @@ export default function reducer(state = initialState, action) {
         singlePost: {},
         // neighborPosts: {},
       };
-
-    case SET_TAGS:
-      return {
-        ...state,
-        tags: action.tags,
-      };
-
-    case GET_POSTS_BY_TAG:
-      newState = { ...state, postsByTag: { byId: {}, allIds: [] } };
-      newState.postsByTag = {
-        byId: { ...newState.postsByTag.byId, ...action.posts.byId },
-        allIds: [
-          ...new Set([...newState.postsByTag.allIds, ...action.posts.allIds]),
-        ],
-      };
-      return newState;
     default:
       return state;
   }

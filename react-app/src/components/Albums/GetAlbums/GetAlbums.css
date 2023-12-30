@@ -5,10 +5,18 @@
   border-radius: 10px;
   height: 237px;
 }
+.albums-main-container{
+  display: flex;
+  flex-direction: column;
+
+}
+.banner-container{
+  height: 200px;
+}
 
 /* Navigation Bar Styles */
 .album-navigation {
-  background-color: #fff;
+  /* background-color:  #12343b; */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 10px 20px;
 }
@@ -18,17 +26,6 @@
   display: flex;
   justify-content: center;
   gap: 20px;
-}
-
-.user-navigation-bar a {
-  color: #007bff;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.user-navigation-bar a.active {
-  color: #0056b3;
-  border-bottom: 2px solid #007bff;
 }
 
 /* About Section */
@@ -45,10 +42,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 60vh;
+  height: 20vh;
   text-align: center;
   color: #333;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   background-color: #f0f0f0;
   border-radius: 10px;
   /* padding: 20px; */
@@ -209,4 +206,23 @@
 
 .pagination-item.active {
   font-weight: bold;
+}
+
+
+.albums-banner-container {
+  position: relative;
+}
+
+.albums-banner {
+  position: relative;
+}
+.albums-user-info-container {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  /* align-items: center; */
+  padding-left: 20px;
 }

@@ -1,0 +1,60 @@
+/* Tag Styling */
+.react-select__multi-value {
+  background-color: #e0e0e0; /* Light grey background */
+  border-radius: 2px; /* Rounded corners */
+  display: flex;
+  align-items: center;
+  margin: 2px;
+  padding: 0 5px;
+}
+
+.react-select__multi-value__label {
+  color: #333; /* Dark text color */
+  font-size: 0.9em;
+}
+
+.react-select__multi-value__remove {
+  cursor: pointer;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.react-select__multi-value__remove:hover {
+  background-color: #c0c0c0; /* Slightly darker grey on hover */
+}
+
+.react-select__control {
+  border: 1px solid #ccc; /* Light grey border */
+  box-shadow: none; /* Remove default shadow */
+  height: 40px; /* Set the height */
+}
+
+.react-select__control--is-focused {
+  border-color: #666; /* Darker border when focused */
+  box-shadow: none;
+}
+
+.react-select__menu {
+  border: 1px solid #ccc; /* Light grey border for the menu */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Slight shadow for depth */
+}
+
+.react-select__menu-list {
+  padding: 0; /* Remove default padding */
+}
+
+.react-select__option {
+  padding: 8px 12px; /* Padding for options */
+}
+
+.react-select__option--is-focused {
+  background-color: #f0f0f0; /* Light grey background for focused option */
+}
+
+.react-select__option--is-selected {
+  background-color: #d0d0d0; /* Slightly darker grey for selected option */
+}

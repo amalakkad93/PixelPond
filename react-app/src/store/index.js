@@ -8,6 +8,7 @@ import comments from './comments'
 import aws from './aws'
 import ui from './ui'
 import favorites from './favorites'
+import tags from './tags'
 
 const rootReducer = combineReducers({
   session,
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   comments,
   aws,
   favorites,
+  tags,
   ui
 });
 

@@ -25,13 +25,13 @@
 }
 
 .profile-icon {
-  color: #5d3b8b;
+  color: white;
   font-size: 2rem;
   transition: color 0.3s;
 }
 
 .profile-icon:hover {
-  color: #b39ddb;
+  color: rgb(195, 195, 195)
 }
 
 .profile-dropdown {
@@ -42,7 +42,7 @@
   position: absolute;
   top: 60px;
   right: 10px;
-  background-color: #ffffff;
+  background-color: #e1b382;
   border-radius: 8px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   width: 220px;
@@ -50,7 +50,7 @@
   z-index: 1000;
   transform: translateY(-10px);
   transition: opacity 0.3s, transform 0.3s;
-  border: 1px solid #5d3b8b;
+  border: 1px solid #c89666;
 }
 
 .profile-dropdown.hidden {
@@ -68,7 +68,7 @@
 
 .divider {
   height: 1px;
-  background-color: #e1e1e1;
+  background-color: #12343b;
   margin: 0;
   width: calc(100% - 30px);
   align-self: center;
@@ -88,18 +88,18 @@
 }
 
 .logout-btn, .center-menu .black-text-button {
-  background-color: #ffcc00;
+  background-color: #2d545e;
   border: none;
   cursor: pointer;
   font-size: large;
   transition: color 0.3s;
   width: 100%;
   text-align: center;
-  color: #303030;
+  color: #e1b382;
 }
 
 .logout-btn:hover, .center-menu:hover .black-text-button:hover {
-  background-color: #e6b800;
+  background-color: #12343b;
 }
 
 /* .black-text-button {
@@ -115,7 +115,7 @@
 }
 
 .black-text-button:hover {
-  background-color: #e6b800;
+  background-color: #12343b;
 }
 
 

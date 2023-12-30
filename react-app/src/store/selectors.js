@@ -37,15 +37,7 @@ export const selectAllPostsImages = (state) => {
   });
 };
 
-export const selectPostsByTag = (state) => {
-  return state.posts.postsByTag.allIds.map(postId => {
-    const post = state.posts.postsByTag?.byId?.[postId];
-    return {
-      post_id: post.id,
-      image_url: post.image_url
-    };
-  });
-};
+
 
 export const selectOwnerPosts = (state) => state.posts?.ownerPosts?.allIds.map((id) => state.posts.ownerPosts.byId[id]|| {});
 // Select all posts by ID as an object
@@ -132,8 +124,6 @@ export const selectAllAlbums = (state) => {
 };
 
 
-
-
 export const selectTotalAlbums = (state) => state.albums?.userAlbums?.allIds?.length;
 export const selectAlbumInfo = (state, albumId) => state.albums?.singleAlbum?.byId?.[albumId];
 
@@ -190,7 +180,17 @@ export const selectFavoriteById = (state, favoriteId) => {
 // =========================================================
 //               ****Tags UseSelectors****
 // =========================================================
-export const selectAllTags = (state) => state.posts?.tags || [];
+export const selectAllTags = (state) => state.tags?.allTags || [];
+
+export const selectPostsByTag = (state) => {
+  return state.tags.postsByTag.allIds.map(postId => {
+    const post = state.tags.postsByTag?.byId?.[postId];
+    return {
+      post_id: post.id,
+      image_url: post.image_url
+    };
+  });
+};
 // =========================================================
 //               ****Paginations UseSelectors****
 // =========================================================
