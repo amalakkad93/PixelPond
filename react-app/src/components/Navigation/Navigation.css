@@ -7,15 +7,17 @@
 }
 
 .navbar {
-  /* background-color: #212121; */
-  background-color: #2d545e;
+  background-color:#032f3c;
+  /* background-color: #b3916d; */
+  /* background-color: rgba(21,21,23,.95); */
+  color: #212124;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 10px 20px;
   border-bottom: 2px solid #12343b;
+  position: relative;
   z-index: 1000;
-
 }
 
 .navbar-content {
@@ -49,6 +51,7 @@
   align-items: center;
   gap: 5px;
   color: #e1b382;
+  color: white;
   text-decoration: none;
   transition: color 0.3s ease;
 }

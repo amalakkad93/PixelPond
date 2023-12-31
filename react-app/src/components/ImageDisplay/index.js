@@ -13,7 +13,7 @@ import {
   selectAlbumDetails,
   selectUserPosts,
   selectPostById,
-  selectUserInfo,
+  selectPostUserInfo,
   selectLoading,
   selectSessionUser,
   selectAlbumInfo,
@@ -42,7 +42,8 @@ const ImageDisplay = memo(({ mode, albumId }) => {
   const { userId } = useParams();
 
   // Selectors to retrieve data from the Redux store
-  const userInfo = useSelector(selectUserInfo);
+  const userInfo = useSelector(selectPostUserInfo);
+  console.log("🚀 ~ file: index.js:46 ~ ImageDisplay ~ userInfo:", userInfo)
   const loading = useSelector(selectLoading);
 
   const { images: albumImages, title: albumTitle } = useSelector((state) =>
@@ -50,6 +51,7 @@ const ImageDisplay = memo(({ mode, albumId }) => {
   );
   const sessionUser = useSelector(selectSessionUser);
   const userPosts = useSelector(selectUserPosts);
+  console.log("🚀 ~ file: index.js:53 ~ ImageDisplay ~ userPosts:", userPosts)
   const userPostsIds = useSelector(selectPostById);
   const albumInfo = useSelector((state) => selectAlbumInfo(state, albumId));
 
@@ -143,6 +145,8 @@ const ImageDisplay = memo(({ mode, albumId }) => {
 
   // Helper functions and variables to process and display images
   const profilePhoto = userInfo?.profile_picture || null;
+  const bannerPhoto = userInfo?.banner_picture || null;
+  console.log("🚀 ~ file: index.js:147 ~ ImageDisplay ~ bannerPhoto:", bannerPhoto)
   const userName = `${userInfo?.first_name || ""} ${userInfo?.last_name || ""}`;
   const aboutMe = userInfo?.about_me || "No about me information available.";
   const getNavigationUserId = () => {
@@ -164,6 +168,7 @@ const ImageDisplay = memo(({ mode, albumId }) => {
             ...userPosts[id],
             image_url: userPosts[id]?.image_url,
           })),
+          // userInfo:
         };
       case "albumImages":
         return {
@@ -197,12 +202,12 @@ const ImageDisplay = memo(({ mode, albumId }) => {
         <Spinner />
       ) : (
         <>
-          {mode !== "albumImages" && (
+          {/* {mode !== "albumImages" && (
         <div className="banner-container">
         <div className="banner">
-          {images && images[0] ? (
+          { bannerPhoto &&  bannerPhoto ? (
             <LazyLoadImage
-              src={images[0]}
+              src={ bannerPhoto}
               effect="blur"
               className="banner-image"
               width={"100%"}
@@ -235,17 +240,17 @@ const ImageDisplay = memo(({ mode, albumId }) => {
         </div>
       </div>
 
-            // <BannerNavbar
-            //   userInfo={userInfo}
-            //   images={images}
-            //   profilePhoto={profilePhoto}
-            //   userName={userName}
-            //   mode={mode}
-            //   setIsEditingProfilePic={setIsEditingProfilePic}
-            // />
-          )}
+            <BannerNavbar
+              userInfo={userInfo}
+              images={images}
+              profilePhoto={profilePhoto}
+              userName={userName}
+              mode={mode}
+              setIsEditingProfilePic={setIsEditingProfilePic}
+            />
+          )} */}
           <div className="photo-stream-container">
-            {mode !== "albumImages" && (
+            {/* {mode !== "albumImages" && (
               <nav className="album-navigation">
                 <UserNavigationBar
                   id={navigationUserId}
@@ -254,7 +259,7 @@ const ImageDisplay = memo(({ mode, albumId }) => {
                   currentPage={currentPage}
                 />
               </nav>
-            )}
+            )} */}
             {noContentMessage && (
               <div className="no-content-message">
                 <h1>You have no public photos.</h1>

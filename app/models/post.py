@@ -35,6 +35,8 @@ class Post(db.Model):
         post_tags = PostTag.query.filter(PostTag.post_id == self.id).all()
         tag_list = [Tag.query.get(post_tag.tag_id).to_dict() for post_tag in post_tags if post_tag.tag_id]
 
+        user = User.query.get(self.owner_id)
+        user_info = user.to_dict() if user else {}
         return {
             'id': self.id,
             'owner_id': self.owner_id,
@@ -43,5 +45,6 @@ class Post(db.Model):
             'description': self.description,
             'created_at': self.created_at.isoformat(),
             'image_url': image_url,
-            'tags': tag_list
+            'tags': tag_list,
+            'user_info': user_info
         }

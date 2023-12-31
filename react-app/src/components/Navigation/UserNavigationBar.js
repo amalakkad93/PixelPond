@@ -6,19 +6,23 @@ import "./UserNavigationBar.css";
 
 const UserNavigationBar = ({
   id,
+  mode,
   photoCount,
   albumCount,
   onAboutClick,
   showAbout,
+  userInfo,
 }) => {
   const location = useLocation();
   const history = useHistory();
   const sessionUser = useSelector(selectSessionUser);
   const isActive = (path) => location.pathname.startsWith(path);
 
-  const photosUrl =
-    sessionUser?.id == id ? "/owner/photostream" : `/posts/users/${id}`;
+  const effectiveId = id || sessionUser?.id;
+  const isOwner = sessionUser?.id === effectiveId;
 
+  const photosUrl = isOwner ? "/owner/photostream" : `/posts/users/${effectiveId}`;
+console.log("🚀 ~ file: UserNavigationBar.js:65 ~ UserNavigationBar ~ effectiveId", effectiveId)
   const handlePhotosClick = (e) => {
     e.preventDefault();
     history.push(photosUrl);
@@ -32,33 +36,38 @@ const UserNavigationBar = ({
           onClick={onAboutClick}
           className={showAbout ? "active" : ""}
         >
-          About
+          {isOwner ? "About Me" : "About"}
         </a>
         <a
           href={photosUrl}
           onClick={handlePhotosClick}
           className={isActive(photosUrl) ? "active" : ""}
         >
-          PhotoStream {photoCount}
+          {isOwner ? "My PhotoStream" : "PhotoStream"} {photoCount}
         </a>
         <a
-          href={`/albums/users/${id}`}
-          className={isActive(`/albums/users/${id}`) ? "active" : ""}
+          href={`/albums/users/${effectiveId}`}
+          className={isActive(`/albums/users/${effectiveId}`) ? "active" : ""}
         >
-          Albums {albumCount}
+          {isOwner ? "My Albums" : "Albums"} {albumCount}
         </a>
-        <a
-          href={`/user/favorites-post`}
-          className={isActive(`/user/favorites-post`) ? "active" : ""}
-        >
-          View Favorites
-        </a>
+        {isOwner && (
+          <a
+           // href={`/posts/users/${sessionUser?.id}/favorites-post`}
+            href={`/user/favorites-post`}
+            className={isActive(`/posts/users/${sessionUser?.id}/favorites-post`) ? "active" : ""}
+          >
+            View Favorites
+          </a>
+        )}
       </div>
     </div>
   );
 };
 
 export default UserNavigationBar;
+
+
 
 // import React, { useState } from "react";
 // import { useDispatch, useSelector } from "react-redux";

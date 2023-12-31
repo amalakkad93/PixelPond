@@ -15,6 +15,7 @@ def seed_users():
         profile_picture='https://flask3.s3.amazonaws.com/Cool-Anime-Pfp-Profile1.jpg',
         about_me='I am a photographer based in New York City. I love to travel and take pictures of nature and pets.',
         country='United States',
+        banner_picture='https://flask3.s3.amazonaws.com/user1_banner.png',
         password='password',
     )
     marnie = User(
@@ -27,6 +28,7 @@ def seed_users():
         profile_picture='https://flask3.s3.amazonaws.com/Cool-Anime-Pfp-Profile2.jpg',
         about_me='I am a passionate photographer based in the vibrant city of Los Angeles, specializing in capturing the beauty of landscapes and architectural wonders. With a deep appreciation for the art of photography and a love for travel, I embark on journeys to both natural and man-made marvels to freeze those awe-inspiring moments in time.',
         country='United States',
+        banner_picture='https://flask3.s3.amazonaws.com/user2_banner.png',
         password='password',
     )
     bobbie = User(
@@ -39,6 +41,7 @@ def seed_users():
         profile_picture='https://flask3.s3.amazonaws.com/Cool-Anime-Pfp-Profile3.jpg',
         about_me="I am an avid wildlife photographer with an unwavering love for the untamed wonders of the natural world. My journey takes me to the heart of Africa, where I am privileged to witness and document the extraordinary lives of wild animals in their natural habitats.",
         country='United States',
+        banner_picture='https://flask3.s3.amazonaws.com/user3_banner.png',
         password='password',
     )
     josh = User(
@@ -51,6 +54,7 @@ def seed_users():
         profile_picture='https://flask3.s3.amazonaws.com/Cool-Anime-Pfp-Profile4.jpg',
         about_me='I am a dedicated explorer of the enchanting world beneath the waves, an avid enthusiast of underwater ecosystems, and an advocate for marine life conservation. My journey unfolds in the depths of the ocean, where I am privileged to immerse myself in the wonders of underwater and marine life. I also enjoy taking pictures of food.',
         country='United States',
+        banner_picture='https://flask3.s3.amazonaws.com/user4_banner.png',
         password='password',
     )
 

@@ -19,7 +19,7 @@ class User(db.Model, UserMixin):
     profile_picture = db.Column(db.String(255), nullable=True)
     about_me = db.Column(db.Text, nullable=True)
     country = db.Column(db.String(255), nullable=True)
-
+    banner_picture = db.Column(db.String(500), nullable=True)
     @property
     def password(self):
         return self.hashed_password
@@ -42,4 +42,5 @@ class User(db.Model, UserMixin):
             'profile_picture': self.profile_picture,
             'about_me': self.about_me,
             'country': self.country,
+            'banner_picture': self.banner_picture,
         }

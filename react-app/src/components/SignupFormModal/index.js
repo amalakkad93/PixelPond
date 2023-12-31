@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useModal } from "../../context/Modal";
 import { signUp } from "../../store/session";
-import GoogleAuthButton from "../GoogleAuthButton"
+import GoogleAuthButton from "../GoogleAuthButton";
 import "./SignupForm.css";
 
 function SignupFormModal() {
@@ -38,15 +38,17 @@ function SignupFormModal() {
   return (
     <>
       <div className="sign-up-container">
-        <h1 className="sign-up-h1">Sign Up</h1>
-        <GoogleAuthButton />
         <form className="sign-up-form" onSubmit={handleSubmit}>
           <ul className="sign-up-ul">
             {errors.map((error, idx) => (
               <li key={idx}>{error}</li>
-            ))}
+              ))}
           </ul>
-          <label>
+              <h1 className="sign-up-h1">Sign Up</h1>
+          <div className="sign-up-google-div">
+              <GoogleAuthButton />
+          </div>
+          <div className="sign-up-input-boxes">
             <input
               className="sign-up-input"
               type="text"
@@ -55,8 +57,7 @@ function SignupFormModal() {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-          </label>
-          <label>
+
             <input
               className="sign-up-input"
               type="text"
@@ -65,9 +66,7 @@ function SignupFormModal() {
               onChange={(e) => setUsername(e.target.value)}
               required
             />
-          </label>
 
-          <label>
             <input
               className="sign-up-input"
               type="text"
@@ -76,8 +75,7 @@ function SignupFormModal() {
               onChange={(e) => setFirstName(e.target.value)}
               required
             />
-          </label>
-          <label>
+
             <input
               className="sign-up-input"
               type="text"
@@ -86,8 +84,7 @@ function SignupFormModal() {
               onChange={(e) => setLastName(e.target.value)}
               required
             />
-          </label>
-          <label>
+
             <input
               className="sign-up-input"
               type="text"
@@ -96,17 +93,16 @@ function SignupFormModal() {
               onChange={(e) => setAge(e.target.value)}
               required
             />
-          </label>
-          <input
-            className="sign-up-input"
-            type="password"
-            value={password}
-            placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
 
-          <label>
+            <input
+              className="sign-up-input"
+              type="password"
+              value={password}
+              placeholder="Password"
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+
             <input
               className="sign-up-input"
               type="password"
@@ -115,10 +111,10 @@ function SignupFormModal() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
-          </label>
           <button className="sign-up-btn" type="submit">
             Sign Up
           </button>
+          </div>
         </form>
       </div>
     </>

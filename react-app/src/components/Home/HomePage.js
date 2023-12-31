@@ -17,6 +17,16 @@ function HomePage() {
   const [showMenu, setShowMenu] = useState(false);
 
   const ulRef = useRef();
+  
+  useEffect(() => {
+    // When HomePage mounts
+    document.body.classList.add('no-scroll');
+
+    // Cleanup function for when HomePage unmounts
+    return () => {
+        document.body.classList.remove('no-scroll');
+    };
+}, []);
 
   const openMenu = () => {
     if (showMenu) return;
@@ -42,12 +52,9 @@ function HomePage() {
   return (
     <div className="home-container">
       <div ref={bgContainerRef} className="background-image-container"></div>
-      <h1 className="Search-bar-title">{greeting}</h1>
-      {/* <SearchBar onPlaceSelected={handlePlaceSelected} /> */}
-
+      <h1 className="greeting-h1">{greeting}</h1>
       <OpenModalButton
         className="home-page-modal"
-        // className="signup-modal-home-page"
         buttonText="Start for Free"
         onItemClick={closeMenu}
         modalComponent={<SignupFormModal />}

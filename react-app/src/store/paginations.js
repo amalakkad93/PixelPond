@@ -93,6 +93,7 @@ export const fetchPaginatedData =
     normalizeFlags = [],
     dataNames = [],
     section,
+    dispatch
   ) =>
   async (dispatch) => {
 

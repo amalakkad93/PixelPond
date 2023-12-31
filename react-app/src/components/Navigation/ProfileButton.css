@@ -3,14 +3,18 @@
   background-color: white;
   border-radius: 10px;
   height: 368px;
+  cursor: pointer;
 }
 .signup-modal {
   position: absolute;
   background-color: white;
   border-radius: 10px;
   height: 660px;
+  cursor: pointer;
 }
-
+.profile-btn-ul{
+  cursor: pointer;
+}
 .profile-button-container {
   position: relative;
   font-family: Arial, sans-serif;
@@ -43,6 +47,7 @@
   top: 60px;
   right: 10px;
   background-color: #e1b382;
+  background-color: white;
   border-radius: 8px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   width: 220px;
@@ -63,13 +68,15 @@
   padding-bottom: 4px;
   width: 100%;
   color: #303030;
+  cursor: pointer;
 
 }
 
 .divider {
   height: 1px;
   background-color: #12343b;
-  margin: 0;
+  /* margin: 0; */
+  margin: 0 15px;
   width: calc(100% - 30px);
   align-self: center;
 }
@@ -77,17 +84,24 @@
 .username, .email {
   display: block;
   margin-bottom: 5px;
+  font-size: 14px;
 }
 
 .username {
   font-weight: bold;
 }
 
-.email {
-  font-size: 14px;
-}
-
-.logout-btn, .center-menu .black-text-button {
+/* .logout-btn, .center-menu .black-text-button {
+  background-color: #2d545e;
+  border: none;
+  cursor: pointer;
+  font-size: large;
+  transition: color 0.3s;
+  width: 100%;
+  text-align: center;
+  color: #e1b382;
+} */
+.center-menu .black-text-button {
   background-color: #2d545e;
   border: none;
   cursor: pointer;
@@ -98,6 +112,17 @@
   color: #e1b382;
 }
 
+.logout-btn {
+  background-color: #2d545e;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+  width: calc(100% - 20px);
+  text-align: center;
+  color: #e1b382;
+  padding: 10px 15px;
+}
 .logout-btn:hover, .center-menu:hover .black-text-button:hover {
   background-color: #12343b;
 }
@@ -120,15 +145,13 @@
 
 
 /* Media Queries */
-
-/* Phone Screens */
 @media screen and (max-width: 599px) {
   .profile-icon {
     font-size: 1.8rem;
   }
 
   .profile-dropdown {
-    width: 100%;
+    /* width: 100%; */
     right: 0;
     top: 50px;
   }
@@ -137,17 +160,16 @@
     font-size: 16px;
   }
 
-  .logout-btn, .center-menu {
-    font-size: medium; /* Larger buttons */
+  .logout-btn {
+    font-size: medium;
   }
 
-  .profile-info, .logout, .center-menu {
+  .profile-info, .logout {
     padding-top: 10px;
     padding-bottom: 10px;
   }
 }
 
-/* Tablets */
 @media screen and (min-width: 600px) and (max-width: 899px) {
   .profile-icon {
     font-size: 2.2rem;
@@ -164,9 +186,7 @@
 }
 
 @media screen and (min-width: 1200px) {
-  /* Styles for larger desktop screens */
   .profile-dropdown {
     width: 240px;
-
   }
 }

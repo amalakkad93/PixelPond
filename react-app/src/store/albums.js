@@ -19,14 +19,18 @@ export const actionGetAlbums = (albums) => ({
   albums,
 });
 
-export const actionGetAlbumImages = (albumId, imagesData, userId, albumTitle) => {
+export const actionGetAlbumImages = (
+  albumId,
+  imagesData,
+  userId,
+  albumTitle
+) => {
   const normalizedImages = normalizeArray(imagesData, "id");
   return {
     type: GET_ALBUM_IMAGES,
     payload: { albumId, images: normalizedImages, userId, albumTitle },
   };
 };
-
 
 export const actionGetAlbumsByUserId = (albums) => {
   const normalizedAlbums = albums.map((album) => {
@@ -39,10 +43,11 @@ export const actionGetAlbumsByUserId = (albums) => {
       user_info: album.user_info,
     };
   });
-
+  // const userInfo = albums[0]?.user_info;
   return {
     type: GET_ALBUMS_BY_USER_ID,
     albums: normalizeArray(normalizedAlbums, "id"),
+    userInfo: albums[0]?.user_info,
   };
 };
 
@@ -96,12 +101,16 @@ export const thunkGetAlbumImages = (albumId, page, perPage) => {
 };
 
 export const thunkGetAlbumsByUserId = (userId, page, perPage) => {
-  console.log("🚀 ~ file: albums.js:99 ~ thunkGetAlbumsByUserId ~ userId:", userId)
+  console.log(
+    "🚀 ~ file: albums.js:99 ~ thunkGetAlbumsByUserId ~ userId:",
+    userId
+  );
   return fetchPaginatedData(
     `/api/albums/user/${userId}`,
     [
       (data) => {
         console.log("-----Fetching albums for data:", data);
+        // return actionGetAlbumsByUserId(data.albums, data.user_info);
         return actionGetAlbumsByUserId(data.albums);
       },
     ],
@@ -110,10 +119,16 @@ export const thunkGetAlbumsByUserId = (userId, page, perPage) => {
     {},
     {},
     null,
-    [false],
-    ["albums"]
+    [false, false],
+    ["albums", "user_info"]
   );
 };
+
+// Action Creator for setting user info
+export const actionSetUserInfo = (userInfo) => ({
+  type: GET_USER_INFO,
+  userInfo,
+});
 
 // ***************************************************************
 // Thunk to Add Post to Album
@@ -206,28 +221,29 @@ export const thunkCreateAlbum =
   };
 
 // Thunk to Update an Album
-export const thunkUpdateAlbum = (albumId, updatedData, currentPage, perPage) => async (dispatch) => {
-  try {
-    const response = await fetch(`/api/albums/${albumId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedData),
-    });
+export const thunkUpdateAlbum =
+  (albumId, updatedData, currentPage, perPage) => async (dispatch) => {
+    try {
+      const response = await fetch(`/api/albums/${albumId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedData),
+      });
 
-    if (response.ok) {
-      const updatedAlbum = await response.json();
-      dispatch(actionUpdateAlbum(updatedAlbum));
-      // dispatch(actionGetAlbumsByUserId(updatedAlbum.user_id, currentPage, perPage));
-      return { type: "SUCCESS", data: updatedAlbum };
-    } else {
-      const errors = await response.json();
-      throw errors;
+      if (response.ok) {
+        const updatedAlbum = await response.json();
+        dispatch(actionUpdateAlbum(updatedAlbum));
+        // dispatch(actionGetAlbumsByUserId(updatedAlbum.user_id, currentPage, perPage));
+        return { type: "SUCCESS", data: updatedAlbum };
+      } else {
+        const errors = await response.json();
+        throw errors;
+      }
+    } catch (error) {
+      // handle errors
+      return { type: "FAILURE", error };
     }
-  } catch (error) {
-    // handle errors
-    return { type: "FAILURE", error };
-  }
-};
+  };
 
 export const thunkDeleteAlbum = (albumId) => async (dispatch) => {
   try {
@@ -294,12 +310,12 @@ export default function reducer(state = initialState, action) {
       };
 
     case GET_ALBUMS_BY_USER_ID:
-      console.log("-----Updating state with new albums:", action.albums);
-
-      return {
-        ...state,
-        userAlbums: action.albums,
-      };
+      newState = { ...state, userAlbums: { byId: {}, allIds: [] } };
+      newState.userAlbums = action.albums;
+      if (action.userInfo) {
+        newState.userInfo = action.userInfo;
+      }
+      return newState;
 
     case ADD_POST_TO_ALBUM: {
       // const { updatedPost } = action;
@@ -359,29 +375,29 @@ export default function reducer(state = initialState, action) {
         return state;
       }
 
-      case UPDATE_ALBUM: {
-        const updatedAlbum = action.updatedAlbum;
+    case UPDATE_ALBUM: {
+      const updatedAlbum = action.updatedAlbum;
 
-        newState = { ...state };
+      newState = { ...state };
 
-        if (newState.allAlbums.byId[updatedAlbum.id]) {
-          newState.allAlbums.byId[updatedAlbum.id] = updatedAlbum;
-        }
-
-        if (newState.ownerAlbums.byId[updatedAlbum.id]) {
-          newState.ownerAlbums.byId[updatedAlbum.id] = updatedAlbum;
-        }
-
-        if (newState.userAlbums.byId[updatedAlbum.id]) {
-          newState.userAlbums.byId[updatedAlbum.id] = updatedAlbum;
-        }
-
-        if (newState.singleAlbum.byId[updatedAlbum.id]) {
-          newState.singleAlbum.byId[updatedAlbum.id] = updatedAlbum;
-        }
-
-        return newState;
+      if (newState.allAlbums.byId[updatedAlbum.id]) {
+        newState.allAlbums.byId[updatedAlbum.id] = updatedAlbum;
       }
+
+      if (newState.ownerAlbums.byId[updatedAlbum.id]) {
+        newState.ownerAlbums.byId[updatedAlbum.id] = updatedAlbum;
+      }
+
+      if (newState.userAlbums.byId[updatedAlbum.id]) {
+        newState.userAlbums.byId[updatedAlbum.id] = updatedAlbum;
+      }
+
+      if (newState.singleAlbum.byId[updatedAlbum.id]) {
+        newState.singleAlbum.byId[updatedAlbum.id] = updatedAlbum;
+      }
+
+      return newState;
+    }
 
     case DELETE_ALBUM: {
       const albumId = action.albumId;

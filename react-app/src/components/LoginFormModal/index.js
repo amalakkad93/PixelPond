@@ -24,14 +24,14 @@ function LoginFormModal() {
 
   return (
     <>
-      <h1 className="login-h1">Log In</h1>
       <form className="login-form" onSubmit={handleSubmit}>
+      <h1 className="login-h1">Log In</h1>
         <ul className="login-ul">
           {errors.map((error, idx) => (
             <li key={idx}>{error}</li>
           ))}
         </ul>
-        <label>
+       
           <input
             className="login-input"
             type="text"
@@ -40,8 +40,7 @@ function LoginFormModal() {
             onChange={(e) => setUsernameOrEmail(e.target.value)}
             required
           />
-        </label>
-        <label>
+
           <input
             className="login-input"
             type="password"
@@ -50,7 +49,7 @@ function LoginFormModal() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-        </label>
+
         <button className="login-btn" type="submit">
           Log In
         </button>

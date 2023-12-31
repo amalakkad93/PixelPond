@@ -50,7 +50,7 @@ export const selectPostById = (state) => state.posts.userPosts.allIds
 export const selectUserPostsWithNoAlbumId = (state) => state.posts.userPostsNoAlbum.byId || {};
 export const selectPostWithNoAlbumIdById = (state) => state.posts.userPostsNoAlbum.allIds
 
-export const selectUserInfo= (state) => state.posts?.userInfo
+export const selectPostUserInfo= (state) => state.posts?.userInfo
 
 
 export const selectNeighborPosts = (state) => {
@@ -107,7 +107,7 @@ export const selectAlbumDetails = (state, albumId) => {
   };
 };
 
-
+export const selectAlbumUserInfo= (state) => state.albums?.userInfo
 
 export const selectAllAlbums = (state) => {
   const { userAlbums } = state?.albums;

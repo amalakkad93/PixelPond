@@ -200,6 +200,7 @@ const PostForm = ({ postId, formType, onPostCreated, fetchPostDetailData }) => {
       </div>
       <button
         type="submit"
+        className="post-form-submit-button"
         disabled={
           title.trim() === "" ||
           description.trim() === "" ||

@@ -52,7 +52,7 @@ function ProfileButton({ user }) {
         <FontAwesomeIcon icon={faUserCircle} className="profile-icon" />
       </button>
 
-      <ul className={ulClassName} ref={ulRef}>
+      <ul className={`${ulClassName} profile-btn-ul`} ref={ulRef}>
         {user ? (
           <>
             <li className="profile-info">

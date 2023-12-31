@@ -24,7 +24,7 @@ import { thunkGetPostComments, actionAddComment } from "../../../store/comments"
 import { setLoading, setError, clearUIState } from "../../../store/ui";
 import {
   selectSinglePost,
-  selectUserInfo,
+  selectPostUserInfo,
   selectNeighborPosts,
   selectLoading,
   selectSessionUser,

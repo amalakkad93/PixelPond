@@ -12,6 +12,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Pagination from "../../Pagination";
+import useResponsivePagination from "../../Pagination/useResponsivePagination";
 import Spinner from "../../Spinner";
 import ImageGrid from "../../ImageDisplay/ImageGrid/ImageGrid";
 import TagSearch from "../../Tags/TagSearch";
@@ -52,7 +53,7 @@ const Explore = () => {
   const sessionUser = useSelector(selectSessionUser);
   const allTags = useSelector(selectAllTags);
   console.log("🚀 ~ file: index.js:47 ~ Explore ~ allTags:", allTags);
-  const perPage = 10;
+  const perPage = useResponsivePagination(10);
 
   // Fetches posts based on the current page and selected tags
   const fetchData = async (page, tags = []) => {

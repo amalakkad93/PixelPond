@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,18 +19,34 @@ import "./PopupsModal.css";
 export default function PopupsModal({ showModal, onClose }) {
   const history = useHistory();
   const dispatch = useDispatch();
-
+  const modalRef = useRef();
   const currentPage = useSelector(selectCurrentPage);
   const sessionUser = useSelector(selectSessionUser);
   const userId = sessionUser?.id;
+
+  const handleClickOutside = (event) => {
+    if (modalRef.current && !modalRef.current.contains(event.target)) {
+      onClose();
+    }
+  }
+
+  useEffect(() => {
+    if (showModal) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showModal, onClose]);
 
   if (!showModal) return null;
 
   return (
     <>
-      <div className={`modal ${showModal ? "show" : ""}`}>
-        <div className="modal-content">
-          <div className="modal-body">
+      <div className={`modal-pop ${showModal ? "show" : ""}`}>
+        <div className="modal-pop-content" ref={modalRef}>
+          <div className="modal-pop-body">
             <button
               className="btn-photo-stream"
               onClick={() => {

@@ -27,7 +27,10 @@ function App() {
     dispatch(authenticate()).then(() => setIsLoaded(true));
   }, [dispatch]);
 
-
+  //<Route path="/user/favorites-post">
+ // <FavoritesPosts  />
+//</Route>
+// "/posts/users/:userId/favorites-post"
   return (
     <>
       <Navigation isLoaded={isLoaded} />
@@ -65,6 +68,8 @@ function App() {
               <ImageDisplay mode="addPostToAnAlbum" key="addPostToAnAlbum" />
             </Route>
 
+
+
             <Route path="/posts/users/:userId">
               <ImageDisplay mode="photoStream" key="photoStream" />
             </Route>
@@ -74,9 +79,10 @@ function App() {
             <Route path="/user/profile">
               <UserProfile />
             </Route>
+
             <Route path="/user/favorites-post">
-              <FavoritesPosts  />
-            </Route>
+ <FavoritesPosts  />
+</Route>
             <Route path="/posts/:postId">
               <PostDetail />
             </Route>

@@ -67,6 +67,7 @@ def update_user():
     user.profile_picture = data.get('profile_picture', user.profile_picture)
     user.about_me = data.get('about_me', user.about_me)
     user.country = data.get('country', user.country)
+    user.banner_picture = data.get('banner_picture', user.banner_picture)
 
     if 'password' in data:
         hashed_password = generate_password_hash(data['password'])

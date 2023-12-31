@@ -89,12 +89,13 @@ const GetAlbums = () => {
   if (!albums || albums.length === 0) return null;
   return (
     <div className="albums-main-container">
+
       {/* {loading ? (
         <Spinner />
       ) : ( */}
 
       <>
-        <div className="albums-banner-container">
+        {/* <div className="albums-banner-container">
           <div className="albums-banner">
             {images ? (
               <LazyLoadImage
@@ -129,10 +130,10 @@ const GetAlbums = () => {
                   />
                 )}
               </div>
-{/*
+
               <div className="user-name">
                 <h1>{userName || "User Name"}</h1>
-              </div> */}
+              </div>
             </div>
           </div>
         </div>
@@ -144,7 +145,7 @@ const GetAlbums = () => {
             showAbout={showAbout}
             albumCount={totalAlbums}
           />
-        </nav>
+        </nav> */}
         {showAbout && (
           <div className="about-section">
             <p>{aboutMe || "No about me information available."}</p>
