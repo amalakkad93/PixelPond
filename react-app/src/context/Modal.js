@@ -1,12 +1,15 @@
-import React, { useRef, useState, useContext } from 'react';
+import React, { useRef, useState, useContext, useEffect } from 'react';
 import ReactDOM from 'react-dom';
+// import { Modal, ShortModal } from './ModalShort';
 import './Modal.css';
+import './ShortModal.css'
 
 const ModalContext = React.createContext();
 
 export function ModalProvider({ children }) {
   const modalRef = useRef();
   const [modalContent, setModalContent] = useState(null);
+  const [isShortModal, setIsShortModal] = useState(false);
   // callback function that will be called when modal is closing
   const [onModalClose, setOnModalClose] = useState(null);
 
@@ -25,6 +28,7 @@ export function ModalProvider({ children }) {
     modalContent, // React component to render inside modal
     setModalContent, // function to set the React component to render inside modal
     setOnModalClose, // function to set the callback function called when modal is closing
+    setIsShortModal,
     closeModal // function to close the modal
   };
 
@@ -38,7 +42,9 @@ export function ModalProvider({ children }) {
   );
 }
 
+
 export function Modal({ className }) {
+
   const { modalRef, modalContent, closeModal } = useContext(ModalContext);
   // If there is no div referenced by the modalRef or modalContent is not a
   // truthy value, render nothing:
@@ -55,15 +61,5 @@ export function Modal({ className }) {
     modalRef.current
   );
 }
-//   return ReactDOM.createPortal(
-//     <div className="modal">
-//       <div className="modal-background" onClick={closeModal} />
-//       <div className="modal-content">
-//         {modalContent}
-//       </div>
-//     </div>,
-//     modalRef.current
-//   );
-// }
 
 export const useModal = () => useContext(ModalContext);

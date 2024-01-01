@@ -6,13 +6,13 @@ import {
   thunkGetAlbumImages,
 } from "../../../store/albums";
 import { selectUserAlbums, selectSessionUser } from "../../../store/selectors";
-import { useModal } from "../../../context/Modal";
+import { useShortModal } from "../../../context/ModalShort";
 
 import "./RemoveFromAlbumModal.css";
 const ITEMS_PER_PAGE = 10;
 const RemoveFromAlbumModal = ({ postId }) => {
   const dispatch = useDispatch();
-  const { closeModal } = useModal();
+  const { closeShortModal } = useShortModal();
   const sessionUser = useSelector(selectSessionUser);
   const userAlbumsRaw = useSelector(selectUserAlbums);
   const userAlbums = useMemo(() => userAlbumsRaw || [], [userAlbumsRaw]);
@@ -70,7 +70,7 @@ const RemoveFromAlbumModal = ({ postId }) => {
           thunkGetAlbumsByUserId(sessionUser.id, currentPage, ITEMS_PER_PAGE)
         );
 
-        closeModal();
+        closeShortModal();
       } catch (error) {
         console.error("Error removing post from album:", error);
       }
@@ -96,7 +96,7 @@ const RemoveFromAlbumModal = ({ postId }) => {
         ))}
       </select>
       <button onClick={handleRemoveFromAlbum}>Remove</button>
-      <button onClick={closeModal}>Cancel</button>
+      <button onClick={closeShortModal}>Cancel</button>
     </div>
   );
 };

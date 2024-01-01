@@ -59,7 +59,6 @@
 
 .edit-icon {
   /* color: #000; */
-  color: #2d545e;
 
 }
 
@@ -80,8 +79,6 @@
 
 .album-navigation a {
   text-decoration: none;
-  /* color: #333; */
-  color: #2d545e;
   margin: 0 20px;
   padding: 10px;
   font-weight: bold;
@@ -90,8 +87,8 @@
 
 .album-navigation a.active,
 .album-navigation a:hover {
-  color: #2d545e;
-  border-bottom: 2px solid #c89666;
+  /* color: #2d545e;
+  border-bottom: 2px solid #c89666; */
 }
 
 .photo-grid {
@@ -112,8 +109,6 @@
   display: inline-block;
   margin-top: 10px;
   padding: 10px 20px;
-  background-color: #2d545e;
-  color: #fff;
   border: none;
   border-radius: 4px;
   text-decoration: none;
@@ -122,7 +117,7 @@
   margin-bottom:10px;
 }
 .create-post-button:hover {
-  background-color: #12343b;
+
 }
 
 .Images-and-create-btn{
@@ -134,21 +129,86 @@
 .no-content-message {
   text-align: center;
   margin-top: 20px;
-  background-color: #e1b382;
-  color: #2d545e;
 }
 .no-content-message {
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
-  color: #333;
+  /* color: #333; */
   font-size: 1.2rem;
-  background-color: #f0f0f0;
+  /* background-color: #f0f0f0; */
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   flex-direction: column;
 }
 .create-post-container {
   margin-bottom: 20px;
+}
+
+
+/* Dark Mode Styles */
+.dark .user-details,
+.dark .owner-details {
+  background-color: rgba(255, 255, 255, 0.7);
+  color: white;
+}
+
+.dark .edit-icon-overlay {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+.dark .edit-icon {
+  color: white;
+}
+
+.dark .album-navigation a {
+  color: white;
+}
+
+.dark .album-navigation a.active,
+.dark .album-navigation a:hover {
+  border-bottom-color: #ff7f47;
+}
+
+.dark .create-post-button {
+  background-color: #ff7f47;
+  color: white;
+}
+
+.dark .create-post-button:hover {
+  background-color: #fd6a2b;
+}
+
+/* Light Mode Styles */
+.light .user-details,
+.light .owner-details {
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #404040;
+}
+
+.light .edit-icon-overlay {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.light .edit-icon {
+  color: #404040;
+}
+
+.light .album-navigation a {
+  color: #404040;
+}
+
+.light .album-navigation a.active,
+.light .album-navigation a:hover {
+  border-bottom-color: #ff0072;
+}
+
+.light .create-post-button {
+  background-color: #ff0072;
+  color: white;
+}
+
+.light .create-post-button:hover {
+  background-color: #e60066;
 }

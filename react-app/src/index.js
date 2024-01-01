@@ -2,7 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
-import { ModalProvider, Modal } from "./context/Modal";
+// import { Modal, ShortModal, ModalProvider } from './context/Modal';
+import { ModalProvider, Modal } from './context/Modal';
+import { ShortModalProvider, ShortModal } from './context/ModalShort';
+
+import ThemeProvider from "./context/ThemeContext";
 import configureStore from "./store";
 import * as sessionActions from "./store/session";
 
@@ -25,17 +29,23 @@ if (process.env.NODE_ENV !== "production") {
 // HTML elements on top of the all the other HTML elements:
 function Root() {
   return (
+    <ThemeProvider>
+      <ShortModalProvider>
     <ModalProvider>
-
       <Provider store={store}>
         <Router>
           <App />
+          <ShortModal />
           <Modal />
         </Router>
       </Provider>
     </ModalProvider>
+      </ShortModalProvider>
+  </ThemeProvider>
   );
 }
+
+
 
 ReactDOM.render(
   <React.StrictMode>

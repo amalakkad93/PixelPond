@@ -1,37 +1,3 @@
-// import React, { useState } from 'react';
-// import { useDispatch } from 'react-redux';
-// import AWSImageUploader from '../Aws/AWSImageUploader';
-// import { updateUserProfilePic } from '../../store/session';
-
-// const UserProfileManager = () => {
-//   const dispatch = useDispatch();
-//   const [imageUploadInitiated, setImageUploadInitiated] = useState(false);
-
-//   const handleUploadSuccess = (newImageUrl) => {
-//     dispatch(updateUserProfilePic(newImageUrl))
-//       .then(() => console.log('Profile picture updated successfully'))
-//       .catch((error) => console.error('Error updating profile picture:', error));
-//   };
-
-//   const handleUploadFailure = (errorMessage) => {
-//     console.error('Upload failed:', errorMessage);
-//   };
-
-//   return (
-//     <div>
-//       <AWSImageUploader
-//         onUploadSuccess={handleUploadSuccess}
-//         onUploadFailure={handleUploadFailure}
-//         initiateUpload={imageUploadInitiated}
-//       />
-
-//     </div>
-//   );
-// };
-
-// export default UserProfileManager;
-
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from "react-router-dom";
@@ -45,78 +11,15 @@ import { setLoading } from '../../../store/ui';
 
 import './UserProfileManager.css';
 
-// const UserProfileManager = ({ setIsEditingProfilePic, onProfilePicUpdate, refreshPageData,  setReloadPage }) => {
-//   const dispatch = useDispatch();
-//   const user = useSelector(selectSessionUser);
-//   const [imageUploadInitiated, setImageUploadInitiated] = useState(false);
-//   const [profileData, setProfileData] = useState({ ...user });
-//   const userProfileManagerRef = useRef(null);
-
-//   const [uploadImage, setUploadImage] = useState(null);
-
-
-
-//   const handleUploadSuccess = async () => {
-//     if (!uploadImage) return;
-//     setImageUploadInitiated(true);
-//     try {
-//       const imageUrl = await uploadImage();
-//       if (imageUrl) {
-//         dispatch(updateUserProfile({ profile_picture: imageUrl }));
-//         onProfilePicUpdate(imageUrl);
-//       }
-//     } catch (error) {
-//       console.error('Error updating profile picture:', error);
-//     } finally {
-//       setImageUploadInitiated(false);
-//     }
-//   };
-
-//   useEffect(() => {
-//     if (imageUploadInitiated) {
-//       handleUploadSuccess();
-//     }
-//   }, [imageUploadInitiated]);
-
-//   const handleUploadFailure = (errorMessage) => {
-//     console.error('Upload failed:', errorMessage);
-//     dispatch(setLoading(false));
-//   };
-
-//   function useOutsideAlerter(ref) {
-//     useEffect(() => {
-//       function handleClickOutside(event) {
-//         if (ref.current && !ref.current.contains(event.target)) {
-//           setIsEditingProfilePic(false);
-//         }
-//       }
-
-//       document.addEventListener("mousedown", handleClickOutside);
-//       return () => {
-//         document.removeEventListener("mousedown", handleClickOutside);
-//       };
-//     }, [ref]);
-//   }
-
-//   useOutsideAlerter(userProfileManagerRef);
-
-//   return (
-//     <div ref={userProfileManagerRef}>
-//       <AWSImageUploader
-//         onUploadSuccess={handleUploadSuccess}
-//         // onUploadFailure={handleUploadFailure}
-//         // initiateUpload={imageUploadInitiated}
-//       />
-//     </div>
-//   );
-// };
 const UserProfileManager = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const user = useSelector(selectSessionUser);
   const [profileData, setProfileData] = useState({ ...user });
-  const [uploadImage, setUploadImage] = useState(null);
+  const [uploadProfileImage, setUploadProfileImage] = useState(null);
+  const [uploadBannerImage, setUploadBannerImage] = useState(null);
   const [showUploader, setShowUploader] = useState(false);
+  const [imageError, setImageError] = useState(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -142,13 +45,32 @@ const UserProfileManager = () => {
     event.preventDefault();
     setIsSubmitting(true);
 
-    let imageUrl = profileData.profile_picture;
-    if (uploadImage) {
-      imageUrl = await uploadImage();
-    }
+    // let imageProfileUrl = null;
+    // let imageBannerUrl = null;
+    let imageProfileUrl = profileData.profile_picture;
+    let imageBannerUrl = profileData.banner_picture;
+    try {
+      if (uploadProfileImage) {
+        const newProfileImageUrl = await uploadProfileImage();
+        if (newProfileImageUrl) {
+          imageProfileUrl = newProfileImageUrl; // Update if new image is uploaded
+        }
+      }
 
-    const updatedProfileData = { ...profileData, profile_picture: imageUrl };
-    await dispatch(updateUserProfile(updatedProfileData));
+      if (uploadBannerImage) {
+        const newBannerImageUrl = await uploadBannerImage();
+        if (newBannerImageUrl) {
+          imageBannerUrl = newBannerImageUrl; // Update if new image is uploaded
+        }
+      }
+
+      const updatedProfileData = { ...profileData, profile_picture: imageProfileUrl, banner_picture: imageBannerUrl };
+      await dispatch(updateUserProfile(updatedProfileData));
+
+    } catch (error) {
+      console.error("Error uploading images", error);
+      // Handle the error appropriately
+    }
 
     setIsSubmitting(false);
     history.push('/user/profile');
@@ -179,8 +101,12 @@ const UserProfileManager = () => {
               <FontAwesomeIcon icon={faCamera} className="edit-icon" />
             </div>
           </div>
-          {showUploader && <AWSImageUploader setUploadImage={setUploadImage} />}
+          {showUploader && <AWSImageUploader setUploadImage={setUploadProfileImage}/>}
         </div>
+        <div className="form-field">
+          <label>Banner Picture</label>
+          {<AWSImageUploader setUploadImage={setUploadBannerImage} />}
+          </div>
         <div className="form-field">
           <label>First Name</label>
           <input
@@ -248,63 +174,3 @@ const UserProfileManager = () => {
 };
 
 export default UserProfileManager;
-
-
-
-// import React, { useState, useEffect, useRef } from 'react';
-// import { useDispatch } from 'react-redux';
-// import AWSImageUploader from '../Aws/AWSImageUploader';
-// import { updateUserProfilePic, setUser } from '../../store/session';
-// import { setLoading } from '../../store/ui';
-
-// const UserProfileManager = ({ setIsEditingProfilePic }) => {
-//   const dispatch = useDispatch();
-//   const [imageUploadInitiated, setImageUploadInitiated] = useState(false);
-//   const userProfileManagerRef = useRef(null);
-
-//   const handleUploadSuccess = (newImageUrl) => {
-//     dispatch(updateUserProfilePic(newImageUrl))
-//       .then((updatedUser) => {
-//         console.log('Profile picture updated successfully');
-//         // dispatch(setUser(updatedUser));
-//         setIsEditingProfilePic(false);
-//       })
-//       .catch((error) => console.error('Error updating profile picture:', error));
-//   };
-
-//   const handleUploadFailure = (errorMessage) => {
-//     console.error('Upload failed:', errorMessage);
-//   };
-
-//   function useOutsideAlerter(ref) {
-//     useEffect(() => {
-//       function handleClickOutside(event) {
-//         if (ref.current && !ref.current.contains(event.target)) {
-//           setIsEditingProfilePic(false);
-//         }
-//       }
-
-//       document.addEventListener("mousedown", handleClickOutside);
-//       return () => {
-
-//         document.removeEventListener("mousedown", handleClickOutside);
-//       };
-//     }, [ref]);
-//   }
-
-
-//   useOutsideAlerter(userProfileManagerRef);
-
-//   return (
-//     <div ref={userProfileManagerRef}>
-//       <AWSImageUploader
-//         onUploadSuccess={handleUploadSuccess}
-//         onUploadFailure={handleUploadFailure}
-//         initiateUpload={imageUploadInitiated}
-//       />
-
-//     </div>
-//   );
-// };
-
-// export default UserProfileManager;

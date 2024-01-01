@@ -1,6 +1,7 @@
 .login-modal {
   position: absolute;
   background-color: white;
+  color: #404040;
   border-radius: 10px;
   height: 368px;
   cursor: pointer;
@@ -8,12 +9,21 @@
 .signup-modal {
   position: absolute;
   background-color: white;
+  color: #404040;
   border-radius: 10px;
   height: 660px;
   cursor: pointer;
 }
+.login-modal:hover,
+.signup-modal:hover {
+  background-color: #f0f0f0;
+}
 .profile-btn-ul{
   cursor: pointer;
+  background-color: white;
+  border: 1px solid #DDD;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 .profile-button-container {
   position: relative;
@@ -29,13 +39,15 @@
 }
 
 .profile-icon {
+  /* color: #ff0072; */
   color: white;
   font-size: 2rem;
   transition: color 0.3s;
 }
 
 .profile-icon:hover {
-  color: rgb(195, 195, 195)
+  color: rgb(195, 195, 195);
+  /* color: #ff0072; */
 }
 
 .profile-dropdown {
@@ -46,16 +58,17 @@
   position: absolute;
   top: 60px;
   right: 10px;
-  background-color: #e1b382;
-  background-color: white;
+
+  /* background-color: white; */
   border-radius: 8px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  /* box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   width: 220px;
   padding: 10px 0;
   z-index: 1000;
   transform: translateY(-10px);
   transition: opacity 0.3s, transform 0.3s;
-  border: 1px solid #c89666;
+  border: 1px solid #DDD;
 }
 
 .profile-dropdown.hidden {
@@ -67,14 +80,14 @@
   padding-top: 15px;
   padding-bottom: 4px;
   width: 100%;
-  color: #303030;
+  color: #404040;
   cursor: pointer;
 
 }
 
 .divider {
   height: 1px;
-  background-color: #12343b;
+  background-color: #DDD;
   /* margin: 0; */
   margin: 0 15px;
   width: calc(100% - 30px);
@@ -102,29 +115,30 @@
   color: #e1b382;
 } */
 .center-menu .black-text-button {
-  background-color: #2d545e;
+  /* background-color: #2d545e; */
   border: none;
   cursor: pointer;
   font-size: large;
   transition: color 0.3s;
   width: 100%;
   text-align: center;
-  color: #e1b382;
+  /* color: #e1b382; */
+
 }
 
 .logout-btn {
-  background-color: #2d545e;
+  background-color: #ff0072;
   border: none;
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s;
   width: calc(100% - 20px);
   text-align: center;
-  color: #e1b382;
+  color: white;
   padding: 10px 15px;
 }
 .logout-btn:hover, .center-menu:hover .black-text-button:hover {
-  background-color: #12343b;
+  background-color: #e60066;
 }
 
 /* .black-text-button {
@@ -140,9 +154,61 @@
 }
 
 .black-text-button:hover {
-  background-color: #12343b;
+  background-color: #e60066;
 }
 
+/* Light Mode Style */
+.light .profile-button-container,
+.light .profile-dropdown,
+.light .profile-info,
+.light .logout,
+.light .center-menu {
+  color: #404040;
+}
+
+.light .profile-icon {
+  color: #404040
+}
+
+.light .profile-icon:hover {
+  color: #ff0072;
+}
+
+.light .logout-btn {
+  background-color: #ff0072;
+  /* color: white; */
+}
+
+.light .logout-btn:hover {
+  background-color: #e60066;
+}
+
+/* Dark Mode Style */
+/* .dark .profile-button-container, */
+.dark .profile-dropdown,
+.dark .profile-info,
+.dark .logout,
+.dark .center-menu {
+  color: white;
+  background-color: #282c35;
+}
+
+.dark .profile-icon {
+  color: white;
+}
+
+.dark .profile-icon:hover {
+  color: #ff7f47;
+}
+
+.dark .logout-btn {
+  background-color: #ff7f47;
+  color: white;
+}
+
+.dark .logout-btn:hover {
+  background-color: #ff7f47;;
+}
 
 /* Media Queries */
 @media screen and (max-width: 599px) {

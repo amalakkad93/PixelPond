@@ -1,5 +1,5 @@
 .sign-up-container{
-  /* height:100%; */
+  height:100%;
  }
 
  .google-auth-btn {
@@ -9,6 +9,8 @@
    border-radius: 4px;
    cursor: pointer;
    transition: background-color 0.3s;
+   background-color: transparent;
+   color: white;
  }
 
  .login-form {
@@ -17,6 +19,8 @@
    align-items: center;
    gap: 10px;
    padding: 20px;
+   /* background-color: #404040; */
+   color: white;
  }
 
  .login-input {
@@ -26,12 +30,16 @@
    border: 1px solid #ccc;
    border-radius: 4px;
    margin-bottom: 10px;
+
+   background-color: #F0F0F0;
+   color: #404040;
+   border: 1px solid #ff0072;
  }
 
  .login-btn, .demo-user-btn {
    width: 300px;
    height: 40px;
-   background-color: #007bff;
+   background-color: #ff0072;
    color: white;
    border: none;
    border-radius: 4px;
@@ -39,25 +47,104 @@
    transition: background-color 0.3s;
  }
 
- .login-btn:hover {
-   background-color: #0056b3;
- }
- .demo-user-btn:hover {
-   background-color: #0056b3;
- }
+
+.login-input:hover {
+  /* border-color: white; */
+  border-color: #ff7f47;
+  background-color: #E0E0E0;
+}
+
+.login-btn:hover, .demo-user-btn:hover {
+  background-color: #e6006f;
+  cursor: pointer;
+}
 
  .login-ul {
    list-style-type: none;
    padding: 0;
    color: red;
  }
-
  .login-h1 {
    text-align: center;
+   /* color: #ff0072; */
  }
+
+/* Dark Mode */
+.google-login-text {
+  color:white;
+}
+.dark .login-h1 {
+  text-align: center;
+  color: #ff7f47;
+}
+.dark .login-form {
+  color: white;
+}
+
+.dark .login-h1 {
+  color: #ff7f47;
+}
+
+.dark .login-ul li {
+  color: #ff7f47;
+}
+
+.dark .login-input {
+  color: white;
+  background-color: #282c35;
+
+}
+
+.dark .login-btn,
+.dark .demo-user-btn {
+
+  background-color: #ff7f47;
+  color: white;
+
+}
+
+.dark .login-btn:hover,
+.dark .demo-user-btn:hover {
+  background-color: #fd6a2b;
+
+}
+
+/* Light Mode */
+.google-auth-btn {
+  color:#282c35;
+}
+.light .login-form {
+  color: white
+}
+
+.light .login-h1 {
+  color: #ff0072;
+}
+
+.light .login-ul li {
+  color: #ff0072;
+}
+
+.light .login-input {
+  color: #404040;
+  background-color: #F0F0F0;
+}
+
+.light .login-btn,
+.light .demo-user-btn {
+  background-color: #ff0072;
+  color: white;
+
+}
+
+.light .login-btn:hover,
+.light .demo-user-btn:hover {
+  background-color: #e60066;
+}
+
 
  @media screen and (max-width: 599px) {
   .login-input, .login-btn, .demo-user-btn, .google-auth-btn {
-    width: 90%; 
+    width: 90%;
   }
 }

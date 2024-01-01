@@ -11,8 +11,8 @@ import { faStar as solidStar} from "@fortawesome/free-solid-svg-icons";
 import { faStar as regularStar } from '@fortawesome/free-regular-svg-icons';
 import AddToAlbumModal from "../../Albums/AddToAlbumModal";
 import RemoveFromAlbumModal from "../../Albums/RemoveFromAlbumModal";
-import OpenModalButton from "../../Modals/OpenModalButton";
-import { useModal } from "../../../context/Modal";
+import OpenShortModalButton from "../../Modals/OpenShortModalButton";
+import { useShortModal } from "../../../context/ModalShort";
 
 import { thunkToggleFavorite } from "../../../store/favorites";
 import {isPostFavorited, selectSessionUser} from "../../../store/selectors";
@@ -22,8 +22,8 @@ import "./ImageItem.css";
 const ImageItem = memo(
   ({ imageUrl, postId, onClick, addPostToAlbumMode, showRemoveIcon }) => {
     const dispatch = useDispatch();
-    const { closeModal } = useModal();
-    const { openModal } = useModal();
+    const { closeShortModal } = useShortModal();
+    const { openShortModal } = useShortModal();
     const sessionUser = useSelector(selectSessionUser);
     const userId = sessionUser?.id;
     const favorite = useSelector(state => isPostFavorited(state, postId));
@@ -50,10 +50,10 @@ const ImageItem = memo(
           </button>
         </div>
         {addPostToAlbumMode && (
-          <OpenModalButton
+          <OpenShortModalButton
             className="add-to-album-modal-trigger"
             modalComponent={
-              <AddToAlbumModal postId={postId} onClose={closeModal} />
+              <AddToAlbumModal postId={postId} onClose={closeShortModal} />
             }
             buttonText={
               <FontAwesomeIcon icon={faPlus} className="add-to-album-icon" />
@@ -61,10 +61,10 @@ const ImageItem = memo(
           />
         )}
         {showRemoveIcon && (
-          <OpenModalButton
+          <OpenShortModalButton
             className="remove-from-album-modal-trigger"
             modalComponent={
-              <RemoveFromAlbumModal postId={postId} onClose={openModal} />
+              <RemoveFromAlbumModal postId={postId} onClose={openShortModal } />
             }
             buttonText={
               <FontAwesomeIcon

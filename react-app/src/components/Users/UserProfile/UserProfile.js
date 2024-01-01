@@ -16,36 +16,91 @@ export default function UserProfile() {
     user.first_name?.charAt(0)?.toUpperCase() +
     user.last_name?.charAt(0)?.toUpperCase();
 
+  // return (
+  //   <div className="user-profile-container">
+  //     <div className="user-profile-image">
+  //       {user.profile_picture ? (
+  //         <img
+  //           className="user-image"
+  //           src={user.profile_picture}
+  //           alt="Profile"
+  //         />
+  //       ) : (
+  //         <div className="user-initials">{userInitials}</div>
+  //       )}
+  //       </div>
+
+  //     <div className="user-profile-header">
+  //       <h2>
+  //         {user.first_name} {user.last_name}
+  //       </h2>
+  //       <FontAwesomeIcon
+  //         icon={faEdit}
+  //         className="edit-icon1"
+  //         onClick={ () => history.push('/user/profile/edit')}
+  //       />
+  //     </div>
+  //     <div className="user-details-in-user-profile">
+  //       <p>Email: {user.email}</p>
+  //       <p>Username: {user.username}</p>
+  //       <p>Age: {user.age}</p>
+  //       <p>Country: {user.country}</p>
+  //       <p>About Me: {user.about_me}</p>
+  //     </div>
+  //   </div>
+  // );
   return (
-    <div className="user-profile-container">
-      <div className="user-profile-image">
-        {user.profile_picture ? (
-          <img
-            className="user-image"
-            src={user.profile_picture}
-            alt="Profile"
-          />
-        ) : (
-          <div className="user-initials">{userInitials}</div>
-        )}
+    <div className="user-profile-page">
+      <div className="user-profile-container">
+        <div className="user-profile-image">
+          {user.profile_picture ? (
+            <img
+              className="user-image"
+              src={user.profile_picture}
+              alt="Profile"
+            />
+          ) : (
+            <div className="user-initials">{userInitials}</div>
+          )}
         </div>
 
-      <div className="user-profile-header">
-        <h2>
-          {user.first_name} {user.last_name}
-        </h2>
-        <FontAwesomeIcon
-          icon={faEdit}
-          className="edit-icon"
-          onClick={ () => history.push('/user/profile/edit')}
-        />
-      </div>
-      <div className="user-details">
-        <p>Email: {user.email}</p>
-        <p>Username: {user.username}</p>
-        <p>Age: {user.age}</p>
-        <p>Country: {user.country}</p>
-        <p>About Me: {user.about_me}</p>
+        <div className="user-profile-header">
+          <h2>
+            {user.first_name} {user.last_name}
+          </h2>
+          <FontAwesomeIcon
+            icon={faEdit}
+            className="edit-icon1"
+            onClick={() => history.push("/user/profile/edit")}
+          />
+        </div>
+
+        <div className="user-details-profile">
+          <div className="user-detail-profile">
+            <span className="user-detail-label">Email:</span>
+            <span>{user.email}</span>
+          </div>
+          <div className="user-detail-profile">
+            <span className="user-detail-label">Username:</span>
+            <span>{user.username}</span>
+          </div>
+          <div className="user-detail-profile">
+            <span className="user-detail-label">Age:</span>
+            <span>{user.age}</span>
+          </div>
+          <div className="user-detail-profile">
+            <span className="user-detail-label">Country:</span>
+            <span>{user.country}</span>
+          </div>
+          {/* <div className="user-detail-profile">
+          <span className="user-detail-label">About Me:</span>
+          <span>{user.about_me}</span>
+        </div> */}
+          <div className="user-detail-profile about-me">
+            <span className="user-detail-label">About Me:</span>
+            <span>{user.about_me}</span>
+          </div>
+        </div>
       </div>
     </div>
   );

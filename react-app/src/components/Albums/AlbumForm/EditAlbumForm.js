@@ -8,6 +8,7 @@ export default function EditAlbumForm({
   currentPage,
   perPage,
   setActiveAlbumImages,
+  onEdit,
 }) {
   return (
     <AlbumForm

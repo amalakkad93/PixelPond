@@ -1,4 +1,4 @@
-#modal {
+#short-modal {
   position: fixed;
   top: 0;
   right: 0;
@@ -7,64 +7,62 @@
   display: flex;
   justify-content: center;
   align-items: center;
-
   z-index: 100000;
 }
 
-#modal-background {
+#short-modal-background {
   position: fixed;
   top: 0;
   right: 0;
   left: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.7);
-
   z-index: 100001;
 }
 
-#modal-content {
+#short-modal-content {
   position: absolute;
-  background-color:white;
+  background-color: white;
   color: #404040;
   z-index: 100002;
-
   max-height: 80%;
   overflow-y: auto;
   border-radius: 10px;
   padding: 20px;
 }
-#modal-content h1, #modal-content h2, #modal-content h3 {
-  /* color: #ff0072; */
+
+#short-modal-content h1, #short-modal-content h2, #short-modal-content h3 {
+  /* Style for headings inside modal */
 }
 
 /* Light Mode Styles for Modal */
-.light #modal-background {
+.light #short-modal-background {
   background-color: rgba(0, 0, 0, 0.7);
 }
 
-.light #modal-content {
+.light #short-modal-content {
   background-color: white;
   color: #404040;
-  color: white;
 }
 
-.light #modal-content h1,
-.light #modal-content h2,
-.light #modal-content h3 {
+.light #short-modal-content h1,
+.light #short-modal-content h2,
+.light #short-modal-content h3 {
   color: #ff0072;
 }
+
 /* Dark Mode Styles for Modal */
-.dark #modal-background {
+.dark #short-modal-background {
   background-color: rgba(0, 0, 0, 0.8);
 }
 
-.dark #modal-content {
+.dark #short-modal-content {
   background-color: #282c35;
   color: white;
 }
 
-.dark #modal-content h1,
-.dark #modal-content h2,
-.dark #modal-content h3 {
+.dark #short-modal-content h1,
+.dark #short-modal-content h2,
+.dark #short-modal-content h3 {
   color: #ff7f47;
 }

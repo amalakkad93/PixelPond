@@ -8,6 +8,7 @@ import GetPosts from "./components/Posts/GetPosts";
 import PostDetail from "./components/Posts/PostDetail";
 import GetAlbums from "./components/Albums/GetAlbums";
 import { authenticate } from "./store/session";
+import { useTheme } from "./context/ThemeContext";
 import Navigation from "./components/Navigation";
 import UserProfile from "./components/Users/UserProfile/UserProfile";
 import ImageDisplay from "./components/ImageDisplay";
@@ -20,17 +21,23 @@ import FavoritesPosts from "./components/Favorites";
 function App() {
   const dispatch = useDispatch();
   const [isLoaded, setIsLoaded] = useState(false);
+  const { themeName } = useTheme();
 
-  const sessionUser = useSelector(state => state.session.user);
+  const sessionUser = useSelector((state) => state.session.user);
 
   useEffect(() => {
     dispatch(authenticate()).then(() => setIsLoaded(true));
   }, [dispatch]);
 
+
+  useEffect(() => {
+    document.body.className = themeName;
+  }, [themeName]);
+
   //<Route path="/user/favorites-post">
- // <FavoritesPosts  />
-//</Route>
-// "/posts/users/:userId/favorites-post"
+  // <FavoritesPosts  />
+  //</Route>
+  // "/posts/users/:userId/favorites-post"
   return (
     <>
       <Navigation isLoaded={isLoaded} />
@@ -38,10 +45,9 @@ function App() {
         <>
           {/* <PageResetter /> */}
           <Switch>
-
-          <Route exact path="/">
-            {sessionUser ? <GetPosts mode="all" /> : <HomePage />}
-          </Route>
+            <Route exact path="/">
+              {sessionUser ? <GetPosts mode="all" /> : <HomePage />}
+            </Route>
             <Route path="/login">
               <LoginFormModal />
             </Route>
@@ -68,8 +74,6 @@ function App() {
               <ImageDisplay mode="addPostToAnAlbum" key="addPostToAnAlbum" />
             </Route>
 
-
-
             <Route path="/posts/users/:userId">
               <ImageDisplay mode="photoStream" key="photoStream" />
             </Route>
@@ -81,8 +85,8 @@ function App() {
             </Route>
 
             <Route path="/user/favorites-post">
- <FavoritesPosts  />
-</Route>
+              <FavoritesPosts />
+            </Route>
             <Route path="/posts/:postId">
               <PostDetail />
             </Route>

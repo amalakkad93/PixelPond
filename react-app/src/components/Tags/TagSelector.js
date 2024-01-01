@@ -1,60 +1,64 @@
 import React from 'react';
 import CreatableSelect from 'react-select/creatable';
+import { useTheme } from '../../context/ThemeContext';
+
+import './TagSelector.css';
 
 const TagSelector = ({ selectedTags, setSelectedTags, availableTags }) => {
+  const { themeName } = useTheme();
   const customStyles = {
     control: (provided) => ({
       ...provided,
       width: '100%',
-      backgroundColor: 'white',
-      borderColor: '#5d3b8b',
+      backgroundColor: themeName === 'dark' ? '#404040' : 'white',
+      borderColor: themeName === 'dark' ? '#ff7f47' : '#ff0072',
       boxShadow: 'none',
       '&:hover': {
-        borderColor: '#b39ddb',
+        borderColor: themeName === 'dark' ? '#ff7f47' : '#ff0072',
       },
     }),
     multiValue: (provided) => ({
       ...provided,
-      backgroundColor: '#ffcc00',
+      backgroundColor: themeName === 'dark' ? '#ff7f47' : '#ff0072',
       borderRadius: '15px',
       padding: '6px 12px',
     }),
     multiValueLabel: (provided) => ({
       ...provided,
       fontSize: '14px',
-      color: '#303030',
+      color: themeName === 'dark' ? 'white' : 'white',
     }),
     multiValueRemove: (provided) => ({
       ...provided,
       cursor: 'pointer',
       ':hover': {
-        backgroundColor: '#e6b800',
-        color: '#303030',
+        backgroundColor: themeName === 'dark' ? '#fd6a2b' : '#ff0072',
+        color: themeName === 'dark' ? 'white' : '#303030',
       },
     }),
     placeholder: (provided) => ({
       ...provided,
-      color: '#5d3b8b',
+      color: themeName === 'dark' ? '#ff7f47' : '#ff0072',
       fontSize: '16px',
     }),
     dropdownIndicator: (provided) => ({
       ...provided,
-      color: '#5d3b8b',
+      color: themeName === 'dark' ? '#ff7f47' : '#ff0072',
+
       '&:hover': {
-        color: '#b39ddb',
+        color: themeName === 'dark' ? '#fd6a2b' : '#ff0072',
       },
     }),
     option: (provided, state) => ({
       ...provided,
-      backgroundColor: state.isFocused ? '#b39ddb' : 'white',
-      color: state.isFocused ? 'white' : '#5d3b8b',
+      backgroundColor: state.isFocused ? (themeName === 'dark' ? '#ff7f47' : '#ff0072') : (themeName === 'dark' ? '#404040' : 'white'),
+      color: state.isFocused ? 'white' : (themeName === 'dark' ? '#ff7f47' : '#000'),
       '&:active': {
-        backgroundColor: '#5d3b8b',
+        backgroundColor: themeName === 'dark' ? '#ff7f47' : '#ff0072',
         color: 'white',
       },
     }),
   };
-
   return (
     <CreatableSelect
       className="my-select"

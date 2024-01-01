@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
+
 import ProfileButton from "./ProfileButton";
 import PopupsModal from "../Modals/PopupsModal";
 import BannerNavbar from "./BannerNavbar";
 import UserNavigationBar from "./UserNavigationBar";
+import ThemeToggle from "../ThemeToggle/ThemeToggle";
 import { selectPostUserInfo, selectAlbumUserInfo } from "../../store/selectors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -107,6 +109,7 @@ console.log("🚀 ~ file: index.js:71 ~ Navigation ~ shouldDisplayBanner", shoul
                 </li>
               </ul>
             )}
+            <ThemeToggle/>
           </ul>
         </div>
       </nav>

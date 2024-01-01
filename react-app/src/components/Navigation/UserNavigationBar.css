@@ -3,11 +3,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px;
-  background-color: #f5f5f5;
-  /* background-color:#02474d; */
-  /* background-color: #e1b382; */
   text-decoration: none;
-  /* color: #0063dc; */
   z-index: 100;
   border-bottom: 2px solid #e8e8e8;
 }
@@ -15,21 +11,16 @@
 .navigation-links a {
   margin-right: 20px;
   text-decoration: none;
-  color: #e1b382;
-  color: white;
-  color:#10898d;
   position: relative;
   transition: color 0.3s;
 }
 
 .navigation-links a:hover {
   text-decoration: underline;
-  color: #c89666;
 }
 
 .navigation-links a.active {
   font-weight: bold;
-  color: #10898d
 }
 
 .navigation-links a.active::after {
@@ -40,13 +31,11 @@
   position: absolute;
   bottom: -10px;
   left: 0;
-  background-color: #12343b;
 }
 
 .create-post-button {
   margin-right: 20px;
   text-decoration: none;
-  color: #e1b382;
   font-size: inherit;
   border: none;
   background: none;
@@ -57,15 +46,83 @@
 
 .create-post-button:hover {
   text-decoration: underline;
-  color: #c89666;
 }
+
+/* Light Mode Styles for Navigation Bar */
+.light .user-navigation-bar {
+  /* background-color: #ff0072; */
+  background: linear-gradient(to right, #d3b8ae, #ff0072);
+  color: white;
+}
+
+.light .navigation-links a {
+  /* color: #ff0072; */
+  color: white;
+}
+
+.light .navigation-links a:hover {
+  text-decoration: underline;
+  color: #e60066;
+  color: white;
+}
+
+.light .navigation-links a.active {
+  color: #ff0072;
+  color: white;
+}
+
+.light .create-post-button {
+  color: #ff0072;
+}
+
+.light .create-post-button:hover {
+  text-decoration: underline;
+  color: #e60066;
+}
+
+/* Dark Mode Styles for Navigation Bar */
+.dark .user-navigation-bar {
+  /* background-color: #ff7f47; */
+  background: linear-gradient(to left, #404040, #ff7f47);
+  color: rgb(213, 213, 213);
+}
+
+.dark .navigation-links a {
+  color: #ff7f47;
+  color: white;
+}
+
+.dark .navigation-links a:hover {
+  text-decoration: underline;
+  color: #fd6a2b;
+  color: white;
+}
+
+.dark .navigation-links a.active {
+  color: #ff7f47;
+  color: rgb(255, 255, 255);
+}
+
+.dark .create-post-button {
+  color: white;
+  background-color: #ff7f47;
+}
+
+.dark .create-post-button:hover {
+  text-decoration: underline;
+  color: #fd6a2b;
+}
+
+
+
+
 
 /* Media Queries */
 
 /* Small Devices, Phones */
 @media (max-width: 600px) {
   .navigation-links a {
-    margin-right: 10px; 
+    margin-right: 10px;
     font-size: 14px;
   }
 

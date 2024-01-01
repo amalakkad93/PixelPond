@@ -4,7 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight, faChevronRight, faChevronLeft} from '@fortawesome/free-solid-svg-icons';
 import './Pagination.css';
 
-const Pagination = ({ totalItems, itemsPerPage, currentPage, onPageChange }) => {
+// const Pagination = ({ totalItems, itemsPerPage, currentPage, onPageChange }) => {
+  const Pagination = ({ currentPage, totalItems, itemsPerPage, onPageChange, disableNext, disablePrevious }) => {
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const handlePageChange = (page) => {
@@ -28,13 +29,12 @@ const Pagination = ({ totalItems, itemsPerPage, currentPage, onPageChange }) => 
     }
     return pages;
   };
-
   return (
     <div className="pagination">
-
       <button
         onClick={() => handlePageChange(currentPage - 1)}
         className={`pagination-btn ${currentPage === 1 ? 'disabled' : ''}`}
+        disabled={disablePrevious}
       >
         <FontAwesomeIcon icon={faChevronLeft} className="pagination-icon" />
       </button>
@@ -42,14 +42,34 @@ const Pagination = ({ totalItems, itemsPerPage, currentPage, onPageChange }) => 
       <button
         onClick={() => handlePageChange(currentPage + 1)}
         className={`pagination-btn ${currentPage === totalPages ? 'disabled' : ''}`}
+        disabled={disableNext}
       >
-        {/* <FontAwesomeIcon icon={faArrowRight} className="pagination-icon" /> */}
         <FontAwesomeIcon icon={faChevronRight} className="pagination-icon" />
       </button>
-      
     </div>
   );
 };
+//   return (
+//     <div className="pagination">
+
+//       <button
+//         onClick={() => handlePageChange(currentPage - 1)}
+//         className={`pagination-btn ${currentPage === 1 ? 'disabled' : ''}`}
+//       >
+//         <FontAwesomeIcon icon={faChevronLeft} className="pagination-icon" />
+//       </button>
+//       {renderPageNumbers()}
+//       <button
+//         onClick={() => handlePageChange(currentPage + 1)}
+//         className={`pagination-btn ${currentPage === totalPages ? 'disabled' : ''}`}
+//       >
+//         {/* <FontAwesomeIcon icon={faArrowRight} className="pagination-icon" /> */}
+//         <FontAwesomeIcon icon={faChevronRight} className="pagination-icon" />
+//       </button>
+
+//     </div>
+//   );
+// };
 
 // Pagination.propTypes = {
 //   totalItems: PropTypes.number.isRequired,

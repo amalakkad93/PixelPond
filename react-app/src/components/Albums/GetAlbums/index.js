@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,6 +12,8 @@ import {
   faUserCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { useModal } from "../../../context/Modal";
+import { useShortModal } from "../../../context/ModalShort";
+
 import { thunkGetAlbumsByUserId } from "../../../store/albums";
 import Spinner from "../../Spinner";
 import {
@@ -26,6 +28,7 @@ import Pagination from "../../Pagination";
 import UserNavigationBar from "../../Navigation/UserNavigationBar";
 import ImageDisplay from "../../ImageDisplay";
 import OpenModalButton from "../../Modals/OpenModalButton";
+import OpenShortModalButton from "../../Modals/OpenShortModalButton";
 import CreateAlbumForm from "../AlbumForm/CreateAlbumForm";
 import EditAlbumForm from "../AlbumForm/EditAlbumForm";
 import DeleteAlbum from "../DeleteAlbum";
@@ -39,6 +42,7 @@ const GetAlbums = () => {
   const { userId } = useParams();
   console.log("🚀 ~ file: index.js:37 ~ userId:", userId);
   const { closeModal } = useModal();
+  const { closeShortModal } = useShortModal();
   const albums = useSelector(selectAllAlbums) || [];
   console.log("🚀 ~ file: index.js:38 ~ albums:", albums);
   const totalAlbums = useSelector(selectTotalAlbums);
@@ -55,33 +59,63 @@ const GetAlbums = () => {
   const loading = useSelector(selectLoading);
   const [isAlbumsFetched, setIsAlbumsFetched] = useState(false);
 
+  const isFirstPage = currentPage === 1;
+  const isLastPage = currentPage === totalPages;
+
   const perPage = 2;
-  const aboutMe = albums[0]?.about_me;
-  const images = albums[0]?.images[0]?.url;
-  const profilePhoto = albums[0]?.user_info?.profile_picture;
-  const userName = `${albums[0]?.user_info?.first_name} ${albums[0]?.user_info?.last_name}`;
+
+  const aboutMe = albums.length > 0 ? albums[0]?.about_me : null;
+  const images = albums.length > 0 && albums[0]?.images?.length > 0 ? albums[0]?.images[0]?.url : null;
+  const profilePhoto = albums.length > 0 ? albums[0]?.user_info?.profile_picture : null;
+  const userName = albums.length > 0 ? `${albums[0]?.user_info?.first_name} ${albums[0]?.user_info?.last_name}` : '';
 
   console.log("🚀 ~ file: index.js:63 ~ userName:", userName);
   console.log("🚀 ~ file: index.js:56 ~ profilePhoto:", profilePhoto);
   console.log("🚀 ~ file: index.js:55 ~ image:", images);
-  useEffect(() => {
-    fetchData();
-  }, [dispatch, currentPage, perPage, userId]);
 
-  const fetchData = async () => {
-    try {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchData = useCallback(
+    async (page) => {
       dispatch(setLoading(true));
-      const response = await dispatch(
-        thunkGetAlbumsByUserId(userId, currentPage, perPage)
-      );
-      setTotalPages(response.totalPages);
-      setIsAlbumsFetched(true);
-      dispatch(setLoading(false));
-    } catch (err) {
-      setIsAlbumsFetched(true);
-      dispatch(setError("An error occurred"));
-      dispatch(setLoading(false));
+      setIsLoading(true);
+      try {
+        const response = await dispatch(thunkGetAlbumsByUserId(userId, page, perPage));
+        if (response) {
+          setCurrentPage(response.current_page);
+          setTotalPages(response.total_pages);
+          setIsAlbumsFetched(true);
+        }
+      } catch (err) {
+        console.error("Fetch Data Error:", err);
+        dispatch(setError("An error occurred"));
+        setIsAlbumsFetched(true);
+      } finally {
+        dispatch(setLoading(false));
+        setIsLoading(false);
+      }
+    },
+    [dispatch, userId, perPage]
+  );
+
+  useEffect(() => {
+    fetchData(currentPage);
+  }, [fetchData, currentPage]);
+
+  const handleAlbumClick = (albumId) => {
+    if (activeAlbumId === albumId) {
+      // Reset to show previews for all albums
+      setActiveAlbumId(null);
+    } else {
+      // Set the clicked album as active
+      setActiveAlbumId(albumId);
     }
+  };
+  const renderAlbumImages = (album) => {
+    const imagesToShow = activeAlbumId === album.id ? album.images : album.images.slice(0, 4);
+    return imagesToShow.map((image, index) => (
+      <img key={index} src={image.url} alt={`Image ${index} of ${album.title}`} className="album-image" />
+    ));
   };
 
   const toggleAbout = () => setShowAbout(!showAbout);
@@ -89,63 +123,11 @@ const GetAlbums = () => {
   if (!albums || albums.length === 0) return null;
   return (
     <div className="albums-main-container">
-
       {/* {loading ? (
         <Spinner />
       ) : ( */}
 
       <>
-        {/* <div className="albums-banner-container">
-          <div className="albums-banner">
-            {images ? (
-              <LazyLoadImage
-                src={images}
-                effect="blur"
-                className="banner-image"
-                width={"100%"}
-                height={"200px"}
-              />
-            ) : (
-              <LazyLoadImage
-                src={defult_banner_image}
-                effect="blur"
-                className="banner-image"
-                width={"100%"}
-                height={"200px"}
-              />
-            )}
-
-            <div className="albums-user-info-container">
-              <div className="profile-picture-container">
-                {profilePhoto ? (
-                  <img
-                    src={profilePhoto}
-                    alt="Profile"
-                    className="profile-picture"
-                  />
-                ) : (
-                  <FontAwesomeIcon
-                    icon={faUserCircle}
-                    className="profile-picture"
-                  />
-                )}
-              </div>
-
-              <div className="user-name">
-                <h1>{userName || "User Name"}</h1>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <nav className="album-navigation">
-          <UserNavigationBar
-            id={userId}
-            onAboutClick={toggleAbout}
-            showAbout={showAbout}
-            albumCount={totalAlbums}
-          />
-        </nav> */}
         {showAbout && (
           <div className="about-section">
             <p>{aboutMe || "No about me information available."}</p>
@@ -227,7 +209,8 @@ const GetAlbums = () => {
                   <>
                     {sessionUser?.id === album?.user_id && (
                       <div className="album-delete-button">
-                        <OpenModalButton
+                        <OpenShortModalButton
+                        className="delete-edit-modal"
                           onClick={(event) => {
                             event.stopPropagation();
                             setActiveAlbumImages(false);
@@ -240,18 +223,21 @@ const GetAlbums = () => {
                               currentPage={currentPage}
                               perPage={perPage}
                               setActiveAlbumImages={setActiveAlbumImages}
+                              onEdit={() => fetchData()}
                             />
                           }
                         />
-                        <OpenModalButton
-                          className="delete-modal"
+
+                        <OpenShortModalButton
+                          className="delete-edit-modal"
                           buttonText={<FontAwesomeIcon icon={faTrashAlt} />}
                           modalComponent={
                             <DeleteAlbum
-                              albumId={album.id}
+                              albumId={album?.id}
                               onDelete={() => fetchData()}
                             />
                           }
+
                         />
                       </div>
                     )}
@@ -281,7 +267,10 @@ const GetAlbums = () => {
             totalItems={totalPages * perPage}
             itemsPerPage={perPage}
             currentPage={currentPage}
-            onPageChange={(newPage) => setCurrentPage(newPage)}
+            // onPageChange={(newPage) => setCurrentPage(newPage)}
+            onPageChange={(newPage) => fetchData(newPage)}
+            disableNext={isLastPage}
+            disablePrevious={isFirstPage}
           />
         )}
         {/* Overlay for active album */}
@@ -301,8 +290,6 @@ const GetAlbums = () => {
           </div>
         )}
       </>
-
-
     </div>
   );
 };

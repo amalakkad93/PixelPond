@@ -42,57 +42,86 @@ export default function FavoritesPosts() {
   };
 
   const hasFavorites = favorites.length > 0;
-
   return (
     <>
-      <div
-        className="Back-to-Home"
-        style={{ marginLeft: "73px", color: "black" }}
-      >
-        <button
-          onClick={() => history.goBack()}
-          style={{
-            color: "black",
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
+      <div className="Back-to-Home" style={{ marginLeft: "73px", color: "black" }}>
+        <button className="Back-to-Home-btn" onClick={() => history.goBack()} style={{ color: "black", background: "none", border: "none", cursor: "pointer" }}>
           <FontAwesomeIcon icon={faArrowLeft} /> Back to Previous Page
         </button>
       </div>
 
-      <div
-        className={`post-list ${
-          hasFavorites ? "with-favorites" : "no-favorites"
-        }`}
-      >
-        {favorites.map((favorite) => (
-          <div
-            key={favorite.post.id}
-            className="post-card"
-            title={favorite.post.title}
-            onClick={() => history.push(`/posts/${favorite.post.id}`)}
-          >
-            <img
-              src={favorite.post.image_url}
-              alt={`Post: ${favorite.post.title}`}
-              className="post-image"
-            />
-
-            <FontAwesomeIcon
-              icon={solidStar}
-              className="favorite-heart"
-              onClick={(e) => handleFavoriteClick(e, favorite.post.id)}
-            />
-
-            <div className="post-details">
-              <h3 className="post-title">{favorite.post.title}</h3>
-              <p className="post-description">{favorite.post.description}</p>
+      <div className={`post-list ${hasFavorites ? "with-favorites" : "no-favorites"}`}>
+        {hasFavorites ? (
+          favorites.map((favorite) => (
+            <div key={favorite.post.id} className="post-card" title={favorite.post.title} onClick={() => history.push(`/posts/${favorite.post.id}`)}>
+              <img src={favorite.post.image_url} alt={`Post: ${favorite.post.title}`} className="post-image" />
+              <FontAwesomeIcon icon={solidStar} className="favorite-heart" onClick={(e) => handleFavoriteClick(e, favorite.post.id)} />
+              <div className="post-details">
+                <h3 className="post-title">{favorite.post.title}</h3>
+                <p className="post-description">{favorite.post.description}</p>
+              </div>
             </div>
+          ))
+        ) : (
+          <div className="no-favorites-message">
+            <p>You have no favorites yet.</p>
           </div>
-        ))}
+        )}
       </div>
     </>
   );
 }
+
+//   return (
+//     <>
+//       <div
+//         className="Back-to-Home"
+//         style={{ marginLeft: "73px", color: "black" }}
+//       >
+//         <button
+//           onClick={() => history.goBack()}
+//           style={{
+//             color: "black",
+//             background: "none",
+//             border: "none",
+//             cursor: "pointer",
+//           }}
+//         >
+//           <FontAwesomeIcon icon={faArrowLeft} /> Back to Previous Page
+//         </button>
+//       </div>
+
+//       <div
+//         className={`post-list ${
+//           hasFavorites ? "with-favorites" : "no-favorites"
+//         }`}
+//       >
+//         {favorites.map((favorite) => (
+//           <div
+//             key={favorite.post.id}
+//             className="post-card"
+//             title={favorite.post.title}
+//             onClick={() => history.push(`/posts/${favorite.post.id}`)}
+//           >
+//             <img
+//               src={favorite.post.image_url}
+//               alt={`Post: ${favorite.post.title}`}
+//               className="post-image"
+//             />
+
+//             <FontAwesomeIcon
+//               icon={solidStar}
+//               className="favorite-heart"
+//               onClick={(e) => handleFavoriteClick(e, favorite.post.id)}
+//             />
+
+//             <div className="post-details">
+//               <h3 className="post-title">{favorite.post.title}</h3>
+//               <p className="post-description">{favorite.post.description}</p>
+//             </div>
+//           </div>
+//         ))}
+//       </div>
+//     </>
+//   );
+// }

@@ -2,8 +2,7 @@
   position: absolute;
   top: 100%;
   left: 69%;
-  background-color: #e1b382;
-  background-color: white;
+  /* background-color: white; */
   border-radius: 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 250px;
@@ -26,9 +25,9 @@
 
 .btn-photo-stream, .btn-albums, .btn-explore {
   /* background-color: #f8f9fa; */
-  /* background-color: #2d545e; */
+  background-color: transparent;
   border: none;
-  color: #10898d;
+  /* color: #10898d; */
   padding: 10px 15px;
   border-radius: 5px;
   display: flex;
@@ -40,19 +39,52 @@
 }
 
 .btn-photo-stream:hover, .btn-albums:hover, .btn-explore:hover {
-  background-color: #e2e6ea;
-  background-color: #12343b;
+  /* background-color: #e2e6ea;
+  background-color: #12343b; */
 }
 
 .modal-pop .faUserCircle, .modal-pop .faImages, .modal-pop .faPhotoVideo, .modal-pop .faCameraRetro {
   font-size: 1.2rem;
-  color: #007bff;
-  color: white;
+  /* color: #007bff;
+  color: white; */
 }
 
 .modal-pop span {
   font-size: 1rem;
   font-weight: 500;
+}
+
+/* Light Mode Styles for Modal */
+.light .modal-pop {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #333;
+}
+
+.light .modal-pop-content {
+  background-color: #fff;
+}
+
+.light .btn-photo-stream,
+.light .btn-albums,
+.light .btn-explore {
+  /* background-color:#ff0072; */
+}
+
+/* Dark Mode Styles for Modal */
+.dark .modal-pop {
+  background-color: rgba(0, 0, 0, 0.9);
+  color: #282c35
+}
+
+.dark .modal-pop-content {
+  background-color: #282c35;
+}
+
+.dark .btn-photo-stream,
+.dark .btn-albums,
+.dark .btn-explore {
+  /* background-color: #ff7f47; */
+  color: #fff;
 }
 
 @media (max-width: 768px) {

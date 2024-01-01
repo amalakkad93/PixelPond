@@ -7,15 +7,13 @@
 }
 
 .navbar {
-  background-color:#032f3c;
-  /* background-color: #b3916d; */
-  /* background-color: rgba(21,21,23,.95); */
-  color: #212124;
+  background-color: #404040;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 10px 20px;
-  border-bottom: 2px solid #12343b;
+  border-bottom: 2px solid #707070;
   position: relative;
   z-index: 1000;
 }
@@ -50,7 +48,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  color: #e1b382;
+  /* color: #ff0072; */
   color: white;
   text-decoration: none;
   transition: color 0.3s ease;
@@ -58,7 +56,8 @@
 
 .navbar-links li a:hover,
 .navbar-links li a.active {
-  color: white;
+  /* color: #d60060; */
+  /* color: #ff0072; */
 }
 
 .pop-modal-trigger {
@@ -81,8 +80,59 @@
 .white-icon {
   display: inline-flex;
   align-items: center;
-  color: #fff;
+  /* color: #ff0072; */
+  color: white;
   border-radius: 50%;
   padding: 5px 10px;
   font-weight: bold;
+}
+
+/* Dark Mode Style */
+.dark .navbar {
+  background-color: #404040;
+  color: #ffffff;
+}
+
+.dark .navbar-links li a,
+.dark .white-icon {
+  color: white;
+}
+
+.dark .navbar-links li a:hover,
+.dark .navbar-links li a.active {
+  color: #ff7f47;
+}
+
+/* Light Mode Style */
+.light .navbar {
+  background-color: #F0F0F0;
+  color: #404040;
+}
+
+.light .navbar-links li a,
+.light .white-icon {
+  color: #404040;
+}
+
+.light .navbar-links li a:hover,
+.light .navbar-links li a.active {
+  color: #ff0072;
+}
+
+/* Media Query */
+@media screen and (max-width: 768px) {
+  .navbar-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .navbar-links {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .logo-img {
+    height: 40px;
+  }
 }
