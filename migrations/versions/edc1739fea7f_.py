@@ -1,3 +1,4 @@
+
 """empty message
 
 Revision ID: edc1739fea7f
@@ -48,6 +49,7 @@ def upgrade():
     sa.Column('profile_picture', sa.String(length=255), nullable=True),
     sa.Column('about_me', sa.Text(), nullable=True),
     sa.Column('country', sa.String(length=255), nullable=True),
+    sa.Column('banner_picture', sa.String(length=500), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),
     sa.UniqueConstraint('username')
