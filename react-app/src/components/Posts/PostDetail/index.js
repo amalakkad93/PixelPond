@@ -64,8 +64,6 @@ export default function PostDetail() {
   const loading = useSelector(selectLoading);
   const userId = post?.owner_id;
 
-  const isCorrectPostLoaded = post?.id?.toString() === postId;
-
   const favorite = useSelector((state) => isPostFavorited(state, postId));
 
   const handleFavoriteToggle = async (e) => {
@@ -94,14 +92,14 @@ export default function PostDetail() {
   useEffect(() => {
     dispatch(thunkFetchAllFavorites(sessionUser?.id));
     fetchData();
-  }, [fetchData, dispatch, sessionUser?.id, postId]);
+  }, [fetchData, dispatch, sessionUser?.id]);
 
   useEffect(() => {
     dispatch(clearPostDetails());
     dispatch(clearUIState());
   }, [dispatch, postId]);
 
-  // if (loading && (!post || !post.image_url)) return <Spinner />;
+
   if (!post || !post.image_url) return null;
 
   return (
