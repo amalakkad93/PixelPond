@@ -25,6 +25,7 @@ import { fetchUserInfoById } from "../../../store/session";
 import {
   thunkGetPostComments,
   actionAddComment,
+  actionClearComments,
 } from "../../../store/comments";
 import { setLoading, setError, clearUIState } from "../../../store/ui";
 import {
@@ -96,6 +97,7 @@ export default function PostDetail() {
 
   useEffect(() => {
     dispatch(clearPostDetails());
+    dispatch(actionClearComments());
     dispatch(clearUIState());
   }, [dispatch, postId]);
 

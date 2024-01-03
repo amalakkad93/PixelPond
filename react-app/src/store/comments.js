@@ -14,6 +14,7 @@ const GET_COMMENT_DETAIL = "comments/GET_COMMENT_DETAIL";
 const DELETE_COMMENT = "comments/DELETE_COMMENT";
 
 const CLEAR_SINGLE_COMMENT = "comments/CLEAR_SINGLE_COMMENT";
+const CLEAR_COMMENTS = "comments/CLEAR_COMMENTS";
 
 const SET_COMMENT_ERROR = "comments/SET_COMMENT_ERROR";
 
@@ -46,6 +47,10 @@ const actionDeleteComment = (commentId) => ({
 
 const actionClearSingleComment = () => ({
   type: CLEAR_SINGLE_COMMENT,
+});
+
+export const actionClearComments = () => ({
+  type: CLEAR_COMMENTS
 });
 
 const actionSetPostError = (errorMessage) => ({
@@ -226,6 +231,11 @@ export default function reducer(state = initialState, action) {
         ...state,
         singleComment: null,
       };
+      case CLEAR_COMMENTS:
+        return {
+          ...state,
+          allCommentsOfPost: { byId: {}, allIds: [] }
+        };
     default:
       return state;
   }
