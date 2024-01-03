@@ -20,6 +20,7 @@ import {
 } from "../../store/selectors";
 import defult_banner_image from "../../assets/images/defult_banner_image.png";
 import OpenModalButton from "../Modals/OpenModalButton";
+import OpenShortModalButton from "../Modals/OpenShortModalButton";
 import CreatePostForm from "../Posts/PostForms/CreatePostForm";
 import UserProfileManager from "../Users/UserProfile/UserProfileManager";
 import ProfilePictureUpdater from "../Users/UserProfile/ProfilePictureUpdater";
@@ -202,64 +203,8 @@ const ImageDisplay = memo(({ mode, albumId }) => {
         <Spinner />
       ) : (
         <>
-          {/* {mode !== "albumImages" && (
-        <div className="banner-container">
-        <div className="banner">
-          { bannerPhoto &&  bannerPhoto ? (
-            <LazyLoadImage
-              src={ bannerPhoto}
-              effect="blur"
-              className="banner-image"
-              width={"100%"}
-              height={"200px"}
-            />
-          ) : (
-            <LazyLoadImage
-              src={defult_banner_image}
-              effect="blur"
-              className="banner-image"
-              width={"100%"}
-              height={"300px"}
-            />
-          )}
 
-          <div className="user-details-container">
-            <div className={mode === "ownerPhotoStream" ? "owner-details" : "user-details"}>
-              <div className="profile-picture-container">
-                {profilePhoto ? (
-                  <img src={profilePhoto} alt="Profile" className="profile-picture" />
-                ) : (
-                  <FontAwesomeIcon icon={faUserCircle} className="profile-picture" />
-                )}
-              </div>
-              <div className="user-name">
-                <h1>{userName || "User Name"}</h1>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-            <BannerNavbar
-              userInfo={userInfo}
-              images={images}
-              profilePhoto={profilePhoto}
-              userName={userName}
-              mode={mode}
-              setIsEditingProfilePic={setIsEditingProfilePic}
-            />
-          )} */}
           <div className="photo-stream-container">
-            {/* {mode !== "albumImages" && (
-              <nav className="album-navigation">
-                <UserNavigationBar
-                  id={navigationUserId}
-                  onAboutClick={toggleAbout}
-                  photoCount={imageLength}
-                  currentPage={currentPage}
-                />
-              </nav>
-            )} */}
             {noContentMessage && (
               <div className="no-content-message">
                 <h1>You have no public photos.</h1>
@@ -291,7 +236,7 @@ const ImageDisplay = memo(({ mode, albumId }) => {
             {/* <div className="Images-and-create-btn"> */}
             {mode === "ownerPhotoStream" && displayedImages.length > 0 && (
               <div className="create-post-container">
-                <OpenModalButton
+                <OpenShortModalButton
                   className="create-post-button"
                   buttonText="Create Post"
                   modalComponent={

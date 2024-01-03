@@ -1,11 +1,22 @@
-.comment-form-container {
-  max-width: 600px;
-  margin: auto;
-  padding: 1em;
-  background-color: #f5f5f5;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.comment-area {
+  display: flex;
+  align-items: flex-start;
+}
+
+.user-profile-picture {
+  margin-right: 10px;
+  margin-top: 12px;
+}
+
+.profile-picture, .default-profile-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.text-area-section {
+  position: relative;
+  flex-grow: 1;
 }
 
 .comment-form {
@@ -13,21 +24,63 @@
   flex-direction: column;
 }
 
-.comment-form textarea {
-  resize: vertical;
+.text-area-wrapper {
+  position: relative;
   padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  min-height: 100px;
-  font-size: 14px;
 }
 
-.comment-form button {
-  background-color: #0063dc;
+.comment-form textarea {
+  resize: none;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ff0072;
+  border-radius: 4px;
+  min-height: 120px;
+  font-size: 14px;
+  width: 282px;
+  padding-left: 30px;
+}
+.comment-arrow {
+  position: absolute;
+  top: 20%;
+  left: -14.2px;
+  width: 50px;
+  height: 20px;
+  transform: translateY(-50%);
+}
+
+.comment-arrow::before {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-color: transparent transparent #ccc #ccc;
+  transform: translate(-50%, -50%) rotate(45deg);
+  top: 50%;
+  left: 50%;
+}
+
+
+
+.comment-create-btn {
+  background-color: #ff0072;
   color: white;
   border: none;
-  padding: 10px 15px;
+  padding: 12px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+  width:50%;
+}
+.comment-edit-btn {
+  background-color: #ff0072;
+  color: white;
+  border: none;
+  padding: 12px 20px;
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
@@ -36,7 +89,7 @@
 }
 
 .comment-form button:hover {
-  background-color: #0051b1;
+  background-color: #e60066;
 }
 
 .comment-form button:disabled {
@@ -45,11 +98,37 @@
 }
 
 .aws-image-uploader {
-  margin-bottom: 10px;
+  margin-bottom: 15px;
   cursor: pointer;
 }
 
-.comment-create-edit-btn{
-  margin-top: 10px;
-  cursor: pointer;
+/* Dark mode styles */
+.dark .comment-form-container {
+  background-color: #282c35;
+  color: white;
+}
+
+.dark .comment-form textarea {
+  background-color: #333;
+  color: #fff;
+  border: 1px solid #ff7f47;
+}
+
+.dark .comment-form button {
+  background-color: #ff7f47;
+}
+
+.dark .comment-form button:hover {
+  background-color: #fd6a2b;
+}
+.dark .comment-arrow::before {
+  background-color: #333;
+  border: 1px solid #ff7f47;
+  border-color: transparent transparent #ff7f47 #ff7f47;
+}
+
+.light .comment-arrow::before {
+  background-color: #fff;
+  border: 1px solid #ff0072;
+  border-color: transparent transparent #ff0072 #ff0072;
 }

@@ -2,6 +2,7 @@
 .short-modal-more-info-button {
   display: inline-block;
   color: white;
+  background-color: transparent;
   border-radius: 5px;
   padding: 10px 15px;
   border-radius: 5px;

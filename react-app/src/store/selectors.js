@@ -70,25 +70,6 @@ export const selectUserPostImages = (state) => {
 //               ****Album UseSelectors****
 // =========================================================
 
-// export const selectAlbumImages =  (state, albumId) => {
-//   const album = state.albums.singleAlbum.byId[albumId];
-//   return album ? album.imageIds.map(id => album.images[id]) : [];
-// };
-
-
-// export const selectAlbumImages = (state, albumId) => {
-//   const album = state.albums?.singleAlbum?.byId?.[albumId];
-//   if (!album || !album?.images) return [];
-
-//   return album.imageIds?.map(id => {
-//     const image = album.images?.[id];
-//     return {
-//       ...image,
-//       post_id: image?.post_id,
-//     };
-//   });
-// };
-
 export const selectAlbumDetails = (state, albumId) => {
   const album = state.albums?.singleAlbum?.byId?.[albumId];
   if (!album) return { images: [], title: '' };
@@ -167,9 +148,25 @@ export const selectAllFavorites = (state) => {
 
 
 // Selector to check if a post is favorited
+// export const isPostFavorited = (state, postId) => {
+//   const favorites = Object.values(state.favorites.favoritesById);
+//   console.log("🚀 ~ file: selectors.js:202 ~ isPostFavorited ~ favorites", favorites)
+//   let res = favorites.some(favorite => favorite.post_id === postId);
+//   console.log("🚀 ~ file: selectors.js:202 ~ isPostFavorited ~ res", res)
+//   return res;
+//   // return favorites.some(favorite => favorite.post_id === postId);
+// };
 export const isPostFavorited = (state, postId) => {
   const favorites = Object.values(state.favorites.favoritesById);
-  return favorites.some(favorite => favorite.post_id === postId);
+  console.log("🚀 ~ favorites:", favorites);
+  console.log("🚀 ~ postId:", postId, "Type:", typeof postId);
+
+  // Ensuring postId is a number, adjust as needed based on your data type
+  const numericPostId = Number(postId);
+
+  let res = favorites.some(favorite => Number(favorite.post_id) === numericPostId);
+  console.log("🚀 ~ isPostFavorited ~ res:", res);
+  return res;
 };
 
 // Selector to get a favorite by ID

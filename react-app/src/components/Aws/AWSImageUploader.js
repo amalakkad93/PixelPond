@@ -50,8 +50,8 @@ const AWSImageUploader =  ({ setUploadImage }) => {
   };
 
   return (
-    <div>
-      <input type="file" onChange={handleFileChange} />
+    <div className="aws-main-container">
+      <input className="aws-input" type="file" onChange={handleFileChange} />
       {uploading && (
         <div className="progress-container">
           <div className="progress-bar">

@@ -1,44 +1,75 @@
+/* CommentItem CSS */
+
 .comment-item {
-  background: white;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); */
   padding: 15px;
   margin-bottom: 15px;
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  display: flex;
-  align-items: flex-start;
-  flex-direction: column;
 }
-
+.comment-item, .create-comment-form {
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 15px;
+  padding:0px;
+}
+.comment-content {
+  width: 100%;
+}
 .comment-user-profile {
   display: flex;
-  flex-direction: row;
-  flex-shrink: 0;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 10px;
+  /* align-items: center; */
+  gap: 15px;
+  margin-bottom: 10px;
+}
+.comment-user-profile-picture-div {
+  margin-right: 10px;
 }
 
 .comment-user-profile-picture {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  margin-right: 15px;
+  /* margin-right: 10px; */
+}
+.comment-user-name-date-comment-text {
+  display: flex;
+  flex-direction: column;
+}
+.comment-user-name-date-edit {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 .comment-user-name-date {
   display: flex;
-  flex-direction: row;
-  gap: 23px;
-  justify-content: space-between;
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 10px;
+  align-items: center;
+  gap: 15px;
 }
 
+.comment-user-name {
+  font-weight: bold;
+  margin: 0;
+  margin-right: 5px;
+}
+
+.comment-date {
+  font-size: 0.8rem;
+  color: #666;
+}
+.comment-text-p-tag {
+  margin-top: 20px;
+}
+.comment-text {
+  /* margin-top: 10px; */
+}
 .comment-text-area {
   flex-grow: 1;
 }
-
 
 .comment-content p {
   margin: 0;
@@ -46,8 +77,103 @@
 }
 
 .comment-img {
-  max-width: 100%;
+  max-width: 50%;
+  /* max-width: 100%; */
   height: auto;
   margin-top: 10px;
   border-radius: 5px;
+}
+
+/* Dark Mode Styles For  CommentItem */
+.dark .comment-item {
+  /* background-color: #282c35; */
+  color: white;
+}
+
+.dark .comment-date {
+  color: #aaa;
+}
+
+/* CommentsList CSS */
+.comments-list {
+  margin: 0;
+  /* padding: 20px; */
+  background: #f0f0f0;
+  border-radius: 10px;
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+.comment-div {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.load-previous-comments-btn,
+.load-more-comments-btn {
+  background-color: #ff0072;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: background-color 0.3s;
+}
+
+/* Dark Mode Styles For  CommentsList */
+.dark .comments-list {
+  background-color: #282c35;
+}
+
+.dark .load-previous-comments-btn,
+.dark .load-more-comments-btn {
+  background-color: #ff7f47;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .comment-user-profile {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .comment-user-profile-picture {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+  .comment-user-name-date {
+    align-items: flex-start;
+  }
+
+  .comment-text-area {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .comments-list {
+    padding: 10px;
+  }
+
+  .load-previous-comments-btn,
+  .load-more-comments-btn {
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  .comment-item {
+    padding: 10px;
+  }
+
+  .comment-content p {
+    font-size: 14px;
+  }
 }

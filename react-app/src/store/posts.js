@@ -349,7 +349,8 @@ export const thunkUpdatePost = (postId, updatedData, image) => async (dispatch) 
   }
 
   try {
-    if (image) {
+    // Check if 'image' is a File object for a new image upload
+    if (image && image instanceof File) {
       const { presignedUrl, fileUrl } = await dispatch(getPresignedUrl(image.name, image.type));
       if (!presignedUrl) {
         throw new Error('Failed to upload image');
@@ -363,8 +364,10 @@ export const thunkUpdatePost = (postId, updatedData, image) => async (dispatch) 
         },
       });
 
+      // Update the image URL in the post data
       updatedData.image_url = fileUrl;
     }
+    // If no new image is provided or image is not a File object, the existing image URL remains unchanged
 
     const response = await fetch(`/api/posts/${postId}`, {
       method: "PUT",
@@ -372,12 +375,7 @@ export const thunkUpdatePost = (postId, updatedData, image) => async (dispatch) 
       body: JSON.stringify(updatedData),
     });
 
-    if (response.ok) {
-      const data = await response.json();
-      dispatch(actionUpdatePost(data));
-      dispatch(thunkGetPostDetails(postId));
-      return data;
-    } else {
+    if (!response.ok) {
       const errors = await response.json();
       console.error("Update Post Error: ", errors);
       dispatch(
@@ -387,6 +385,11 @@ export const thunkUpdatePost = (postId, updatedData, image) => async (dispatch) 
       );
       return { type: "FAILURE", error: errors };
     }
+
+    const data = await response.json();
+    dispatch(actionUpdatePost(data));
+    dispatch(thunkGetPostDetails(postId));
+    return data;
   } catch (error) {
     console.error("Error in thunkUpdatePost: ", error);
     dispatch(
@@ -397,6 +400,62 @@ export const thunkUpdatePost = (postId, updatedData, image) => async (dispatch) 
     return { type: "ERROR", error };
   }
 };
+
+
+// export const thunkUpdatePost = (postId, updatedData, image) => async (dispatch) => {
+//   if (!postId) {
+//     return { type: "ERROR", error: { message: "Invalid post ID" } };
+//   }
+
+//   try {
+//     if (image) {
+//       const { presignedUrl, fileUrl } = await dispatch(getPresignedUrl(image.name, image.type));
+//       if (!presignedUrl) {
+//         throw new Error('Failed to upload image');
+//       }
+
+//       await fetch(presignedUrl, {
+//         method: "PUT",
+//         body: image,
+//         headers: {
+//           "Content-Type": image.type,
+//         },
+//       });
+
+//       updatedData.image_url = fileUrl;
+//     }
+
+//     const response = await fetch(`/api/posts/${postId}`, {
+//       method: "PUT",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify(updatedData),
+//     });
+
+//     if (response.ok) {
+//       const data = await response.json();
+//       dispatch(actionUpdatePost(data));
+//       dispatch(thunkGetPostDetails(postId));
+//       return data;
+//     } else {
+//       const errors = await response.json();
+//       console.error("Update Post Error: ", errors);
+//       dispatch(
+//         actionSetPostError(
+//           errors.error || `Error updating post with ID ${postId}.`
+//         )
+//       );
+//       return { type: "FAILURE", error: errors };
+//     }
+//   } catch (error) {
+//     console.error("Error in thunkUpdatePost: ", error);
+//     dispatch(
+//       actionSetPostError(
+//         `An error occurred while updating post with ID ${postId}.`
+//       )
+//     );
+//     return { type: "ERROR", error };
+//   }
+// };
 
 // ***************************************************************
 //  Thunk to Delete a Post

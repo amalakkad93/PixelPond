@@ -12,3 +12,24 @@
 .load-previous-btn i {
   margin-right: 5px;
 }
+.load-previous-pagination{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+.load-previous-pagination button {
+  background-color: transparent;
+  color: #ff0072;
+}
+
+
+.dark .load-previous-pagination button {
+  background-color: transparent;
+  color:#ff7f47;
+}
+
+.dark .load-previous-pagination button:hover {
+  background-color:#e66a3f;
+}

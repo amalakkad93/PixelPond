@@ -1,68 +1,118 @@
 
-  .delete-modal #modal-content {
-    position: absolute;
-    background-color: white;
-    border-radius: 10px;
-    height: 237px;
+
+.tile-parent-delete-item {
+  background-color: #ffffff;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  max-width: 360px;
+  margin: 40px auto;
+  /* border: 1px solid #dcdcdc; */
 }
-  .tile-parent-delete-item {
-    background-color: #ffffff;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    text-align: center;
-    max-width: 360px;
-    margin: 40px auto;
-    /* border: 1px solid #dcdcdc; */
-  }
 
-  .delete-item-h1-tag {
-    color: #333333;
-    font-size: 24px;
-    font-weight: 600;
-    margin-bottom: 20px;
-  }
+.delete-item-h1-tag {
+  color: #333333;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
 
-  .delete-item-p-tag {
-    color: #555555;
-    font-size: 18px;
-    margin-bottom: 30px;
-  }
+.delete-item-p-tag {
+  color: #555555;
+  font-size: 18px;
+  margin-bottom: 30px;
+}
 
-  .delete-keep-item-cancel-btn {
-    display: flex;
-    justify-content: space-between;
-    gap: 15px;
-  }
+.delete-keep-item-cancel-btn {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
 
-  #delete-item-btn, #cancel-item-btn {
-    padding: 12px 30px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    transition: all 0.2s ease;
-  }
+#delete-item-btn, #cancel-item-btn {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+}
 
-  #delete-item-btn {
-    background-color: #ff6b6b;
-    color: white;
-  }
+#delete-item-btn {
+  background-color: #ff6b6b;
+  color: white;
+}
 
-  #delete-item-btn:hover {
-    background-color: #ff5252;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
+#delete-item-btn:hover {
+  background-color: #ff5252;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
-  #cancel-item-btn {
-    background-color: #f0f0f0;
-    color: #333333;
-  }
+#cancel-item-btn {
+  background-color: #f0f0f0;
+  color: #333333;
+}
 
-  #cancel-item-btn:hover {
-    background-color: #e0e0e0;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
+#cancel-item-btn:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+
+
+.dark .tile-parent-delete-item {
+  background-color: #282c35;
+}
+
+.dark .delete-item-h1-tag, .dark .delete-item-p-tag {
+  color: white;
+}
+
+.dark #delete-item-btn {
+  background-color: #ff7f47;
+  color: white;
+}
+
+.dark #delete-item-btn:hover {
+  background-color: #e66a3f;
+}
+
+.dark #cancel-item-btn {
+  background-color: #404040;
+  color: white;
+}
+
+.dark #cancel-item-btn:hover {
+  background-color: #505050;
+}
+
+.light .tile-parent-delete-item {
+  background-color: #ffffff;
+}
+
+.light .delete-item-h1-tag, .light .delete-item-p-tag {
+  color: #333333; /* Dark text for contrast */
+}
+
+.light #delete-item-btn {
+  background-color: #ff0072;
+  color: white;
+}
+
+.light #delete-item-btn:hover {
+  background-color: #e60066;
+}
+
+.light #cancel-item-btn {
+  background-color: #f0f0f0;
+  color: #333333;
+}
+
+.light #cancel-item-btn:hover {
+  background-color: #d9d9d9;
+}

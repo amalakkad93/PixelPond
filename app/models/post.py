@@ -30,11 +30,14 @@ class Post(db.Model):
         image = Image.query.get(self.image_id)
         image_url = image.url if image else None
 
-        # tags = Tag.query.filter(Tag.post_id == self.id).all()
-        # tag_list = [{'id': tag.id, 'name': tag.name} for tag in tags]
-        post_tags = PostTag.query.filter(PostTag.post_id == self.id).all()
-        tag_list = [Tag.query.get(post_tag.tag_id).to_dict() for post_tag in post_tags if post_tag.tag_id]
 
+        # post_tags = PostTag.query.filter(PostTag.post_id == self.id).all()
+        # tag_list = [Tag.query.get(post_tag.tag_id).to_dict() for post_tag in post_tags if post_tag.tag_id]
+        post_tags = PostTag.query.filter(PostTag.post_id == self.id).all()
+        tag_ids = [post_tag.tag_id for post_tag in post_tags if post_tag.tag_id]
+        tags = Tag.query.filter(Tag.id.in_(tag_ids)).all()
+        tag_list = [tag.to_dict() for tag in tags]
+        
         user = User.query.get(self.owner_id)
         user_info = user.to_dict() if user else {}
         return {

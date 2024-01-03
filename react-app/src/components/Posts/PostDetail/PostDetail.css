@@ -20,21 +20,25 @@
 
 .post-detail-container {
   display: flex;
-  justify-content: space-between;
-  max-width: 100%;
   flex-direction: column;
-  /* padding: 20px; */
+  /* align-items: center; */
+  max-width: 100%;
 }
 
 .main-content-container {
   display: flex;
   width: 100%;
   height: 413px;
+}
 
+.post-detail-top-container {
+  position: relative;
+  margin-bottom: 20px;
+  background-color: #212124;
 }
 
 .image-container {
-  background-color:#212124;
+  background-color: #212124;
   display: flex;
   /* justify-content: center; */
   align-items: center;
@@ -42,17 +46,28 @@
   padding: 20px;
   flex-direction: column;
   position: relative;
+
+
+  /* position: absolute; */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .displayed-image {
   max-width: 100%;
   max-height: 390px;
-  height:390px;
+  height: 390px;
   /* height:200px; */
   object-fit: contain;
 }
 
-.prev-button, .next-button {
+.prev-button,
+.next-button {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -75,20 +90,34 @@
 .next-button {
   right: 10px;
 }
-
-.edit-delete-post-btn {
-  /* position: absolute; */
-  /* top: 490px; */
-  /* right: 10px; */
+.edit-delete-fav-btns {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   color: white;
   border: none;
-  /* padding: 10px; */
   margin-left: 792px;
   cursor: pointer;
   font-size: 16px;
   display: flex;
   gap: 10px;
   margin-top: -49px;
+
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+
+.edit-delete-post-btn,
+.favorite-button {
+  display: flex;
+  align-items: center;
+}
+.favorite-button {
+  background-color: transparent;
+}
+.favorite-button {
+  color: white;
 }
 
 .trash-icon {
@@ -112,7 +141,6 @@
   font-size: 24px;
 }
 
-
 .slider-icon:hover {
   color: lightgray;
   transform: scale(1.1);
@@ -126,7 +154,10 @@
   padding-left: 20px;
   margin-top: 10px;
 }
-
+.user-info {
+  display: flex;
+  align-items: center;
+}
 .user-profile-picture-name-container {
   display: flex;
   align-items: center;
@@ -165,17 +196,10 @@
   color: #555;
 }
 
-.image-container, .user-info-container {
+.image-container,
+.user-info-container {
   width: 100%;
 }
-.comments-section {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-top: 104px;
-
-}
-
 .comments-section {
   display: flex;
   flex-direction: column;
@@ -183,7 +207,145 @@
   margin-top: 20px;
   margin-left: auto;
   margin-right: auto;
-  /* width: 30%; */
-  width: 10%;
-  max-width: 800px;
+}
+
+.user-post-info{
+  display: flex;
+  /* justify-content: center; */
+  align-items: center;
+}
+.user-post-info,
+.comments-section {
+  width: 100%;
+}
+.post-detail-bottom-container {
+  /* display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
+
+
+  width: 1060px;
+  width: 100%; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 1060px;
+  margin: 0 auto;
+}
+
+.details-comments-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* Dark Mode */
+.dark .post-detail-container {
+  color: white;
+}
+
+.dark .image-container {
+  /* background-color: #282c35; */
+}
+
+.dark .edit-delete-post-btn button,
+.dark .prev-button,
+.dark .next-button {
+  color: white;
+}.post-description
+
+.dark .trash-icon {
+  color: red;
+}
+
+.dark .slider-icon {
+  color: white;
+}
+.dark .post-description {
+color: rgb(221, 221, 221);
+}
+
+/* Light Mode */
+.light .post-detail-container {
+  color: #404040;
+}
+
+.light .image-container {
+  /* background-color: #F0F0F0; */
+}
+
+.light .edit-delete-post-btn button,
+.light .prev-button,
+.light .next-button {
+  color: white;
+}
+
+.light .slider-icon {
+  color: white;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .post-detail-container {
+    padding: 10px;
+  }
+
+  .main-content-container,
+  .image-container,
+  .user-info-container {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .edit-delete-post-btn {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+  }
+
+  .user-profile-picture-name-container,
+  .post-info-container {
+    align-items: center;
+    text-align: center;
+  }
+
+  .comments-section {
+    width: 95%;
+    margin-top: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-profile-picture {
+    width: 50px;
+    height: 50px;
+  }
+
+  .post-title {
+    font-size: 20px;
+  }
+
+  .post-description {
+    font-size: 14px;
+  }
+
+  .edit-delete-post-btn {
+    gap: 5px;
+  }
+
+  .pagination-icon {
+    font-size: 20px;
+  }
+
+  .slider-icon,
+  .trash-icon {
+    font-size: 20px;
+  }
 }

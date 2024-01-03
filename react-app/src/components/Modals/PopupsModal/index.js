@@ -57,7 +57,7 @@ export default function PopupsModal({ showModal, onClose }) {
             >
 
               <FontAwesomeIcon icon={faUserCircle} />
-              <span>Profile</span>
+              <span>My Profile</span>
             </button>
 
             <button
@@ -70,7 +70,7 @@ export default function PopupsModal({ showModal, onClose }) {
             >
               {/* <FontAwesomeIcon icon={faStream} /> */}
               <FontAwesomeIcon icon={faImages} />
-              <span>PhotoStream</span>
+              <span>My PhotoStream</span>
             </button>
 
             <button
@@ -82,7 +82,7 @@ export default function PopupsModal({ showModal, onClose }) {
               className="btn-albums"
             >
               <FontAwesomeIcon icon={faPhotoVideo} />
-              <span>Albums</span>
+              <span>My Albums</span>
             </button>
 
             {/* Additional button with the faCameraRetro icon */}

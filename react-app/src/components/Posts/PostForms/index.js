@@ -5,6 +5,7 @@ import CreatableSelect from "react-select/creatable";
 // import CreatableSelect from "react-select/creatable";
 
 import { useModal } from "../../../context/Modal";
+import { useShortModal } from "../../../context/ModalShort";
 import {
   uploadImageToAWS,
   createInputChangeHandler,
@@ -25,7 +26,7 @@ import "./Tag.css";
 
 const PostForm = ({ postId, formType, onPostCreated, fetchPostDetailData }) => {
   const dispatch = useDispatch();
-  const { closeModal } = useModal();
+  const { closeShortModal } = useShortModal();
   const sessionUser = useSelector(selectSessionUser);
 
   const [title, setTitle] = useState("");
@@ -48,7 +49,12 @@ const PostForm = ({ postId, formType, onPostCreated, fetchPostDetailData }) => {
             setTitle(fetchedPost.title);
             setDescription(fetchedPost.description);
             setImageFile(fetchedPost.image);
-            setTags(fetchedPost.tags.map((tag) => tag.name));
+            // Update here to set the existing tags in selectedTags
+            const existingTags = fetchedPost.tags.map((tag) => ({
+              value: tag.name,
+              label: tag.name,
+            }));
+            setSelectedTags(existingTags);
           }
         } catch (error) {
           console.error("Error fetching post details: ", error);
@@ -95,9 +101,10 @@ const PostForm = ({ postId, formType, onPostCreated, fetchPostDetailData }) => {
     if (description.length > 1000)
       errorsObj.description = "Description is too long";
 
-    if (!imageFile) {
-      errorsObj.image = "An image must be uploaded";
-    }
+      if (formType === "Create" && !imageFile) {
+        errorsObj.image = "An image must be uploaded";
+      }
+
 
     if (Object.keys(errorsObj).length > 0) {
       setValidationObj(errorsObj);
@@ -121,7 +128,7 @@ const PostForm = ({ postId, formType, onPostCreated, fetchPostDetailData }) => {
 
       if (response && response.id) {
         resetFormFields();
-        closeModal();
+        closeShortModal();
         if (onPostCreated) onPostCreated(response);
       } else {
         console.error("Invalid response:", response);
@@ -204,7 +211,8 @@ const PostForm = ({ postId, formType, onPostCreated, fetchPostDetailData }) => {
         disabled={
           title.trim() === "" ||
           description.trim() === "" ||
-          isSubmitting ||
+          isSubmitting
+          ||
           Object.keys(validationObj).length > 0
         }
       >
