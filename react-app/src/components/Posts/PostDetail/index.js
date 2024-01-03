@@ -102,7 +102,7 @@ export default function PostDetail() {
   }, [dispatch, postId]);
 
 
-  if (!post || !post.image_url) return null;
+  if ( !post || !post.image_url || !neighborPosts) return null;
 
   return (
     <CSSTransition

@@ -83,7 +83,13 @@
   margin-top: 10px;
   border-radius: 5px;
 }
+.comment-actions{
+  cursor: pointer;
+}
 
+.edit-comment-button{
+color:white;
+}
 /* Dark Mode Styles For  CommentItem */
 .dark .comment-item {
   /* background-color: #282c35; */

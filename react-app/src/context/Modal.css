@@ -32,6 +32,10 @@
   overflow-y: auto;
   border-radius: 10px;
   padding: 20px;
+
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-top: 72px;
 }
 #modal-content h1, #modal-content h2, #modal-content h3 {
   /* color: #ff0072; */

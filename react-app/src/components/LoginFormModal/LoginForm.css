@@ -36,6 +36,11 @@
    border: 1px solid #ff0072;
  }
 
+.disabled-btn {
+  background-color: grey;
+  color: white;
+}
+
  .login-btn, .demo-user-btn {
    width: 300px;
    height: 40px;
@@ -47,82 +52,63 @@
    transition: background-color 0.3s;
  }
 
-
-.login-input:hover {
-  /* border-color: white; */
-  border-color: #ff7f47;
-  background-color: #E0E0E0;
-}
-
 .login-btn:hover, .demo-user-btn:hover {
   background-color: #e6006f;
   cursor: pointer;
 }
 
- .login-ul {
-   list-style-type: none;
-   padding: 0;
-   color: red;
- }
+.error-message {
+  color: red;
+  max-width: 300px;
+  word-wrap: break-word;
+  margin-bottom: 10px;
+  font-size: small;
+}
+
+
  .login-h1 {
    text-align: center;
-   /* color: #ff0072; */
  }
 
-/* Dark Mode */
+
 .google-login-text {
   color:white;
 }
-.dark .login-h1 {
-  text-align: center;
+
+/* Dark Mode */
+.dark .login-h1,
+.dark .google-login-text {
   color: #ff7f47;
 }
+
 .dark .login-form {
   color: white;
-}
-
-.dark .login-h1 {
-  color: #ff7f47;
-}
-
-.dark .login-ul li {
-  color: #ff7f47;
 }
 
 .dark .login-input {
   color: white;
   background-color: #282c35;
-
 }
 
 .dark .login-btn,
 .dark .demo-user-btn {
-
   background-color: #ff7f47;
   color: white;
-
 }
 
 .dark .login-btn:hover,
 .dark .demo-user-btn:hover {
   background-color: #fd6a2b;
-
 }
 
 /* Light Mode */
-.google-auth-btn {
-  color:#282c35;
+.light .login-h1,
+.light .google-auth-btn {
+  color: #ff0072;
 }
+
 .light .login-form {
-  color: white
-}
-
-.light .login-h1 {
-  color: #ff0072;
-}
-
-.light .login-ul li {
-  color: #ff0072;
+  color: white;
 }
 
 .light .login-input {
@@ -134,7 +120,6 @@
 .light .demo-user-btn {
   background-color: #ff0072;
   color: white;
-
 }
 
 .light .login-btn:hover,
@@ -143,8 +128,23 @@
 }
 
 
- @media screen and (max-width: 599px) {
-  .login-input, .login-btn, .demo-user-btn, .google-auth-btn {
+
+
+.disabled-btn,
+.login-btn:disabled,
+.login-btn:disabled:hover,
+.login-btn:disabled:focus,
+.login-btn:disabled:active {
+  background-color: grey;
+  color: white;
+  cursor: not-allowed;
+}
+
+
+
+/* Responsive Design */
+@media screen and (max-width: 599px) {
+  .login-input, .login-btn, .demo-user-btn, .google-auth-btn, .error-message {
     width: 90%;
   }
 }

@@ -4,6 +4,8 @@ import { useHistory } from "react-router-dom";
 import { logout } from "../../store/session";
 import OpenModalButton from "../Modals/OpenModalButton";
 import OpenModalMenuItem from "./OpenModalMenuItem";
+import OpenShortModalButton from "../Modals/OpenShortModalButton";
+import { useShortModal } from "../../context/ModalShort";
 import LoginFormModal from "../LoginFormModal";
 import SignupFormModal from "../SignupFormModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -41,6 +43,7 @@ function ProfileButton({ user }) {
   const handleLogout = (e) => {
     e.preventDefault();
     dispatch(logout());
+    setShowMenu(false); 
     history.push("/");
   };
 

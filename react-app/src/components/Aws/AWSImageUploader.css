@@ -1,3 +1,27 @@
+.aws-input {
+  display: none;
+}
+.custom-file-upload {
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 4px;
+  text-align: center;
+}
+.profile-preview {
+  border: 1px solid #ddd;
+  padding: 5px;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+.profile-preview img {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
 .aws-main-container {
   cursor: pointer;
 }
@@ -20,4 +44,28 @@
   text-align: center;
   line-height: 20px;
   color: white;
+}
+
+
+
+.custom-file-upload:hover {
+  background-color: #e60066;
+}
+
+/* Dark mode styles */
+.dark .custom-file-upload {
+  background-color: #ff7f47;
+}
+
+.dark .custom-file-upload:hover {
+  background-color: #fd6a2b;
+}
+
+/* Light mode styles */
+.light .custom-file-upload {
+  background-color: #ff0072;
+}
+
+.light .custom-file-upload:hover {
+  background-color: #e60066;
 }

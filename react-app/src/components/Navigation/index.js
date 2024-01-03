@@ -36,12 +36,6 @@ function Navigation({ isLoaded }) {
     setShowModal(!showModal);
   };
 
-  // useEffect(() => {
-  //   // This will run when the userInfo in the Redux store updates
-  //   console.log("Updated userInfo in post in Navigation:", postUserInfo);
-  //   console.log("Updated userInfo in album in Navigation:", albumUserInfo);
-  // }, [postUserInfo, albumUserInfo]);
-
   const displayBannerRoutes = [
     "/user/favorites-post",
     "/posts/users/:userId",

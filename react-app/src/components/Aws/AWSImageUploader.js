@@ -4,7 +4,7 @@ import { getPresignedUrl, deleteImage } from "../../store/aws";
 
 import "./AWSImageUploader.css";
 
-const AWSImageUploader =  ({ setUploadImage }) => {
+const AWSImageUploader = ({ setUploadImage }) => {
   const dispatch = useDispatch();
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -15,7 +15,9 @@ const AWSImageUploader =  ({ setUploadImage }) => {
   useEffect(() => {
     if (file) {
       const upload = async () => {
-        const presignedData = await dispatch(getPresignedUrl(file.name, file.type));
+        const presignedData = await dispatch(
+          getPresignedUrl(file.name, file.type)
+        );
         if (!presignedData) throw new Error("Failed to get presigned URL");
 
         const xhr = new XMLHttpRequest();
@@ -35,7 +37,6 @@ const AWSImageUploader =  ({ setUploadImage }) => {
         });
       };
 
-
       setUploadImage(() => upload);
     }
   }, [file, dispatch, setUploadImage]);
@@ -51,11 +52,24 @@ const AWSImageUploader =  ({ setUploadImage }) => {
 
   return (
     <div className="aws-main-container">
-      <input className="aws-input" type="file" onChange={handleFileChange} />
+      {/* <input className="aws-input" type="file" onChange={handleFileChange} /> */}
+      <label htmlFor="file-upload" className="custom-file-upload">
+        Upload photos
+      </label>
+      <input
+        id="file-upload"
+        className="aws-input"
+        type="file"
+        onChange={handleFileChange}
+      />
+
       {uploading && (
         <div className="progress-container">
           <div className="progress-bar">
-            <div className="progress-bar-inner" style={{ width: `${progress}%` }}>
+            <div
+              className="progress-bar-inner"
+              style={{ width: `${progress}%` }}
+            >
               {progress}%
             </div>
           </div>
