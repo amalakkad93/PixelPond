@@ -43,10 +43,10 @@ def create_google_oauth_flow():
     try:
 
         if os.getenv('FLASK_ENV') == 'development':
-            redirect_uri = "http://localhost:5000/api/auth/google"
+            redirect_uri = "http://localhost:5000/api/google_auth/google"
             logger.info("Using development redirect URI")
         else:
-            redirect_uri = f"{base_url}/api/auth/google"
+            redirect_uri = f"{base_url}/api/google_auth/google"
             logger.info("Using production redirect URI")
 
         client_secrets = {
@@ -58,8 +58,8 @@ def create_google_oauth_flow():
                 "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
                 "client_secret": client_secret,
                 "redirect_uris": [
-                   f"{base_url}/api/auth/google",
-                    "http://localhost:5000/api/auth/google"
+                   f"{base_url}/api/google_auth/google",
+                    "http://localhost:5000/api/google_auth/google"
                 ],
                 "javascript_origins": ["http://localhost:3000"]
             }
