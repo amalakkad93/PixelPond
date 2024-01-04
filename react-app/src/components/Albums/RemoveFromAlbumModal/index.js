@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useParams } from "react-router-dom";
 import {
   thunkRemovePostFromAlbum,
   thunkGetAlbumsByUserId,
@@ -10,9 +11,13 @@ import { useShortModal } from "../../../context/ModalShort";
 
 import "./RemoveFromAlbumModal.css";
 const ITEMS_PER_PAGE = 10;
-const RemoveFromAlbumModal = ({ postId }) => {
+const RemoveFromAlbumModal = ({ postId, mode }) => {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const { albumId } = useParams();
+
   const { closeShortModal } = useShortModal();
+
   const sessionUser = useSelector(selectSessionUser);
   const userAlbumsRaw = useSelector(selectUserAlbums);
   const userAlbums = useMemo(() => userAlbumsRaw || [], [userAlbumsRaw]);
@@ -27,6 +32,7 @@ const RemoveFromAlbumModal = ({ postId }) => {
   const [totalItems, setTotalItems] = useState(0);
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
+  const isAlbumSpecificMode = mode === 'albumImages';
   useEffect(() => {
     if (sessionUser) {
       dispatch(thunkGetAlbumsByUserId(sessionUser.id));
@@ -47,7 +53,6 @@ const RemoveFromAlbumModal = ({ postId }) => {
           return image?.post_id === postIdInt;
         });
       });
-
 
       console.log("Filtered Albums:", filteredAlbums);
 
@@ -81,20 +86,26 @@ const RemoveFromAlbumModal = ({ postId }) => {
     "🚀 ~ file: index.js:17 ~ RemoveFromAlbumModal ~ albumsContainingPost:",
     albumsContainingPost
   );
-  return (
+   return (
     <div className="remove-from-album-modal">
       <h2>Remove from Album</h2>
-      <select
-        value={selectedAlbumId}
-        onChange={(e) => setSelectedAlbumId(e.target.value)}
-      >
-        <option value="">Select Album</option>
-        {albumsContainingPost.map((album) => (
-          <option key={album.id} value={album.id}>
-            {album.title}
-          </option>
-        ))}
-      </select>
+      {!isAlbumSpecificMode ? (
+        <select
+          value={selectedAlbumId}
+          onChange={(e) => setSelectedAlbumId(e.target.value)}
+        >
+          <option value="">Select Album</option>
+          {albumsContainingPost.map((album) => (
+            <option key={album.id} value={album.id}>
+              {album.title}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <div>
+          <strong>Album: </strong> {userAlbums.find(a => a.id === parseInt(albumId))?.title}
+        </div>
+      )}
       <button onClick={handleRemoveFromAlbum}>Remove</button>
       <button onClick={closeShortModal}>Cancel</button>
     </div>

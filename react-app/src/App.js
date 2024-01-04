@@ -29,7 +29,6 @@ function App() {
     dispatch(authenticate()).then(() => setIsLoaded(true));
   }, [dispatch]);
 
-
   useEffect(() => {
     document.body.className = themeName;
   }, [themeName]);
@@ -67,10 +66,17 @@ function App() {
             <Route path="/owner/photostream">
               <ImageDisplay mode="ownerPhotoStream" key="ownerPhotoStream" />
             </Route>
+            <Route path="/owner/albums/manage">
+              <ImageDisplay mode="albumManagement" key="albumManagement" />
+            </Route>
             <Route path="/owner/albums">
               <ImageDisplay mode="ownerAlbumImages" key="ownerAlbumImages" />
             </Route>
-            <Route path="/owner/posts/add">
+
+            {/* <Route path="/owner/posts/add">
+              <ImageDisplay mode="addPostToAnAlbum" key="addPostToAnAlbum" />
+            </Route> */}
+            <Route path="/owner/posts/albums/:albumId/add">
               <ImageDisplay mode="addPostToAnAlbum" key="addPostToAnAlbum" />
             </Route>
 
@@ -93,7 +99,8 @@ function App() {
             <Route path="/albums/users/:userId">
               <GetAlbums />
             </Route>
-            <Route path="/albums/:albumId">
+            {/* <Route path="/albums/:albumId"> */}
+            <Route path="/albums/:albumId/users/:userId">
               <ImageDisplay mode="albumImages" key="albumImages" />
             </Route>
 

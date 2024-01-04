@@ -72,7 +72,14 @@
   border-radius: 50%;
   overflow: hidden;
   cursor: pointer;
-  background: #fff;
+
+}
+.dark .banner-nav-profile-picture-container {
+  background: #ff7f47;;
+}
+.banner-nav-profile-picture-container {
+
+  background:#ff0072;
 }
 
 .banner-nav-profile-picture {

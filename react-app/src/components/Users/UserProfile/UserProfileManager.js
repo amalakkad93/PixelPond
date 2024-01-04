@@ -91,15 +91,15 @@ const UserProfileManager = () => {
       <form onSubmit={handleSubmit}>
       <div className="form-field profile-picture-field" onClick={() => setShowUploader(true)}>
           {/* <label>Profile Picture</label> */}
+            {/* <div className="edit-icon-overlay"> */}
           <div className="user-profile-image">
             {user.profile_picture ? (
               <img className="user-image" src={user.profile_picture} alt="Profile" />
             ) : (
               <div className="user-initials">{userInitials}</div>
             )}
-            <div className="edit-icon-overlay">
-              <FontAwesomeIcon icon={faCamera} className="edit-icon" />
-            </div>
+              <FontAwesomeIcon icon={faCamera} className="edit-icon-user-profile" />
+            {/* </div> */}
           </div>
           {showUploader && <AWSImageUploader setUploadImage={setUploadProfileImage}/>}
         </div>

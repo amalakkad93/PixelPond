@@ -12,6 +12,15 @@
   margin: auto;
 }
 
+.album-title {
+  font-size: 24px;
+  font-weight: bold;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  margin: 10px 0;
+}
+
 .add-to-album-modal h2 {
   text-align: center;
   margin-bottom: 20px;
@@ -23,8 +32,11 @@
   margin-bottom: 20px;
   border: 1px solid #ccc;
   background-color: white;
+  cursor: pointer;
 }
-
+.add-to-album-option{
+  cursor: pointer;
+}
 .add-to-album-modal button {
   width: 100%;
   padding: 10px;
@@ -52,9 +64,6 @@
   grid-gap: 1px;
 }
 
-
-
-
 .pagination-control-left, .pagination-control-right {
   position: absolute;
   cursor: pointer;
@@ -80,7 +89,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(255, 255, 255, 0.5); 
+  background-color: rgba(255, 255, 255, 0.5);
   z-index: 1;
 }
 
@@ -105,4 +114,129 @@
   font-size: 24px;
   color: black;
   z-index: 2;
+}
+
+/* Dark Mode */
+.dark .add-to-album-modal-main {
+  background-color: #282c35;
+  color: white;
+}
+
+.dark .add-to-album-option::selection {
+  background-color: #ff7f47;
+  color: white;
+}
+
+.dark .add-to-album-modal .album-add-cancel-btns button:first-child {
+  background-color: #ff7f47;
+  color: white;
+}
+
+.dark .add-to-album-modal .album-add-cancel-btns button:first-child:hover {
+  background-color: #fd6a2b;
+}
+
+.dark .add-to-album-modal .album-add-cancel-btns button:last-child {
+  background-color: #333;
+  color: white;
+}
+
+.dark .add-to-album-modal .album-add-cancel-btns button:last-child:hover {
+  background-color: #555;
+}
+
+
+.dark .add-to-album-modal select {
+  background-color: #333;
+  color: white;
+}
+
+.dark .pagination-control-left,
+.dark .pagination-control-right,
+.dark .checkmark-overlay {
+  color: white;
+}
+
+.dark-mode .album-title {
+  color: #ff7f47;
+  background-color: #222;
+  border: 1px solid #ff7f47;
+}
+
+/* Light Mode */
+.light .add-to-album-modal-main {
+  background-color: #F0F0F0;
+  color: #404040;
+}
+
+.light .add-to-album-option::selection {
+  background-color: #ff0072;
+  color: white;
+}
+
+.light .add-to-album-modal .album-add-cancel-btns button:first-child {
+  background-color: #ff0072;
+  color: white;
+}
+
+.light .add-to-album-modal .album-add-cancel-btns button:first-child:hover {
+  background-color: #e60066;
+}
+
+.light .add-to-album-modal .album-add-cancel-btns button:last-child {
+  background-color: #dcdcdc;
+  color: #333;
+}
+
+.light .add-to-album-modal .album-add-cancel-btns button:last-child:hover {
+  background-color: #c0c0c0;
+}
+
+.light .add-to-album-modal select {
+  background-color: white;
+  color: #404040;
+}
+
+.light .pagination-control-left,
+.light .pagination-control-right,
+.light .checkmark-overlay {
+  color: #404040;
+}
+
+.light-mode .album-title {
+  color: #ff0072;
+  background-color: #fff;
+  border: 1px solid #ff0072;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .add-to-album-modal-main {
+    width: 95%;
+    height: auto;
+    padding: 15px;
+  }
+
+  .add-to-album-modal {
+    max-width: 95%;
+  }
+
+  .album-thumbnails-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .album-thumbnails-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .pagination-control-left,
+  .pagination-control-right {
+    font-size: 20px;
+  }
+
+  .checkmark-overlay {
+    font-size: 20px;
+  }
 }

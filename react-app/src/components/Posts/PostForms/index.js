@@ -101,10 +101,9 @@ const PostForm = ({ postId, formType, onPostCreated, fetchPostDetailData }) => {
     if (description.length > 1000)
       errorsObj.description = "Description is too long";
 
-      if (formType === "Create" && !imageFile) {
-        errorsObj.image = "An image must be uploaded";
-      }
-
+    if (formType === "Create" && !imageFile) {
+      errorsObj.image = "An image must be uploaded";
+    }
 
     if (Object.keys(errorsObj).length > 0) {
       setValidationObj(errorsObj);
@@ -190,8 +189,13 @@ const PostForm = ({ postId, formType, onPostCreated, fetchPostDetailData }) => {
       </div>
 
       <div className="form-group">
+        <label htmlFor="file-upload" className="custom-file-upload">
+          Upload photos
+        </label>
         <input
+          id="file-upload"
           type="file"
+          className="aws-input"
           onChange={(e) => {
             const file = e.target.files[0];
             if (file) {
@@ -211,8 +215,7 @@ const PostForm = ({ postId, formType, onPostCreated, fetchPostDetailData }) => {
         disabled={
           title.trim() === "" ||
           description.trim() === "" ||
-          isSubmitting
-          ||
+          isSubmitting ||
           Object.keys(validationObj).length > 0
         }
       >

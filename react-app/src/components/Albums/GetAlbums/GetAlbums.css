@@ -109,6 +109,8 @@
 
 .album-item {
   flex: 1;
+  /* display: flex; */
+  /* flex-direction: column; */
   min-width: 250px;
   max-width: calc(33.33% - 20px);
   box-sizing: border-box;
@@ -122,7 +124,8 @@
   transform: translateY(-5px);
 }
 
-.album-title {
+.album-title,
+.album-delete-edit-button {
   font-size: 18px;
   /* color: #333; */
   margin-bottom: 15px;
@@ -155,14 +158,28 @@
   /* border: 3px solid #007bff;
   box-shadow: 0 0 10px rgba(0, 123, 255, 0.6); */
 }
-
+.add-posts-to-an-album-btn{
+  background-color: transparent;
+  cursor: pointer;
+}
 .album-title-overlay {
   color: #fff;
   font-size: 24px;
   text-align: center;
   margin: 10px 0;
 }
+.album-delete-button {
+  /* position: absolute; */
 
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
+
+
+}
 .album-overlay {
   transform: scale(0.9);
   opacity: 0;

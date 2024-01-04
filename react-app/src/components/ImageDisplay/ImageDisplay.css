@@ -8,6 +8,22 @@
   /* margin-top: 163px; */
 }
 
+.album-management-banner {
+  background-color: var(--primary-color);
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+  border-bottom: 2px solid #e0e0e0;
+  margin-bottom: 20px;
+}
+
+.album-management-banner h2 {
+  font-size: 24px;
+}
+
+.album-management-banner p {
+  font-size: 16px;
+}
 
 .user-details-container {
   /* position: absolute;
@@ -148,6 +164,11 @@
 
 
 /* Dark Mode Styles */
+.dark .album-management-banner {
+  background-color: #a64d00;
+  color: #fff;
+}
+
 .dark .user-details,
 .dark .owner-details {
   background-color: rgba(255, 255, 255, 0.7);
@@ -177,10 +198,14 @@
 }
 
 .dark .create-post-button:hover {
-  background-color: #fd6a2b;
+
 }
 
 /* Light Mode Styles */
+.light .album-management-banner {
+  background-color: #ffb3c1; /* Soft, lighter pink */
+  color: #fff;
+}
 .light .user-details,
 .light .owner-details {
   background-color: rgba(0, 0, 0, 0.7);

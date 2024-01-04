@@ -7,7 +7,36 @@
 
 .photo-item .image-wrapper {
   position: relative;
+  position: relative;
   display: inline-block;
+}
+
+.options-button {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: white;
+}
+.options-modal button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  /* Additional styles as needed */
+}
+.options-modal {
+  display: flex;
+  position: absolute;
+  top: 10px; /* Adjust as necessary */
+  left: 10px; /* Adjust as necessary */
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  padding: 5px;
+  gap: 10px;
+  z-index: 10; /* Ensure it's above other elements */
 }
 
 .photo-item .favorite-button {
@@ -29,23 +58,28 @@
   border-radius: 5px;
 }
 
-.add-to-album-modal-trigger {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background-color: rgba(255, 255, 255, 0.5);
-  border-radius: 50%;
-  padding: 10px;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+.add-to-album-modal-trigger,
+.remove-from-album-modal-trigger {
+  background-color: transparent;
   border: none;
-  z-index: 10;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border-radius: 50%;
+}
+
+.remove-from-album-icon {
+  font-size: 16px;
+  color:red;
+}
+
+.add-to-album-icon {
+  font-size: 16px;
+  color: #00ff0a;
 }
 
 .add-to-album-modal-trigger:hover {
   background-color: rgba(255, 255, 255, 0.7);
-}
-
-.add-to-album-icon {
-  color: #4caf50;
 }

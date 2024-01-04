@@ -102,7 +102,7 @@ const UserNavigationBar = ({
   const effectiveId = id || sessionUser?.id;
   const isOwner = sessionUser?.id === effectiveId;
   const about = userInfo?.about_me;
-
+  const aboutContent = about || "No 'About Me' information available.";
   // const toggleAboutModal = () => {
   //   setShowAboutModal(!showAboutModal);
   // };
@@ -167,7 +167,7 @@ const UserNavigationBar = ({
     </div>
     {showAboutModal && (
       <div className="about-dropdown">
-        <p>{about}</p>
+         <p>{aboutContent}</p>
       </div>
     )}
     </>

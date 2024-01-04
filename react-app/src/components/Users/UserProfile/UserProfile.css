@@ -138,7 +138,9 @@
   width: auto;
   margin-bottom: 5px;
 }
-
+.edit-icon1 {
+  cursor: pointer;
+}
 
 
 .dark .user-profile-container {
