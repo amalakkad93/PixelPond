@@ -33,13 +33,14 @@
   resize: none;
   padding: 10px;
   margin-bottom: 15px;
-  border: 1px solid #ff0072;
+  border: 1px solid #FFA69E;
   border-radius: 4px;
   min-height: 120px;
   font-size: 14px;
   width: 282px;
   padding-left: 30px;
 }
+
 .comment-arrow {
   position: absolute;
   top: 20%;
@@ -62,10 +63,9 @@
   left: 50%;
 }
 
-
-
 .comment-create-btn {
-  background-color: #ff0072;
+  background-color: #FFA69E;
+  background-image: linear-gradient(to right, #FFA69E 0%, #FFC3A0 100%);
   color: white;
   border: none;
   padding: 12px 20px;
@@ -74,10 +74,12 @@
   font-size: 16px;
   font-weight: bold;
   transition: background-color 0.3s;
-  width:50%;
+  width: 50%;
 }
+
 .comment-edit-btn {
-  background-color: #ff0072;
+  background-color: #FFA69E;
+  background-image: linear-gradient(to right, #FFA69E 0%, #FFC3A0 100%);
   color: white;
   border: none;
   padding: 12px 20px;
@@ -89,7 +91,8 @@
 }
 
 .comment-form button:hover {
-  background-color: #e60066;
+  background-color: #FF7EB3;
+  background-image: linear-gradient(to right, #FFB3B3 0%, #FFD1C1 100%);
 }
 
 .comment-form button:disabled {
@@ -111,24 +114,27 @@
 .dark .comment-form textarea {
   background-color: #333;
   color: #fff;
-  border: 1px solid #ff7f47;
+  border: 1px solid #FF7EB3;
 }
 
 .dark .comment-form button {
-  background-color: #ff7f47;
+  background-color: #FF7EB3;
+  background-image: linear-gradient(to right, #FF758C 0%, #FF7EB3 100%);
 }
 
 .dark .comment-form button:hover {
-  background-color: #fd6a2b;
+  background-color: #FF5678;
+  background-image: linear-gradient(to right, #FF5678 0%, #FF6EA1 100%);
 }
+
 .dark .comment-arrow::before {
   background-color: #333;
-  border: 1px solid #ff7f47;
-  border-color: transparent transparent #ff7f47 #ff7f47;
+  border: 1px solid #FF7EB3;
+  border-color: transparent transparent #FF7EB3 #FF7EB3;
 }
 
 .light .comment-arrow::before {
   background-color: #fff;
-  border: 1px solid #ff0072;
-  border-color: transparent transparent #ff0072 #ff0072;
+  border: 1px solid #FFA69E;
+  border-color: transparent transparent #FFA69E #FFA69E;
 }

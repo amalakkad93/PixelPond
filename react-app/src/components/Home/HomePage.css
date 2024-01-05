@@ -52,24 +52,22 @@ html, body {
 }
 
 /* Button styles */
+/* Button styles */
 .home-page-modal {
-
   padding: 10px 20px;
   font-size: 1em;
   color: #fff;
-  background-color: #ff0072;
+  background-color: #FFA69E;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   margin-top: 20px;
   transition: background-color 0.3s, color 0.3s;
   font-weight: 600;
-
 }
 
 .home-page-modal:hover {
-  background-color: darken(#ff0072, 10%);
-  background-color: #e60066;
+  background-color: #FF7EB3;
   color: #fff;
 }
 
@@ -80,12 +78,12 @@ html, body {
 }
 
 .dark .home-page-modal {
-  background-color: #ff7f47;
+  background-color: #FF7EB3;
   color: white;
 }
 
 .dark .home-page-modal:hover {
-  background-color: #fd6a2b;
+  background-color: #FF5678;
 }
 
 .dark .greeting-h1 {
@@ -99,16 +97,16 @@ html, body {
 }
 
 .light .home-page-modal {
-  background-color: #ff0072;
+  background-color: #FFA69E;
   color: white;
 }
 
 .light .home-page-modal:hover {
-  background-color: #e60066;
+  background-color: #FF7EB3;
 }
 
 .light .greeting-h1 {
-  color: white;
+  color: #404040;
 }
 
 /* Media Queries */

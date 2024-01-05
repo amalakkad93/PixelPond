@@ -34,8 +34,51 @@
   color: #ff6b6b;
   margin-top: 10px;
 }
-
 .dark .album-form {
+  color: white;
+  background-color: #282c35;
+}
+
+.dark .form-group .album-form-input[type="text"] {
+  background-color: #404040;
+  color: white;
+  border-color: #FF7EB3;
+}
+
+.dark .album-form-btn[type="submit"] {
+  background-color: #FF7EB3;
+  color: white;
+  background-image: linear-gradient(to right, #FF758C 0%, #FF7EB3 100%);
+}
+
+.dark .album-form-btn[type="submit"]:hover {
+  background-color: #FF5678;
+  background-image: linear-gradient(to right, #FF5678 0%, #FF6EA1 100%);
+}
+
+.light .album-form  {
+  color: #404040;
+  background-color: #ffffff;
+}
+
+.light .form-group .album-form-input[type="text"] {
+  background-color: #f0f0f0;
+  color: #404040;
+  border-color: #FFA69E;
+}
+
+.light .album-form-btn[type="submit"] {
+  background-color: #FFA69E;
+  color: white;
+  background-image: linear-gradient(to right, #FFA69E 0%, #FFC3A0 100%);
+}
+
+.light .album-form-btn[type="submit"]:hover {
+  background-color: #FF7EB3;
+  background-image: linear-gradient(to right, #FFB3B3 0%, #FFD1C1 100%);
+}
+
+/* .dark .album-form {
   color: white;
   background-color: #282c35;
 }
@@ -73,7 +116,7 @@
 
 .light .album-form-btn[type="submit"]:hover {
   background-color: #e60066;
-}
+} */
 
 @media screen and (max-width: 768px) {
   .form-group .album-form-input[type="text"] {

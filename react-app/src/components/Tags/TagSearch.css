@@ -55,7 +55,7 @@
 .dark .tag-search-container {
 
 }
-.dark .tag-search-input::placeholder {
+/* .dark .tag-search-input::placeholder {
   color: white;
   opacity: 1;
 }
@@ -92,10 +92,10 @@
 
 .dark .tag-selected-button:hover {
   background-color: #fd6a2b;
-}
+} */
 
 /* Light Mode for Tag Search */
-.light .tag-search-container {
+/* .light .tag-search-container {
 
 }
 .light .tag-search-input::placeholder {
@@ -135,6 +135,87 @@
 
 .light .tag-selected-button:hover {
   background-color: #e60066;
+} */
+.dark .tag-search-input::placeholder {
+  color: white;
+  opacity: 1;
+}
+
+.dark .tag-search-input {
+  background-color: #2D2D2D;
+  color: white;
+  border: 2px solid #FF7EB3;
+}
+
+.dark .tag-search-input:focus {
+  border-color: #FF5678;
+}
+
+.dark .tag-search-dropdown {
+  background-color: #333333;
+  color: white;
+}
+
+.dark .tag-search-item {
+  background-color: #404040;
+  color: white;
+}
+
+.dark .tag-search-item:hover {
+  background-color: #FF5678;
+  color: white;
+}
+
+.dark .tag-selected-button {
+  background-color: #FF7EB3;
+  color: white;
+}
+
+.dark .tag-selected-button:hover {
+  background-color: #FF5678;
+}
+
+.light .tag-search-container {
+  /* Your container styles (if any) */
+}
+
+.light .tag-search-input::placeholder {
+  color: black;
+  opacity: 1;
+}
+
+.light .tag-search-input {
+  background-color: #FAFAFA;
+  color: #404040;
+  border: 2px solid #FFA69E;
+}
+
+.light .tag-search-input:focus {
+  border-color: #FF7EB3;
+}
+
+.light .tag-search-dropdown {
+  background-color: white;
+  color: #404040;
+}
+
+.light .tag-search-item {
+  background-color: white;
+  color: #404040;
+}
+
+.light .tag-search-item:hover {
+  background-color: #FFA69E;
+  color: white;
+}
+
+.light .tag-selected-button {
+  background-color: #FFA69E;
+  color: white;
+}
+
+.light .tag-selected-button:hover {
+  background-color: #FF7EB3;
 }
 
 

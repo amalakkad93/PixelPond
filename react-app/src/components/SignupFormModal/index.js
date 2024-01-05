@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useModal } from "../../context/Modal";
 import { signUp } from "../../store/session";
@@ -17,6 +17,21 @@ function SignupFormModal() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [validationObj, setValidationObj] = useState({});
 
+  const [isButtonEnabled, setIsButtonEnabled] = useState(false);
+
+  useEffect(() => {
+    const fieldsFilled =
+      firstName &&
+      lastName &&
+      email &&
+      username &&
+      password &&
+      password &&
+      confirmPassword &&
+      age;
+    setIsButtonEnabled(fieldsFilled);
+  }, [firstName, lastName, email, username, password, confirmPassword, age]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -26,35 +41,65 @@ function SignupFormModal() {
     if (!lastName) validationErrors.lastName = "Last name is required";
     if (!email.includes("@")) validationErrors.email = "Must be a valid email";
     if (username.length <= 4)
-      validationErrors.username = "Username must be greater than four characters";
+      validationErrors.username =
+        "Username must be greater than four characters";
     if (password.length < 6)
       validationErrors.password = "Password must be at least six characters";
     if (password !== confirmPassword)
       validationErrors.confirmPassword = "Passwords must match";
-    if (isNaN(age) || age <= 0) validationErrors.age = "Age must be a positive number";
+    if (isNaN(age) || age <= 0)
+      validationErrors.age = "Age must be a positive number";
 
-    setValidationObj(validationErrors);
-
+    //   if (Object.keys(validationErrors).length === 0) {
+    //     const data = await dispatch(
+    //       signUp(firstName, lastName, age, username, email, password)
+    //     );
+    //     if (data) {
+    //       setValidationObj(data);
+    //     } else {
+    //       closeModal();
+    //     }
+    //   } else {
+    //     setValidationObj(validationErrors);
+    //   }
+    // };
     if (Object.keys(validationErrors).length === 0) {
       const data = await dispatch(
         signUp(firstName, lastName, age, username, email, password)
       );
       if (data) {
-        setValidationObj({ general: data });
+        // Assuming data is an array of error strings like "fieldName: Error message"
+        const backendErrors = data.reduce((acc, err) => {
+          const [field, message] = err.split(" : ");
+          acc[field] = message;
+          return acc;
+        }, {});
+        setValidationObj(backendErrors);
       } else {
         closeModal();
-        // push("/posts/current"); 
       }
+    } else {
+      setValidationObj(validationErrors);
     }
   };
 
   return (
     <>
       <div className="sign-up-container">
-        <form className="sign-up-form" onSubmit={handleSubmit}>
           <h1 className="sign-up-h1">Sign Up</h1>
           <div className="sign-up-google-div">
             <GoogleAuthButton />
+          </div>
+        <form className="sign-up-form" onSubmit={handleSubmit}>
+          <div className="general-error-container">
+            {/* Display errors from validationObj */}
+            {/* {Object.entries(validationObj).map(([field, message], idx) => (
+              <div className="error" key={idx}>
+                {`${
+                  field.charAt(0).toUpperCase() + field.slice(1)
+                }: ${message}`}
+              </div>
+            ))} */}
           </div>
           <div className="sign-up-input-boxes">
             {/* Email Input */}
@@ -65,8 +110,10 @@ function SignupFormModal() {
               placeholder="Email"
               onChange={(e) => setEmail(e.target.value)}
               required
-              />
-              {validationObj.email && <p className="error-message">{validationObj.email}</p>}
+            />
+            {validationObj.email && (
+              <p className="error-message">{validationObj.email}</p>
+            )}
 
             {/* Username Input */}
             <input
@@ -76,8 +123,10 @@ function SignupFormModal() {
               placeholder="Username"
               onChange={(e) => setUsername(e.target.value)}
               required
-              />
-              {validationObj.username && <p className="error-message">{validationObj.username}</p>}
+            />
+            {validationObj.username && (
+              <p className="error-message">{validationObj.username}</p>
+            )}
 
             {/* First Name Input */}
             <input
@@ -87,8 +136,10 @@ function SignupFormModal() {
               placeholder="First Name"
               onChange={(e) => setFirstName(e.target.value)}
               required
-              />
-              {validationObj.firstName && <p className="error-message">{validationObj.firstName}</p>}
+            />
+            {validationObj.firstName && (
+              <p className="error-message">{validationObj.firstName}</p>
+            )}
 
             {/* Last Name Input */}
             <input
@@ -98,8 +149,10 @@ function SignupFormModal() {
               placeholder="Last Name"
               onChange={(e) => setLastName(e.target.value)}
               required
-              />
-              {validationObj.lastName && <p className="error-message">{validationObj.lastName}</p>}
+            />
+            {validationObj.lastName && (
+              <p className="error-message">{validationObj.lastName}</p>
+            )}
 
             {/* Age Input */}
             <input
@@ -109,8 +162,10 @@ function SignupFormModal() {
               placeholder="Age"
               onChange={(e) => setAge(e.target.value)}
               required
-              />
-              {validationObj.age && <p className="error-message">{validationObj.age}</p>}
+            />
+            {validationObj.age && (
+              <p className="error-message">{validationObj.age}</p>
+            )}
 
             {/* Password Input */}
             <input
@@ -120,8 +175,10 @@ function SignupFormModal() {
               placeholder="Password"
               onChange={(e) => setPassword(e.target.value)}
               required
-              />
-              {validationObj.password && <p className="error-message">{validationObj.password}</p>}
+            />
+            {validationObj.password && (
+              <p className="error-message">{validationObj.password}</p>
+            )}
 
             {/* Confirm Password Input */}
             <input
@@ -131,11 +188,21 @@ function SignupFormModal() {
               placeholder="Confirm Password"
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
-              />
-              {validationObj.confirmPassword && <p className="error-message">{validationObj.confirmPassword}</p>}
+            />
+            {validationObj.confirmPassword && (
+              <p className="error-message">{validationObj.confirmPassword}</p>
+            )}
 
             {/* Submit Button */}
-            <button className="sign-up-btn" type="submit">Sign Up</button>
+            <button
+              className={`sign-up-btn ${
+                !isButtonEnabled ? "disabled-btn" : ""
+              }`}
+              type="submit"
+              disabled={!isButtonEnabled}
+            >
+              Sign Up
+            </button>
           </div>
         </form>
       </div>

@@ -34,6 +34,8 @@
    background-color: #F0F0F0;
    color: #404040;
    border: 1px solid #ff0072;
+
+   border: 2px solid transparent;
  }
 
 .disabled-btn {
@@ -66,6 +68,7 @@
 }
 
 
+
  .login-h1 {
    text-align: center;
  }
@@ -78,11 +81,13 @@
 /* Dark Mode */
 .dark .login-h1,
 .dark .google-login-text {
-  color: #ff7f47;
+  /* color: #ff7f47; */
+  color: #FF7EB3;
 }
 
 .dark .login-form {
   color: white;
+  background-color: #323232;
 }
 
 .dark .login-input {
@@ -90,45 +95,75 @@
   background-color: #282c35;
 }
 
-.dark .login-btn,
-.dark .demo-user-btn {
+.dark .login-btn {
   background-color: #ff7f47;
   color: white;
+  background-image: linear-gradient(to right, #FF758C 0%, #FF7EB3 100%);
+  color: #ffffff;
+}
+.dark .demo-user-btn {
+  background-color: #333333;
+  color: #ffffff;
 }
 
-.dark .login-btn:hover,
-.dark .demo-user-btn:hover {
-  background-color: #fd6a2b;
+.dark-mode .login-btn:hover {
+  background-image: linear-gradient(to right, #FF5678 0%, #FF6EA1 100%);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.dark-mode .demo-user-btn:hover {
+  background-color: #444444;
+  color: #ffffff;
 }
 
 /* Light Mode */
 .light .login-h1,
 .light .google-auth-btn {
   color: #ff0072;
+  color: #FFA69E;
 }
 
 .light .login-form {
   color: white;
+  background-color: #FAFAFA;
+  color: #333333;
 }
 
 .light .login-input {
   color: #404040;
   background-color: #F0F0F0;
+  border: 1px solid #ddd;
 }
 
-.light .login-btn,
+.light .login-btn{
+  background-image: linear-gradient(to right, #FFA69E 0%, #FFC3A0 100%);
+  color: #333333;
+}
 .light .demo-user-btn {
   background-color: #ff0072;
   color: white;
+
+  background-color: #ffffff;
+  color: #333333;
 }
 
-.light .login-btn:hover,
+.light .login-btn:hover {
+  background-image: linear-gradient(to right, #FFB3B3 0%, #FFD1C1 100%);
+  color: #333333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
 .light .demo-user-btn:hover {
-  background-color: #e60066;
+  background-color: #f5f5f5;
+  color: #333333;
 }
 
-
-
+button {
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
 
 .disabled-btn,
 .login-btn:disabled,
@@ -138,6 +173,9 @@
   background-color: grey;
   color: white;
   cursor: not-allowed;
+
+  /* pointer-events: none;
+  opacity: 0.7; */
 }
 
 

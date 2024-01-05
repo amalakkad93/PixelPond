@@ -1,4 +1,4 @@
-.user-navigation-bar {
+/* .user-navigation-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -8,36 +8,52 @@
   border-bottom: 2px solid #e8e8e8;
 
   position: relative;
-}
+  transition: background-color 0.3s ease;
+} */
 
 .about-dropdown {
-  background-color: white;
-  padding: 15px;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   width: 100%;
+  position: absolute;
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #ddd;
+  padding: 1rem;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
 }
 
 .about-section {
   padding: 15px;
 
 }
-.navigation-links a {
+
+/* .navigation-links {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+} */
+
+/* .navigation-links a {
   margin-right: 20px;
   text-decoration: none;
   position: relative;
-  transition: color 0.3s;
-}
 
-.navigation-links a:hover {
+  text-decoration: none;
+  padding: 0.1rem 1rem;
+  transition: color 0.3s ease, border-color 0.3s ease;
+  border-bottom: 2px solid transparent;
+} */
+
+/* .navigation-links a:hover {
   text-decoration: underline;
-}
+} */
 
 .navigation-links a.active {
   font-weight: bold;
 }
 
-.navigation-links a.active::after {
+/* .navigation-links a.active::after {
   content: '';
   display: block;
   width: 100%;
@@ -45,7 +61,7 @@
   position: absolute;
   bottom: -10px;
   left: 0;
-}
+} */
 
 .create-post-button {
   margin-right: 20px;
@@ -62,74 +78,14 @@
   text-decoration: underline;
 }
 
-/* Light Mode Styles for Navigation Bar */
-.light .user-navigation-bar {
-  /* background-color: #ff0072; */
-  background: linear-gradient(to right, #d3b8ae, #ff0072);
-  color: white;
-}
 
-.light .navigation-links a {
-  /* color: #ff0072; */
-  color: white;
-}
 
-.light .navigation-links a:hover {
-  text-decoration: underline;
-  color: #e60066;
-  color: white;
-}
-
-.light .navigation-links a.active {
-  color: #ff0072;
-  color: white;
-}
-
-.light .create-post-button {
-  color: #ff0072;
-}
-
-.light .create-post-button:hover {
-  text-decoration: underline;
-  color: #e60066;
-}
-
-/* Dark Mode Styles for Navigation Bar */
-.dark .user-navigation-bar {
-  /* background-color: #ff7f47; */
-  background: linear-gradient(to left, #404040, #ff7f47);
-  color: rgb(213, 213, 213);
-}
-
-.dark .navigation-links a {
-  color: #ff7f47;
-  color: white;
-}
-
-.dark .navigation-links a:hover {
-  text-decoration: underline;
-  color: #fd6a2b;
-  color: white;
-}
-
-.dark .navigation-links a.active {
-  color: #ff7f47;
-  color: rgb(255, 255, 255);
-}
-
-.dark .create-post-button {
-  color: white;
-  background-color: #ff7f47;
-}
-
-.dark .create-post-button:hover {
-  text-decoration: underline;
-
-}
 
 .dark .about-dropdown {
-  background-color:  #404040;
-  color:white;
+  /* background-color:  #404040; */
+  background-color: #2D2D2D;
+  color: #fff;
+
   padding: 15px;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
@@ -139,8 +95,76 @@
 
 
 
-/* Media Queries */
 
+.user-navigation-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 2px solid #e8e8e8;
+  position: relative;
+  transition: background-color 0.3s ease;
+  background-color: transparent;
+}
+
+.navigation-links {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.navigation-links a {
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  transition: color 0.3s ease, border-bottom-color 0.3s ease;
+  position: relative;
+  font-weight: bold;
+  color: #333;
+}
+
+.navigation-links a:hover {
+  color: #FFA69E;
+  text-decoration: none;
+}
+
+.navigation-links a.active::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: #FFA69E;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+/* Light Mode */
+.light .user-navigation-bar {
+  background-color: #FAFAFA;
+  color: #333;
+}
+
+.light .navigation-links a.active,
+.light .navigation-links a:hover {
+  color: #FFA69E;
+}
+
+/* Dark Mode */
+.dark .user-navigation-bar {
+  background-color: #323232;
+  color: #fff;
+}
+
+.dark .navigation-links a {
+  color: #fff;
+}
+
+.dark .navigation-links a.active,
+.dark .navigation-links a:hover {
+  color: #FF7EB3;
+}
+
+/* Media Queries */
 /* Small Devices, Phones */
 @media (max-width: 600px) {
   .navigation-links a {

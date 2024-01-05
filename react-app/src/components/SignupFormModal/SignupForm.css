@@ -7,7 +7,7 @@
   background-color: white;
   background-color: #404040;
   border-radius: 10px;
-  height: 750px;
+  /* height: 750px; */
 }
 
 .google-auth-btn {
@@ -28,13 +28,14 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 4px;
   /* margin-top: 38px; */
 }
 .sign-up-form {
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* gap: 10px; */
+  gap: 15px;
   padding: 20px;
   justify-content: center;
   height: 100%;
@@ -54,6 +55,7 @@
   /* margin-bottom: 10px; */
   margin-bottom: 6px;
   cursor: pointer;
+  gap: 15px;
 }
 .sign-up-input:focus {
   border-color: #ff0072;
@@ -87,9 +89,78 @@
 
 }
 
-
 /* Dark Mode for Sign-Up Form */
 .dark .google-login-text {
+  color: white;
+}
+.dark .sign-up-form {
+  color: white;
+}
+.dark .sign-up-input:focus {
+  border-color: #FF7EB3;
+}
+.dark .sign-up-h1 {
+  text-align: center;
+  color: #FF7EB3;
+}
+.dark .sign-up-ul li {
+  color: #FF7EB3;
+}
+.dark .sign-up-input {
+  color: white;
+  background-color: #2D2D2D;
+}
+.dark .sign-up-btn {
+  background-color: #FF7EB3;
+  color: white;
+}
+.dark .sign-up-btn:hover {
+  background-color: #FF5678;
+}
+.dark .sign-up-btn.disabled-btn {
+  background-color: grey;
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Light Mode for Sign-Up Form */
+.light .google-login-text {
+  color: #404040;
+}
+.light .sign-up-form {
+  color: #404040;
+}
+.light .sign-up-input:focus {
+  border-color: #FFA69E;
+}
+.light .sign-up-h1 {
+  text-align: center;
+  color: #FFA69E;
+}
+.light .sign-up-ul li {
+  color: #FFA69E;
+}
+.light .sign-up-input {
+  color: #404040;
+  background-color: #FAFAFA;
+}
+.light .sign-up-btn {
+  background-color: #FFA69E;
+  color: white;
+}
+.light .sign-up-btn:hover {
+  background-color: #FF7EB3;
+}
+.light .sign-up-btn.disabled-btn {
+  background-color: grey;
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+
+
+/* Dark Mode for Sign-Up Form */
+/* .dark .google-login-text {
   color: white;
 }
 .dark .sign-up-form {
@@ -121,8 +192,14 @@
   background-color: #fd6a2b;
 }
 
+.dark .sign-up-btn.disabled-btn {
+  background-color: grey;
+  color: #ccc;
+  cursor: not-allowed;
+} */
+
 /* Light Mode for Sign-Up Form */
-.light .google-login-text {
+/* .light .google-login-text {
   color:#404040;
 }
 .light .sign-up-form {
@@ -153,3 +230,9 @@
 .light .sign-up-btn:hover {
   background-color: #e60066;
 }
+
+.light .sign-up-btn.disabled-btn {
+  background-color: grey;
+  color: #ccc;
+  cursor: not-allowed;
+} */

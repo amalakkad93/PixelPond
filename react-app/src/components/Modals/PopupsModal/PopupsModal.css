@@ -1,13 +1,14 @@
 .modal-pop {
   position: absolute;
-  top: 100%;
-  left: 69%;
-  /* background-color: white; */
   border-radius: 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 250px;
   z-index: 1000;
   display: none;
+  /* top: 100%; */
+  top: 220%;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .modal-pop.show {

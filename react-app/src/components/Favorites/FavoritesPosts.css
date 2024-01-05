@@ -71,9 +71,9 @@
   /* margin-top: 20px; */
 }
 
-/* Light Mode Specific Styles */
+
 .light .back-to-home-btn {
-  color: #ff0072;
+  color: #FFA69E;
 }
 
 .light .post-list {
@@ -81,11 +81,9 @@
   color: #333333;
 }
 
-
-
 /* Dark Mode Specific Styles */
-.dark .back-to-home button {
-  color: #ff7f47;
+.dark .back-to-home-btn {
+  color: #FF7EB3;
 }
 
 .dark .post-list {

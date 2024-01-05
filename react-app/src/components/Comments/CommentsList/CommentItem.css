@@ -123,7 +123,7 @@ color:white;
 
 .load-previous-comments-btn,
 .load-more-comments-btn {
-  background-color: #ff0072;
+  background-color: #FFA69E;
   color: white;
   border: none;
   padding: 10px;
@@ -133,14 +133,13 @@ color:white;
   transition: background-color 0.3s;
 }
 
-/* Dark Mode Styles For  CommentsList */
 .dark .comments-list {
   background-color: #282c35;
 }
 
 .dark .load-previous-comments-btn,
 .dark .load-more-comments-btn {
-  background-color: #ff7f47;
+  background-color: #FF7EB3;
 }
 
 /* Media Queries */

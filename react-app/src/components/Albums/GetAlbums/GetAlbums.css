@@ -245,7 +245,7 @@
 }
 
 .dark .add-posts-to-an-album-button {
-  background-color:  #ff7f47;
+  background-color: #FF7EB3;
   color: white;
   transition: background-color 0.3s;
 }
@@ -262,38 +262,34 @@
 
 .dark .album-controls-container .create-album-button,
 .dark  {
-  /* background-color: #ff7f47; */
-  color:  #ff7f47;
+  color: #FF7EB3;
 }
 
 .dark .create-album-button:hover,
 .dark .add-posts-to-an-album-button:hover {
-  /* background-color: #fd6a2b; */
+  background-color: #FF5678;
 }
 
 .dark .album-item {
-  border: 1px solid #ff7f47;
+  border: 1px solid #FF7EB3;
 }
 
 .dark .album-title {
   color: white;
-  /* color: linear-gradient(to left, #ff9d00, #ff7f47); */
   font-size: x-large;
 }
 
 .dark .album-delete-button .delete-edit-modal {
   background-color: transparent;
-  color: #ff7f47;
+  color: #FF7EB3;
 }
 
-
 .light .albums-main-container {
-
   background-color: #F0F0F0;
   color: #404040;
 }
 .light .add-posts-to-an-album-button {
-  background-color:  #ff0072;
+  /* background-color: #FFA69E; */
   color: white;
   transition: background-color 0.3s;
 }
@@ -304,26 +300,23 @@
 
 .light .album-controls-container .create-album-button,
 .light .add-posts-to-an-album-button {
-  /* background-color: #ff0072; */
-  /* color: #ff0072; */
+  color: #FFA69E;
 }
 
 .light .create-album-button:hover,
 .light .add-posts-to-an-album-button:hover {
-  background-color: #e60066;
+  background-color: #FF7EB3;
 }
 
 .light .album-item {
-  border: 1px solid #ff0072;
+  border: 1px solid #FFA69E;
 }
 
 .light .album-title {
   color: black;
-  /* color: linear-gradient(to left, #ff9d00, #ff7f47); */
   font-size: x-large;
 }
 
 .light .album-delete-button .delete-edit-modal {
-  /* background-color: #ff7f47;  */
-  color: #ff0072;
+  color: #FFA69E;
 }

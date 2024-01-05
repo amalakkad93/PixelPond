@@ -27,9 +27,6 @@ function Navigation({ isLoaded }) {
   const [showModal, setShowModal] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
-  const [userData, setUserData] = useState(null);
-  const [albumData, setAlbumData] = useState(null);
-
   // const toggleModal = () => setShowModal(!showModal);
   const toggleModal = () => {
     console.log("---Toggling modal:", !showModal);
@@ -48,7 +45,7 @@ function Navigation({ isLoaded }) {
     "/albums/users/:userId",
     "/albums/:albumId",
   ];
- // const isFavoritesPage = location.pathname.includes("/posts/users/:userId/favorites-post");
+  // const isFavoritesPage = location.pathname.includes("/posts/users/:userId/favorites-post");
   const isFavoritesPage = location.pathname.includes("/user/favorites-post");
   // Determine which userInfo to use
   let userInfo;
@@ -63,19 +60,25 @@ function Navigation({ isLoaded }) {
   const shouldDisplayBanner = displayBannerRoutes.some((path) =>
     location.pathname.includes(path.replace(/:\w+/g, ""))
   );
-console.log("🚀 ~ file: index.js:71 ~ Navigation ~ shouldDisplayBanner", shouldDisplayBanner)
+  console.log(
+    "🚀 ~ file: index.js:71 ~ Navigation ~ shouldDisplayBanner",
+    shouldDisplayBanner
+  );
+
   return (
     <>
-      <nav className="navbar">
         <div className="navbar-content">
-          <NavLink exact to="/posts/all" className="navbar-logo">
-            <img src={logo} alt="logo" className="logo-img" />
-          </NavLink>
+      <nav className="navbar">
+        <NavLink exact to="/posts/all" className="navbar-logo">
+          <img src={logo} alt="logo" className="logo" />
+        </NavLink>
 
-          <ul className="navbar-links">
-            <li>
+        <ul className="navbar-links">
+          <div class="menu">
+            <li className="explore-icon">
               <NavLink to="/explore" activeClassName="active">
                 <FontAwesomeIcon icon={faCameraRetro} />
+                {" "}
                 Explore
               </NavLink>
             </li>
@@ -97,26 +100,23 @@ console.log("🚀 ~ file: index.js:71 ~ Navigation ~ shouldDisplayBanner", shoul
             )}
 
             {isLoaded && (
-              <ul className="navBar-far-right">
+              // <ul className="navBar-far-right">
+              // <ProfileButton user={sessionUser} showMenu={showMenu} />
                 <li>
-                  <ProfileButton user={sessionUser} showMenu={showMenu} />
+                  <ProfileButton className="profile-btn" user={sessionUser} showMenu={showMenu} />
                 </li>
-              </ul>
+              // </ul>
             )}
-            <ThemeToggle/>
-          </ul>
-        </div>
+            <ThemeToggle className="theme-toggle"/>
+          </div>
+        </ul>
       </nav>
+        </div>
       {shouldDisplayBanner && (
-      //{shouldDisplayBanner && userInfo && (
+        //{shouldDisplayBanner && userInfo && (
         <>
-          <BannerNavbar
-            userInfo={userInfo}
-          />
-          <UserNavigationBar
-          id={userInfo?.id}
-            userInfo={userInfo}
-          />
+          <BannerNavbar userInfo={userInfo} />
+          <UserNavigationBar id={userInfo?.id} userInfo={userInfo} />
         </>
       )}
     </>

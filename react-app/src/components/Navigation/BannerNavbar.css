@@ -75,11 +75,11 @@
 
 }
 .dark .banner-nav-profile-picture-container {
-  background: #ff7f47;;
+  background: #FF7EB3;
 }
-.banner-nav-profile-picture-container {
 
-  background:#ff0072;
+.banner-nav-profile-picture-container {
+  background: #FFA69E;
 }
 
 .banner-nav-profile-picture {
@@ -93,6 +93,7 @@
   font-size: 1.5em;
   color: white;
 }
+
 
 /* Media Queries */
 /* Small Devices, Phones */

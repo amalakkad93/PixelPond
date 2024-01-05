@@ -54,18 +54,21 @@
 
 /* Dark mode styles */
 .dark .custom-file-upload {
-  background-color: #ff7f47;
+  background-color: #FF7EB3;
+  color: white;
 }
 
 .dark .custom-file-upload:hover {
-  background-color: #fd6a2b;
+  background-color: #FF5678;
 }
 
 /* Light mode styles */
 .light .custom-file-upload {
-  background-color: #ff0072;
+  background-color: #FFA69E;
+  color: white;
 }
 
 .light .custom-file-upload:hover {
-  background-color: #e60066;
+  background-color: #FF7EB3;
 }
+

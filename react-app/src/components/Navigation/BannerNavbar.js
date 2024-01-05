@@ -3,7 +3,12 @@ import { useSelector } from "react-redux";
 import UserNavigationBar from "../Navigation/UserNavigationBar";
 import { selectPostUserInfo } from "../../store/selectors";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import defult_banner_image from "../../assets/images/defult_banner_image.png";
+import defult_banner_image1 from "../../assets/images/defult_banner_image.png";
+import defult_banner_image2 from "../../assets/images/defult_banner_image2.png";
+import defult_banner_image3 from "../../assets/images/defult_banner_image3.png";
+import defult_banner_image4 from "../../assets/images/defult_banner_image4.png";
+import profileImage1 from "../../assets/images/profileImage1.png";
+import profileImage2 from "../../assets/images/profileImage2.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import Spinner from "../Spinner";
@@ -18,6 +23,19 @@ const BannerNavbar = ({ userInfo }) => {
   const bannerPhoto = userInfo?.banner_picture;
   const userName = `${userInfo?.first_name || ''} ${userInfo?.last_name || ''}`;
 
+   // Function to get a random default banner image
+   const getRandomDefaultBannerImage = () => {
+    const images = [defult_banner_image1, defult_banner_image2, defult_banner_image3,defult_banner_image4];
+    return images[Math.floor(Math.random() * images.length)];
+  };
+  const getRandomDefaultImage = () => {
+    const images = [profileImage1, profileImage2];
+    return images[Math.floor(Math.random() * images.length)];
+  };
+
+
+  // const bannerPhoto = userInfo?.banner_picture || getRandomDefaultBannerImage();
+
   if(!isDataAvailable) return null;
   return (
     <div className="banner-nav-container">
@@ -26,7 +44,7 @@ const BannerNavbar = ({ userInfo }) => {
         <div className="banner-nav">
           {/* Render images if available, else default banner image */}
           {bannerPhoto && bannerPhoto ? (
-            <LazyLoadImage
+              <LazyLoadImage
               src={bannerPhoto}
               effect="blur"
               className="banner-nav-image"
@@ -35,7 +53,7 @@ const BannerNavbar = ({ userInfo }) => {
             />
           ) : (
             <LazyLoadImage
-              src={defult_banner_image}
+              src={getRandomDefaultBannerImage()}
               effect="blur"
               className="banner-nav-image"
               width={"100%"}
@@ -53,10 +71,11 @@ const BannerNavbar = ({ userInfo }) => {
                   className="banner-nav-profile-picture"
                 />
               ) : (
-                <FontAwesomeIcon
-                  icon={faUserCircle}
-                  className="banner-nav-profile-picture"
-                />
+                // <FontAwesomeIcon
+                //   icon={faUserCircle}
+                //   className="banner-nav-profile-picture"
+                // />
+                <img className="banner-nav-profile-picture" src={ getRandomDefaultImage()} alt="Profile" />
               )}
             </div>
 

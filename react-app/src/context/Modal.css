@@ -47,15 +47,16 @@
 }
 
 .light #modal-content {
-  background-color: white;
   color: #404040;
   color: white;
+  background-color: #fff;
+
 }
 
 .light #modal-content h1,
 .light #modal-content h2,
 .light #modal-content h3 {
-  color: #ff0072;
+  color: #FFA69E;
 }
 /* Dark Mode Styles for Modal */
 .dark #modal-background {
@@ -63,12 +64,13 @@
 }
 
 .dark #modal-content {
-  background-color: #282c35;
   color: white;
+  background-color: #2D2D2D;
 }
 
 .dark #modal-content h1,
 .dark #modal-content h2,
 .dark #modal-content h3 {
-  color: #ff7f47;
+  color: #FF7EB3;
+
 }

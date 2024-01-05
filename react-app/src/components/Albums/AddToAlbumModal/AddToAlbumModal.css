@@ -116,8 +116,99 @@
   z-index: 2;
 }
 
-/* Dark Mode */
 .dark .add-to-album-modal-main {
+  background-color: #282c35;
+  color: white;
+}
+
+.dark .add-to-album-option::selection {
+  background-color: #FF7EB3;
+  color: white;
+}
+
+.dark .add-to-album-modal .album-add-cancel-btns button:first-child {
+  background-color: #FF7EB3;
+  color: white;
+}
+
+.dark .add-to-album-modal .album-add-cancel-btns button:first-child:hover {
+  background-color: #FF5678;
+}
+
+.dark .add-to-album-modal .album-add-cancel-btns button:last-child {
+  background-color: #333;
+  color: white;
+}
+
+.dark .add-to-album-modal .album-add-cancel-btns button:last-child:hover {
+  background-color: #555;
+}
+
+.dark .add-to-album-modal select {
+  background-color: #333;
+  color: white;
+}
+
+.dark .pagination-control-left,
+.dark .pagination-control-right,
+.dark .checkmark-overlay {
+  color: white;
+}
+
+.dark-mode .album-title {
+  color: #FF7EB3;
+  background-color: #222;
+  border: 1px solid #FF7EB3;
+}
+
+.light .add-to-album-modal-main {
+  background-color: #F0F0F0;
+  color: #404040;
+}
+
+.light .add-to-album-option::selection {
+  background-color: #FFA69E;
+  color: white;
+}
+
+.light .add-to-album-modal .album-add-cancel-btns button:first-child {
+  background-color: #FFA69E;
+  color: white;
+}
+
+.light .add-to-album-modal .album-add-cancel-btns button:first-child:hover {
+  background-color: #FF7EB3;
+}
+
+.light .add-to-album-modal .album-add-cancel-btns button:last-child {
+  background-color: #dcdcdc;
+  color: #333;
+}
+
+.light .add-to-album-modal .album-add-cancel-btns button:last-child:hover {
+  background-color: #c0c0c0;
+}
+
+.light .add-to-album-modal select {
+  background-color: white;
+  color: #404040;
+}
+
+.light .pagination-control-left,
+.light .pagination-control-right,
+.light .checkmark-overlay {
+  color: #404040;
+}
+
+.light-mode .album-title {
+  color: #FFA69E;
+  background-color: #fff;
+  border: 1px solid #FFA69E;
+}
+
+
+/* Dark Mode */
+/* .dark .add-to-album-modal-main {
   background-color: #282c35;
   color: white;
 }
@@ -161,10 +252,10 @@
   color: #ff7f47;
   background-color: #222;
   border: 1px solid #ff7f47;
-}
+} */
 
 /* Light Mode */
-.light .add-to-album-modal-main {
+/* .light .add-to-album-modal-main {
   background-color: #F0F0F0;
   color: #404040;
 }
@@ -207,7 +298,7 @@
   color: #ff0072;
   background-color: #fff;
   border: 1px solid #ff0072;
-}
+} */
 
 /* Media Queries */
 @media (max-width: 768px) {
