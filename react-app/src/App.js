@@ -18,6 +18,7 @@ import HomePage from "./components/Home/HomePage";
 import UserProfileManager from "./components/Users/UserProfile/UserProfileManager";
 import FavoritesPosts from "./components/Favorites";
 
+import UserProfileDisplay from "./components/Users/UserProfile/UserProfileDisplay";
 function App() {
   const dispatch = useDispatch();
   const [isLoaded, setIsLoaded] = useState(false);
@@ -79,7 +80,10 @@ function App() {
             <Route path="/owner/posts/albums/:albumId/add">
               <ImageDisplay mode="addPostToAnAlbum" key="addPostToAnAlbum" />
             </Route>
-
+        
+            <Route path="/users/search">
+              <UserProfileDisplay />
+            </Route>
             <Route path="/posts/users/:userId">
               <ImageDisplay mode="photoStream" key="photoStream" />
             </Route>

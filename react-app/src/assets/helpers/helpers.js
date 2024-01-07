@@ -57,36 +57,7 @@ export const useDynamicBackground = (bgContainerRef) => {
   }, [bgImageIndex, images, bgContainerRef]);
 
   return images[bgImageIndex]; // This line is optional, only if you need to use the current image elsewhere
-
-
-    // useEffect(() => {
-  //   // Check if the user is on the login/signup pages or if they're logged in
-  //   const whiteBackgroundRoutes = [
-  //     "/login",
-  //     "/signup",
-  //     "/restaurants/nearby",
-  //     "/favorites",
-  //     "/restaurants",
-  //     "/menu-item"
-  //   ];
-
-  //   const isMenuItemDetailPage = /^\/restaurant\/\d+\/menu-item\/\d+$/.test(location.pathname);
-
-  //   // Using .some() to check if location.pathname matches any of the routes
-  //   if (
-  //     whiteBackgroundRoutes.some((route) => location.pathname.startsWith(route)) ||
-  //     isMenuItemDetailPage
-  //   ) {
-  //     document.documentElement.style.background = "white";
-  //     document.documentElement.style.backgroundImage = "none";
-  //   } else {
-  //     document.documentElement.style.backgroundImage = `url(${images[bgImageIndex]})`;
-  //   }
-  // }, [sessionUser, bgImageIndex, images, location.pathname]);
 };
-
-
-
 
 
 // Custom hook to generate a dynamic greeting based on the time of day
@@ -155,4 +126,17 @@ export const createInputChangeHandler = (setterFunction, setValidationObj, valid
     delete newObj[validationField];
     return newObj;
   });
+};
+
+export const highlightText = (text, highlight) => {
+  const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
+  return (
+    <span>
+      {parts.map((part, index) =>
+        part.toLowerCase() === highlight.toLowerCase()
+          ? <span key={index} className="highlighted-text">{part}</span>
+          : part
+      )}
+    </span>
+  );
 };

@@ -13,6 +13,7 @@ export const selectLoading = (state) => state.ui.loading;
 export const selectSessionUser = state => state?.session?.user;
 export const selectUserId = selectSessionUser?.id;
 export const selectUserById = state => state.session.usersById
+export const selectSearchedUserDisplay = (state) => state.session.searchedUsers
 
 
 // =========================================================

@@ -1,12 +1,12 @@
 import { normalizeArray } from "../assets/helpers/storesHelpers";
-import {fetchPaginatedData,} from "./paginations";
+import { fetchPaginatedData } from "./paginations";
 
 // Tag Actions
 export const CREATE_TAG = "CREATE_TAG";
 export const UPDATE_TAG = "UPDATE_TAG";
 export const SET_TAGS = "posts/tags/SET_TAGS";
 export const GET_POSTS_BY_TAG = "posts/GET_POSTS_BY_TAG";
-
+export const SET_SELECTED_TAGS = "SET_SELECTED_TAGS";
 
 // Action Creators
 const actionSetTags = (tags) => ({
@@ -29,6 +29,10 @@ export const actionUpdateTag = (tag) => ({
   tag,
 });
 
+export const actionSetSelectedTags = (tags) => ({
+  type: SET_SELECTED_TAGS,
+  payload: tags,
+});
 // Thunk to create a new tag
 export const thunkCreateTag = (tagName) => async (dispatch) => {
   try {
@@ -105,14 +109,14 @@ export const thunkGetPostsByTag = (tag, page, perPage) => {
     "postsByTag"
   );
 };
+
 export const thunkGetPostsByTags = (tags, page, perPage) => {
   console.log("thunkGetPostsByTag called", { tags, page, perPage });
 
-
   const queryParams = new URLSearchParams();
-  tags.forEach(tag => queryParams.append('tags', tag));
-  queryParams.append('page', page);
-  queryParams.append('per_page', perPage);
+  tags.forEach((tag) => queryParams.append("tags", tag));
+  queryParams.append("page", page);
+  queryParams.append("per_page", perPage);
 
   return fetchPaginatedData(
     `/api/posts/by_tags?${queryParams.toString()}`,
@@ -128,7 +132,6 @@ export const thunkGetPostsByTags = (tags, page, perPage) => {
   );
 };
 
-
 const initialState = {
   postsByTag: {
     byId: {},
@@ -136,6 +139,7 @@ const initialState = {
     pagination: { currentPage: 1, totalPages: 1 },
   },
   allTags: [],
+  selectedTags: [],
 };
 
 export default function reducer(state = initialState, action) {
@@ -166,9 +170,16 @@ export default function reducer(state = initialState, action) {
     case UPDATE_TAG:
       return {
         ...state,
-        allTags: state.allTags.map(tag => tag.id === action.tag.id ? action.tag : tag),
+        allTags: state.allTags.map((tag) =>
+          tag.id === action.tag.id ? action.tag : tag
+        ),
+      };
+    case SET_SELECTED_TAGS:
+      return {
+        ...state,
+        selectedTags: action.payload,
       };
     default:
       return state;
   }
-};
+}

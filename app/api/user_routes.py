@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash
+from sqlalchemy import or_, and_
 from app.models import User, db
 
 user_routes = Blueprint('users', __name__)
@@ -75,3 +76,35 @@ def update_user():
 
     db.session.commit()
     return jsonify(user.to_dict())
+
+
+@user_routes.route('/search')
+def search_users():
+    search_term = request.args.get('query', '')
+
+    # Split the search term into words to handle first name and last name separately
+    search_words = search_term.split()
+
+    # Construct the query based on the number of words in the search term
+    if len(search_words) == 1:
+        # If there's only one word, search it against both first and last names
+        query = User.query.filter(
+            or_(
+                User.first_name.ilike(f'%{search_words[0]}%'),
+                User.last_name.ilike(f'%{search_words[0]}%')
+            )
+        )
+    elif len(search_words) >= 2:
+        # If there are two or more words, use the first two for first and last names
+        query = User.query.filter(
+            or_(
+                and_(User.first_name.ilike(f'%{search_words[0]}%'), User.last_name.ilike(f'%{search_words[1]}%')),
+                and_(User.first_name.ilike(f'%{search_words[1]}%'), User.last_name.ilike(f'%{search_words[0]}%'))
+            )
+        )
+    else:
+        # If the search term is empty, return all users
+        query = User.query
+
+    users = query.all()
+    return jsonify([user.to_dict() for user in users])

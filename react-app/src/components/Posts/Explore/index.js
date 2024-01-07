@@ -11,17 +11,14 @@
  */
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 import Pagination from "../../Pagination";
 import useResponsivePagination from "../../Pagination/useResponsivePagination";
 import Spinner from "../../Spinner";
 import ImageGrid from "../../ImageDisplay/ImageGrid/ImageGrid";
 import TagSearch from "../../Tags/TagSearch";
-import {
-  thunkGetAllPosts,
-  // thunkGetAllTags,
-  // thunkGetPostsByTag,
-  // thunkGetPostsByTags,
-} from "../../../store/posts";
+import SearchBar from "../../SearchBar";
+import { thunkGetAllPosts } from "../../../store/posts";
 import {
   thunkGetAllTags,
   thunkGetPostsByTag,
@@ -41,29 +38,32 @@ import "./Explore.css";
 
 const Explore = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [selectedTags, setSelectedTags] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Redux store state
   const loading = useSelector(selectLoading);
   const postsImages = useSelector(selectAllPostsImages);
   const postsByTag = useSelector(selectPostsByTag);
-  console.log("🚀 ~ file: index.js:51 ~ Explore ~ postsByTag :", postsByTag )
   const sessionUser = useSelector(selectSessionUser);
   const allTags = useSelector(selectAllTags);
-  console.log("🚀 ~ file: index.js:47 ~ Explore ~ allTags:", allTags);
   const perPage = useResponsivePagination(10);
 
   // Fetches posts based on the current page and selected tags
-  const fetchData = async (page, tags = []) => {
-    dispatch(setLoading(true));
+  const fetchData = async () => {
+    setIsLoading(true);
+    // dispatch(setLoading(true));
     try {
       let response;
-      if (tags.length > 0) {
-        response = await dispatch(thunkGetPostsByTags(tags, page, perPage));
+      if (selectedTags.length > 0) {
+        response = await dispatch(
+          thunkGetPostsByTags(selectedTags, currentPage, perPage)
+        );
       } else {
-        response = await dispatch(thunkGetAllPosts(page, perPage));
+        response = await dispatch(thunkGetAllPosts(currentPage, perPage));
       }
 
       if (response) {
@@ -71,49 +71,34 @@ const Explore = () => {
         setTotalPages(response.total_pages);
       }
     } finally {
-      dispatch(setLoading(false));
+      setIsLoading(false);
+      // dispatch(setLoading(false));
     }
   };
-
-  // Update tag selection
-  const updateTagSelection = (tag) => {
-    const updatedTags = selectedTags.includes(tag)
-      ? selectedTags.filter((t) => t !== tag)
-      : [...selectedTags, tag];
-    setSelectedTags(updatedTags);
-    fetchData(1, updatedTags);
-  };
-
-  useEffect(() => {
-    if (sessionUser?.id) {
-      dispatch(thunkFetchAllFavorites(sessionUser?.id));
-    }
-  }, [dispatch, sessionUser?.id]);
-
-  useEffect(() => {
-    fetchData(currentPage, selectedTags);
-  }, [currentPage, selectedTags, dispatch]);
 
   useEffect(() => {
     dispatch(thunkGetAllTags());
   }, [dispatch]);
 
-  if (loading) return <Spinner />;
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const tagsArray = queryParams.getAll("tags");
+    setSelectedTags(tagsArray);
+    setCurrentPage(1);
+  }, [location.search]);
+
+  useEffect(() => {
+    fetchData();
+  }, [selectedTags, currentPage, perPage, dispatch]);
+
+  // if (loading) return <Spinner />;
+  if (isLoading) return <Spinner />;
 
   // Decide which posts to display: by selected tags or all posts
   const displayPosts = selectedTags.length > 0 ? postsByTag : postsImages;
 
   return (
     <div className="explore-container">
-      <TagSearch
-        allTags={allTags}
-        selectedTags={selectedTags}
-        onTagSelected={updateTagSelection}
-        onClearTag={() => {
-          setSelectedTags([]);
-          fetchData(currentPage);
-        }}
-      />
       <div className="explor-photo-grid">
         <ImageGrid
           className="explor-photo-grid"
@@ -135,15 +120,23 @@ export default Explore;
 // import React, { useEffect, useState } from "react";
 // import { useDispatch, useSelector } from "react-redux";
 // import Pagination from "../../Pagination";
+// import useResponsivePagination from "../../Pagination/useResponsivePagination";
 // import Spinner from "../../Spinner";
 // import ImageGrid from "../../ImageDisplay/ImageGrid/ImageGrid";
 // import TagSearch from "../../Tags/TagSearch";
 // import {
 //   thunkGetAllPosts,
+//   // thunkGetAllTags,
+//   // thunkGetPostsByTag,
+//   // thunkGetPostsByTags,
+// } from "../../../store/posts";
+// import {
 //   thunkGetAllTags,
 //   thunkGetPostsByTag,
-// } from "../../../store/posts";
-// import {thunkFetchAllFavorites} from "../../../store/favorites";
+//   thunkGetPostsByTags,
+// } from "../../../store/tags";
+
+// import { thunkFetchAllFavorites } from "../../../store/favorites";
 // import { setLoading } from "../../../store/ui";
 // import {
 //   selectLoading,
@@ -158,24 +151,28 @@ export default Explore;
 //   const dispatch = useDispatch();
 //   const [currentPage, setCurrentPage] = useState(1);
 //   const [totalPages, setTotalPages] = useState(0);
-//   const [selectedTag, setSelectedTag] = useState("");
+//   const [selectedTags, setSelectedTags] = useState([]);
 
-//   // Loading and posts state from Redux store
+//   // Redux store state
 //   const loading = useSelector(selectLoading);
 //   const postsImages = useSelector(selectAllPostsImages);
 //   const postsByTag = useSelector(selectPostsByTag);
+//   console.log("🚀 ~ file: index.js:51 ~ Explore ~ postsByTag :", postsByTag )
 //   const sessionUser = useSelector(selectSessionUser);
 //   const allTags = useSelector(selectAllTags);
-//   const perPage = 10;
+//   console.log("🚀 ~ file: index.js:47 ~ Explore ~ allTags:", allTags);
+//   const perPage = useResponsivePagination(10);
 
-//   // Fetches posts based on the current page and selected tag.
-//   const fetchData = async (page, tag = "") => {
+//   // Fetches posts based on the current page and selected tags
+//   const fetchData = async (page, tags = []) => {
 //     dispatch(setLoading(true));
 //     try {
 //       let response;
-//       response = tag
-//         ? await dispatch(thunkGetPostsByTag(tag, page, perPage))
-//         : await dispatch(thunkGetAllPosts(page, perPage));
+//       if (tags.length > 0) {
+//         response = await dispatch(thunkGetPostsByTags(tags, page, perPage));
+//       } else {
+//         response = await dispatch(thunkGetAllPosts(page, perPage));
+//       }
 
 //       if (response) {
 //         setCurrentPage(response.current_page);
@@ -186,50 +183,56 @@ export default Explore;
 //     }
 //   };
 
-//   // Fetch user favorites if a session user exists.
+//   // Update tag selection
+//   const updateTagSelection = (tag) => {
+//     const updatedTags = selectedTags.includes(tag)
+//       ? selectedTags.filter((t) => t !== tag)
+//       : [...selectedTags, tag];
+//     setSelectedTags(updatedTags);
+//     fetchData(1, updatedTags);
+//   };
+
 //   useEffect(() => {
 //     if (sessionUser?.id) {
 //       dispatch(thunkFetchAllFavorites(sessionUser?.id));
 //     }
 //   }, [dispatch, sessionUser?.id]);
 
-//   // Fetch posts whenever currentPage or selectedTag changes.
 //   useEffect(() => {
-//     fetchData(currentPage, selectedTag);
-//   }, [currentPage, selectedTag, dispatch]);
+//     fetchData(currentPage, selectedTags);
+//   }, [currentPage, selectedTags, dispatch]);
 
-//   // Fetch all tags for the tag search functionality.
 //   useEffect(() => {
 //     dispatch(thunkGetAllTags());
 //   }, [dispatch]);
 
 //   if (loading) return <Spinner />;
 
-//   // Decides which posts to display: by tag or all posts.
-//   const displayPosts = selectedTag ? postsByTag : postsImages;
+//   // Decide which posts to display: by selected tags or all posts
+//   const displayPosts = selectedTags.length > 0 ? postsByTag : postsImages;
 
 //   return (
 //     <div className="explore-container">
 //       <TagSearch
 //         allTags={allTags}
-//         selectedTag={selectedTag}
-//         onTagSelected={(tag) => {
-//           setSelectedTag(tag);
-//           fetchData(1, tag);
-//         }}
+//         selectedTags={selectedTags}
+//         onTagSelected={updateTagSelection}
 //         onClearTag={() => {
-//           setSelectedTag("");
+//           setSelectedTags([]);
 //           fetchData(currentPage);
 //         }}
 //       />
-
-//       <ImageGrid displayedImages={displayPosts} />
-
+//       <div className="explor-photo-grid">
+//         <ImageGrid
+//           className="explor-photo-grid"
+//           displayedImages={displayPosts}
+//         />
+//       </div>
 //       <Pagination
 //         totalItems={totalPages * perPage}
 //         itemsPerPage={perPage}
 //         currentPage={currentPage}
-//         onPageChange={(newPage) => fetchData(newPage, selectedTag)}
+//         onPageChange={(newPage) => fetchData(newPage, selectedTags)}
 //       />
 //     </div>
 //   );

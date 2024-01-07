@@ -1,13 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { NavLink, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { NavLink, useLocation, useHistory } from "react-router-dom";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 
 import ProfileButton from "./ProfileButton";
 import PopupsModal from "../Modals/PopupsModal";
 import BannerNavbar from "./BannerNavbar";
 import UserNavigationBar from "./UserNavigationBar";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
-import { selectPostUserInfo, selectAlbumUserInfo } from "../../store/selectors";
+import {
+  thunkGetAllTags,
+  thunkGetPostsByTags,
+  actionSetSelectedTags,
+} from "../../store/tags";
+import {
+  selectPostUserInfo,
+  selectAlbumUserInfo,
+  selectAllTags,
+  selectSessionUser,
+} from "../../store/selectors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCameraRetro,
@@ -16,22 +26,24 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import logo from "../../assets/images/logo.png";
+import TagSearch from "../Tags/TagSearch";
+import SearchBar from "../SearchBar";
 import "./Navigation.css";
 
 function Navigation({ isLoaded }) {
   const location = useLocation();
-  const sessionUser = useSelector((state) => state.session.user);
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  const sessionUser = useSelector(selectSessionUser);
   const postUserInfo = useSelector(selectPostUserInfo);
   const albumUserInfo = useSelector(selectAlbumUserInfo);
-  console.log("🚀 ~ file: index.js:23 ~ Navigation ~ userInfo:", postUserInfo);
+
+  const allTags = useSelector(selectAllTags);
   const [showModal, setShowModal] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
-  // const toggleModal = () => setShowModal(!showModal);
-  const toggleModal = () => {
-    console.log("---Toggling modal:", !showModal);
-    setShowModal(!showModal);
-  };
+  const isFavoritesPage = location.pathname.includes("/user/favorites-post");
 
   const displayBannerRoutes = [
     "/user/favorites-post",
@@ -39,14 +51,12 @@ function Navigation({ isLoaded }) {
     "/owner/photostream",
     "/owner/albums",
     "/owner/posts/add",
-    //"/posts/users/:userId/favorites-post",
     "/user/favorites-post",
     "/posts/favorites-post",
     "/albums/users/:userId",
     "/albums/:albumId",
   ];
-  // const isFavoritesPage = location.pathname.includes("/posts/users/:userId/favorites-post");
-  const isFavoritesPage = location.pathname.includes("/user/favorites-post");
+
   // Determine which userInfo to use
   let userInfo;
   if (location.pathname.includes("/albums/")) {
@@ -57,63 +67,84 @@ function Navigation({ isLoaded }) {
     userInfo = postUserInfo;
   }
 
+  useEffect(() => {
+    dispatch(thunkGetAllTags());
+  }, [dispatch]);
+
   const shouldDisplayBanner = displayBannerRoutes.some((path) =>
     location.pathname.includes(path.replace(/:\w+/g, ""))
   );
-  console.log(
-    "🚀 ~ file: index.js:71 ~ Navigation ~ shouldDisplayBanner",
-    shouldDisplayBanner
-  );
+
+  const handleTagSelection = (tag) => {
+    const currentURL = new URL(window.location);
+    let tags = currentURL.searchParams.getAll("tags");
+
+    if (tags.includes(tag)) {
+      // Remove the tag if it's already selected
+      tags = tags.filter((t) => t !== tag);
+    } else {
+      // Add the new tag
+      tags.push(tag);
+    }
+
+    const newQueryParams = new URLSearchParams();
+    tags.forEach((t) => newQueryParams.append("tags", t));
+
+    history.push(`/explore?${newQueryParams.toString()}`);
+  };
 
   return (
     <>
-        <div className="navbar-content">
-      <nav className="navbar">
-        <NavLink exact to="/posts/all" className="navbar-logo">
-          <img src={logo} alt="logo" className="logo" />
-        </NavLink>
+      <div className="navbar-content">
+        <nav className="navbar">
+          <NavLink exact to="/posts/all" className="navbar-logo">
+            <img src={logo} alt="logo" className="logo" />
+          </NavLink>
 
-        <ul className="navbar-links">
-          <div class="menu">
-            <li className="explore-icon">
-              <NavLink to="/explore" activeClassName="active">
-                <FontAwesomeIcon icon={faCameraRetro} />
-                {" "}
-                Explore
-              </NavLink>
-            </li>
-
-            {sessionUser && (
-              <li className="pop-modal-trigger" onClick={toggleModal}>
-                <span className="white-icon">You</span>
-
-                {/* <FontAwesomeIcon icon={faUserCircle} className="white-icon" /> */}
-
-                {/* <span>{sessionUser.username}</span> */}
-                {showModal && (
-                  <PopupsModal
-                    showModal={showModal}
-                    onClose={() => setShowModal(false)}
-                  />
-                )}
+          <SearchBar
+            className="tag-search-container"
+            allTags={allTags}
+            onTagSelected={handleTagSelection}
+            onTagClear={() => history.push("/posts/all")}
+          />
+          <ul className="navbar-links">
+            <div class="menu">
+              <li className="explore-icon">
+                <NavLink to="/explore" activeClassName="active">
+                  <FontAwesomeIcon icon={faCameraRetro} /> Explore
+                </NavLink>
               </li>
-            )}
 
-            {isLoaded && (
-              // <ul className="navBar-far-right">
-              // <ProfileButton user={sessionUser} showMenu={showMenu} />
-                <li>
-                  <ProfileButton className="profile-btn" user={sessionUser} showMenu={showMenu} />
+              {sessionUser && (
+                <li
+                  className="pop-modal-trigger"
+                  onClick={() => setShowModal(!showModal)}
+                >
+                  <span className="white-icon">You</span>
+                  {showModal && (
+                    <PopupsModal
+                      showModal={showModal}
+                      onClose={() => setShowModal(false)}
+                    />
+                  )}
                 </li>
-              // </ul>
-            )}
-            <ThemeToggle className="theme-toggle"/>
-          </div>
-        </ul>
-      </nav>
-        </div>
+              )}
+
+              {isLoaded && (
+                <li>
+                  <ProfileButton
+                    className="profile-btn"
+                    user={sessionUser}
+                    showMenu={showMenu}
+                  />
+                </li>
+              )}
+              <ThemeToggle className="theme-toggle" />
+            </div>
+          </ul>
+        </nav>
+      </div>
       {shouldDisplayBanner && (
-        //{shouldDisplayBanner && userInfo && (
         <>
           <BannerNavbar userInfo={userInfo} />
           <UserNavigationBar id={userInfo?.id} userInfo={userInfo} />
