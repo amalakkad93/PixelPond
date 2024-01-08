@@ -99,17 +99,17 @@ export default function CommentForm({
   return (
     <div className="comment-area">
       {formType === "Create" && (
-        <div className="user-profile-picture">
+        <div className="comment-user-profile-picture">
           {profilePic ? (
             <img
               src={profilePic}
               alt="User Profile"
-              className="profile-picture"
+              className="comment-profile-picture"
             />
           ) : (
             <FontAwesomeIcon
               icon={faUserCircle}
-              className="default-profile-icon"
+              className="comment-default-profile-icon"
             />
           )}
         </div>

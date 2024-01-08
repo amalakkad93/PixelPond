@@ -1,14 +1,14 @@
 import React, { memo, useEffect, useState, useRef, useCallback } from "react";
-import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams, useHistory, useLocation, Link } from "react-router-dom";
 
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import Pagination from "../Pagination";
-import UserNavigationBar from "../Navigation/UserNavigationBar";
-import Spinner from "../Spinner";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft, faLayerGroup } from "@fortawesome/free-solid-svg-icons";
+// import { useLoading } from "../../context/LoadingContext";
+import { thunkFetchAllFavorites } from "../../store/favorites";
 import { thunkGetAlbumImages } from "../../store/albums";
 import { thunkGetPostsByUserId } from "../../store/posts";
-import { setLoading, setError, clearUIState } from "../../store/ui";
+import { setError, clearUIState } from "../../store/ui";
 import {
   selectAlbumDetails,
   selectUserPosts,
@@ -18,26 +18,14 @@ import {
   selectSessionUser,
   selectAlbumInfo,
 } from "../../store/selectors";
-import defult_banner_image from "../../assets/images/defult_banner_image.png";
-import OpenModalButton from "../Modals/OpenModalButton";
+
 import OpenShortModalButton from "../Modals/OpenShortModalButton";
+import Pagination from "../Pagination";
+import Spinner from "../Spinner";
 import CreatePostForm from "../Posts/PostForms/CreatePostForm";
-import UserProfileManager from "../Users/UserProfile/UserProfileManager";
-import ProfilePictureUpdater from "../Users/UserProfile/ProfilePictureUpdater";
-import AddToAlbumModal from "../Albums/AddToAlbumModal";
-import ImageItem from "./ImageItem/ImageItem";
-import { thunkFetchAllFavorites } from "../../store/favorites";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faUserCircle,
-  faEdit,
-  faPlus,
-  faArrowLeft,
-  faLayerGroup,
-} from "@fortawesome/free-solid-svg-icons";
-import "./ImageDisplay.css";
 import ImageGrid from "./ImageGrid/ImageGrid";
-import BannerNavbar from "../Navigation/BannerNavbar";
+
+import "./ImageDisplay.css";
 
 const ImageDisplay = memo(({ mode }) => {
   console.log("Mode in ImageDisplay:", mode);
@@ -80,7 +68,7 @@ const ImageDisplay = memo(({ mode }) => {
     async (page) => {
       setIsLoading(true);
       try {
-        dispatch(setLoading(true));
+        // dispatch(setLoading(true));
 
         // Determine the user ID based on the mode
         const selectedUserId =
@@ -124,7 +112,7 @@ const ImageDisplay = memo(({ mode }) => {
         dispatch(setError("An error occurred"));
       } finally {
         if (isMounted.current) {
-          dispatch(setLoading(false));
+          // dispatch(setLoading(false));
           setIsLoading(false);
         }
       }

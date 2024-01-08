@@ -5,6 +5,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 // import { Modal, ShortModal, ModalProvider } from './context/Modal';
 import { ModalProvider, Modal } from './context/Modal';
 import { ShortModalProvider, ShortModal } from './context/ModalShort';
+import { LoadingProvider } from './context/LoadingContext';
 
 import ThemeProvider from "./context/ThemeContext";
 import configureStore from "./store";
@@ -27,24 +28,26 @@ if (process.env.NODE_ENV !== "production") {
 // Wrap the application with the Modal provider and render the Modal component
 // after the App component so that all the Modal content will be layered as
 // HTML elements on top of the all the other HTML elements:
+
 function Root() {
   return (
     <ThemeProvider>
       <ShortModalProvider>
-    <ModalProvider>
-      <Provider store={store}>
-        <Router>
-          <App />
-          <ShortModal />
-          <Modal />
-        </Router>
-      </Provider>
-    </ModalProvider>
+        <ModalProvider>
+          <LoadingProvider>
+            <Provider store={store}>
+              <Router>
+                <App />
+                <ShortModal />
+                <Modal />
+              </Router>
+            </Provider>
+          </LoadingProvider>
+        </ModalProvider>
       </ShortModalProvider>
-  </ThemeProvider>
+    </ThemeProvider>
   );
 }
-
 
 
 ReactDOM.render(

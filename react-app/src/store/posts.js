@@ -1,6 +1,9 @@
 // import { normalizeArray, fetchPaginatedData } from "../assets/helpers/storesHelpers";
-import { normalizeArray } from "../assets/helpers/storesHelpers";
-import {getPresignedUrl} from "./aws";
+import {
+  normalizeArray,
+  uploadFileWithProgress,
+} from "../assets/helpers/storesHelpers";
+import { getPresignedUrl } from "./aws";
 import {
   fetchPaginatedData,
   actionSetCurrentPage,
@@ -57,8 +60,6 @@ const SET_TOTAL_PAGES_POST = "posts/SET_TOTAL_PAGES";
 const CLEAR_POSTS_DATA = "CLEAR_POSTS_DATA";
 
 export const CLEAR_POST_DETAILS = "posts/CLEAR_POST_DETAILS";
-
-
 
 // Action Creators
 
@@ -166,7 +167,6 @@ export const actionAddPostToAlbum = (post) => ({
   type: ADD_POST_TO_ALBUM,
   post,
 });
-
 
 /** Creates an action to handle errors during post operations */
 const actionSetPostError = (errorMessage) => ({
@@ -304,9 +304,11 @@ export const thunkCreatePost = (postData, image) => {
   return async (dispatch) => {
     try {
       if (image) {
-        const { presignedUrl, fileUrl } = await dispatch(getPresignedUrl(image.name, image.type));
+        const { presignedUrl, fileUrl } = await dispatch(
+          getPresignedUrl(image.name, image.type)
+        );
         if (!presignedUrl) {
-          throw new Error('Failed to upload image');
+          throw new Error("Failed to upload image");
         }
 
         await fetch(presignedUrl, {
@@ -320,9 +322,9 @@ export const thunkCreatePost = (postData, image) => {
         postData.image_url = fileUrl;
       }
 
-      const postResponse = await fetch('/api/posts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const postResponse = await fetch("/api/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(postData),
       });
 
@@ -334,7 +336,12 @@ export const thunkCreatePost = (postData, image) => {
       const postDataResult = await postResponse.json();
       return postDataResult;
     } catch (error) {
-      dispatch(setError(error.message || 'An unexpected error occurred while creating the post'));
+      dispatch(
+        setError(
+          error.message ||
+            "An unexpected error occurred while creating the post"
+        )
+      );
       throw error;
     }
   };
@@ -343,64 +350,68 @@ export const thunkCreatePost = (postData, image) => {
 // ***************************************************************
 //  Thunk to Update a Post
 // ***************************************************************
-export const thunkUpdatePost = (postId, updatedData, image) => async (dispatch) => {
-  if (!postId) {
-    return { type: "ERROR", error: { message: "Invalid post ID" } };
-  }
+export const thunkUpdatePost =
+  (postId, updatedData, image, onProgress) => async (dispatch) => {
+    if (!postId) {
+      return { type: "ERROR", error: { message: "Invalid post ID" } };
+    }
 
-  try {
-    // Check if 'image' is a File object for a new image upload
-    if (image && image instanceof File) {
-      const { presignedUrl, fileUrl } = await dispatch(getPresignedUrl(image.name, image.type));
-      if (!presignedUrl) {
-        throw new Error('Failed to upload image');
+    try {
+      // Check if 'image' is a File object for a new image upload
+      if (image && image instanceof File) {
+        const { presignedUrl, fileUrl } = await dispatch(
+          getPresignedUrl(image.name, image.type)
+        );
+
+        if (!presignedUrl) {
+          throw new Error("Failed to upload image");
+        }
+
+        await fetch(presignedUrl, {
+          method: "PUT",
+          body: image,
+          headers: {
+            "Content-Type": image.type,
+          },
+        });
+
+        // Upload file with progress tracking
+        await uploadFileWithProgress(presignedUrl, image, onProgress);
+        // Update the image URL in the post data
+        updatedData.image_url = fileUrl;
       }
-
-      await fetch(presignedUrl, {
+      // If no new image is provided or image is not a File object, the existing image URL remains unchanged
+      const response = await fetch(`/api/posts/${postId}`, {
         method: "PUT",
-        body: image,
-        headers: {
-          "Content-Type": image.type,
-        },
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedData),
       });
 
-      // Update the image URL in the post data
-      updatedData.image_url = fileUrl;
-    }
-    // If no new image is provided or image is not a File object, the existing image URL remains unchanged
+      if (!response.ok) {
+        const errors = await response.json();
+        console.error("Update Post Error: ", errors);
+        dispatch(
+          actionSetPostError(
+            errors.error || `Error updating post with ID ${postId}.`
+          )
+        );
+        return { type: "FAILURE", error: errors };
+      }
 
-    const response = await fetch(`/api/posts/${postId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedData),
-    });
-
-    if (!response.ok) {
-      const errors = await response.json();
-      console.error("Update Post Error: ", errors);
+      const data = await response.json();
+      dispatch(actionUpdatePost(data));
+      dispatch(thunkGetPostDetails(postId));
+      return data;
+    } catch (error) {
+      console.error("Error in thunkUpdatePost: ", error);
       dispatch(
         actionSetPostError(
-          errors.error || `Error updating post with ID ${postId}.`
+          `An error occurred while updating post with ID ${postId}.`
         )
       );
-      return { type: "FAILURE", error: errors };
+      return { type: "ERROR", error };
     }
-
-    const data = await response.json();
-    dispatch(actionUpdatePost(data));
-    dispatch(thunkGetPostDetails(postId));
-    return data;
-  } catch (error) {
-    console.error("Error in thunkUpdatePost: ", error);
-    dispatch(
-      actionSetPostError(
-        `An error occurred while updating post with ID ${postId}.`
-      )
-    );
-    return { type: "ERROR", error };
-  }
-};
-
+  };
 
 // export const thunkUpdatePost = (postId, updatedData, image) => async (dispatch) => {
 //   if (!postId) {
@@ -506,8 +517,6 @@ export const thunkGetUserPostsNotInAlbum = (userId, page, perPage) => {
     ["user_posts", "user_info"]
   );
 };
-
-
 
 // =========================================================
 //                   ****Reducer****

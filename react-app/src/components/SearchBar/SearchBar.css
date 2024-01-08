@@ -1,13 +1,17 @@
-/* 
+
 .search-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: absolute;
   left: 10px;
-  top: 30%;
+  top: 37%;
   transform: translateY(-50%);
   bottom: 20px;
   margin-top: 5px;
   color: #ccc;
-} */
+  z-index: 10;
+}
 
 .tag-search-dropdown {
   position: absolute;
@@ -21,6 +25,7 @@
   background-color: white;
   z-index: 1000;
   animation: fadeIn 0.3s;
+
 }
 
 .tag-search-dropdown::-webkit-scrollbar {
@@ -87,7 +92,7 @@
 }
 
 .tag-search-input:focus {
-  width: 110%;
+  /* width: 110%; */
   box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
 }
 
@@ -101,15 +106,47 @@
   flex-wrap: wrap;
   gap: 5px;
   padding-top: 5px;
+  position: relative;
+  z-index: 1001;
 }
 
-.tag-selected-button {
+.tag-selected-button{
   border: none;
   border-radius: 4px;
-  padding: 5px 10px;
+  padding: 0px 10px;
+  margin-right: -11px;
+  cursor: pointer;
+}
+
+.popover {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  padding: 10px;
+  padding: 0px 10px;
+  border-radius: 5px;
+  /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); */
+  z-index: 1001;
+  margin-right: 5px;
+  border: none;
+
+  cursor: pointer;
+}
+
+.popover.hidden {
+  display: none;
+}
+
+.tag-selected-div {
+  display: inline-block;
+  border: none;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 0px 10px;
   margin-right: 5px;
   cursor: pointer;
 }
+
 
 /* Dark Mode Styles */
 .dark .tag-search-container {
@@ -146,13 +183,17 @@
   color: white;
 }
 
-.dark .tag-selected-button {
+.dark .tag-selected-div {
   background-color: #FF7EB3;
   color: white;
 }
 
-.dark .tag-selected-button:hover {
+.dark .tag-selected-div:hover {
   background-color: #FF5678;
+}
+.dark .tag-selected-button{
+  background-color: transparent;
+  color: white;
 }
 
 /* Light Mode Styles */
@@ -190,14 +231,15 @@
   color: white;
 }
 
-.light .tag-selected-button {
+.light .tag-selected-div{
   background-color: #FFA69E;
   color: white;
 }
-
-.light .tag-selected-button:hover {
-  background-color: #FF7EB3;
+.light .tag-selected-button{
+  background-color: transparent;
+  color: white;
 }
+
 
 @keyframes fadeIn {
   from { opacity: 0; }

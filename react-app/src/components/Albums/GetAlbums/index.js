@@ -2,89 +2,56 @@ import React, { memo, useEffect, useState, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { LazyLoadImage } from "react-lazy-load-image-component";
+
 import {
-  faTimes,
   faPlusCircle,
   faLayerGroup,
   faTrashAlt,
   faEdit,
-  faUserCircle,
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
-import { useModal } from "../../../context/Modal";
+import { useLoading } from "../../../context/LoadingContext";
 import { useShortModal } from "../../../context/ModalShort";
 
 import { thunkGetAlbumsByUserId } from "../../../store/albums";
 import Spinner from "../../Spinner";
-import {
-  selectAllAlbums,
-  selectUserPosts,
-  selectTotalAlbums,
-  selectSessionUser,
-  selectLoading,
-} from "../../../store/selectors";
-import { setLoading, setError } from "../../../store/ui";
+import { selectAllAlbums, selectSessionUser, } from "../../../store/selectors";
+import { setError } from "../../../store/ui";
 import Pagination from "../../Pagination";
-import UserNavigationBar from "../../Navigation/UserNavigationBar";
-import ImageDisplay from "../../ImageDisplay";
-import OpenModalButton from "../../Modals/OpenModalButton";
 import OpenShortModalButton from "../../Modals/OpenShortModalButton";
 import CreateAlbumForm from "../AlbumForm/CreateAlbumForm";
 import EditAlbumForm from "../AlbumForm/EditAlbumForm";
 import DeleteAlbum from "../DeleteAlbum";
-import defult_banner_image from "../../../assets/images/defult_banner_image.png";
-import BannerNavbar from "../../Navigation/BannerNavbar";
+
 import "./GetAlbums.css";
 
 const GetAlbums = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { userId } = useParams();
-  console.log("🚀 ~ file: index.js:37 ~ userId:", userId);
-  const { closeModal } = useModal();
   const { closeShortModal } = useShortModal();
+  // const { setIsLoading } = useLoading();
+  // const { isLoading, setIsLoading } = useLoading();
+
+
   const albums = useSelector(selectAllAlbums) || [];
-  console.log("🚀 ~ file: index.js:38 ~ albums:", albums);
-  const totalAlbums = useSelector(selectTotalAlbums);
   const sessionUser = useSelector(selectSessionUser);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [showAbout, setShowAbout] = useState(false);
-
   const [activeAlbumId, setActiveAlbumId] = useState(null);
-  const [activeAlbumTitle, setActiveAlbumTitle] = useState(null);
-  const [activeAlbumImages, setActiveAlbumImages] = useState(true);
-  const [showImageDisplayModal, setShowImageDisplayModal] = useState(false);
-  const loading = useSelector(selectLoading);
   const [isLoading, setIsLoading] = useState(false);
   const [isAlbumsFetched, setIsAlbumsFetched] = useState(false);
 
-  const isFirstPage = currentPage === 1;
-  const isLastPage = currentPage === totalPages;
 
   const perPage = 2;
   const isCurrentUserProfile = sessionUser?.id === parseInt(userId);
-  const aboutMe = albums.length > 0 ? albums[0]?.about_me : null;
-  const images =
-    albums.length > 0 && albums[0]?.images?.length > 0
-      ? albums[0]?.images[0]?.url
-      : null;
-  const profilePhoto =
-    albums.length > 0 ? albums[0]?.user_info?.profile_picture : null;
-  const userName =
-    albums.length > 0
-      ? `${albums[0]?.user_info?.first_name} ${albums[0]?.user_info?.last_name}`
-      : "";
+
   const showPagination = albums.length > 0;
-  const noAlbumsMessage = isCurrentUserProfile
-    ? "You have no albums. Create an album?"
-    : "This user has no albums.";
 
   const fetchData = useCallback(
     async (page) => {
-      dispatch(setLoading(true));
       setIsLoading(true);
       try {
         const response = await dispatch(
@@ -100,7 +67,6 @@ const GetAlbums = () => {
         dispatch(setError("An error occurred"));
         setIsAlbumsFetched(true);
       } finally {
-        dispatch(setLoading(false));
         setIsLoading(false);
       }
     },
@@ -111,18 +77,7 @@ const GetAlbums = () => {
     fetchData(currentPage);
   }, [fetchData, currentPage]);
 
-  // const renderAlbumImages = (album) => {
-  //   const imagesToShow =
-  //     activeAlbumId === album.id ? album.images : album.images.slice(0, 4);
-  //   return imagesToShow.map((image, index) => (
-  //     <img
-  //       key={index}
-  //       src={image.url}
-  //       alt={`Image ${index} of ${album.title}`}
-  //       className="album-image"
-  //     />
-  //   ));
-  // };
+
   const renderAlbumImages = (album) => {
     // Ensure album.images is defined and is an array
     const imagesToShow = album.images && Array.isArray(album.images)
@@ -139,7 +94,6 @@ const GetAlbums = () => {
     ));
   };
 
-  const toggleAbout = () => setShowAbout(!showAbout);
 
   // if (!albums || albums.length === 0) return null;
   if (isLoading) return <Spinner />;
@@ -184,8 +138,6 @@ const GetAlbums = () => {
           <div className="add-posts-to-an-album-button-container">
             <button
               className="add-posts-to-an-album-button"
-              // onClick={() => history.push("/owner/posts/add")}
-              // onClick={() => history.push("/owner/photostream")}
               onClick={() => history.push('/owner/albums/manage')}
             >
               <FontAwesomeIcon icon={faLayerGroup} />
@@ -236,7 +188,6 @@ const GetAlbums = () => {
                   />
                   <button
                     className="add-posts-to-an-album-btn"
-                    // onClick={() => history.push("/owner/posts/add")}
                     onClick={() => history.push(`/owner/posts/albums/${album.id}/add`)}
                   >
                     <FontAwesomeIcon
@@ -246,7 +197,6 @@ const GetAlbums = () => {
                   </button>
                 </div>
               </div>
-              {/* </div> */}
               {renderAlbumImages(album)}
             </div>
           ))}

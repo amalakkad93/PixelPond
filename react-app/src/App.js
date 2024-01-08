@@ -9,6 +9,7 @@ import PostDetail from "./components/Posts/PostDetail";
 import GetAlbums from "./components/Albums/GetAlbums";
 import { authenticate } from "./store/session";
 import { useTheme } from "./context/ThemeContext";
+import { useLoading } from "./context/LoadingContext";
 import Navigation from "./components/Navigation";
 import UserProfile from "./components/Users/UserProfile/UserProfile";
 import ImageDisplay from "./components/ImageDisplay";
@@ -23,6 +24,7 @@ function App() {
   const dispatch = useDispatch();
   const [isLoaded, setIsLoaded] = useState(false);
   const { themeName } = useTheme();
+
 
   const sessionUser = useSelector((state) => state.session.user);
 
@@ -68,24 +70,24 @@ function App() {
               <ImageDisplay mode="ownerPhotoStream" key="ownerPhotoStream" />
             </Route>
             <Route path="/owner/albums/manage">
-              <ImageDisplay mode="albumManagement" key="albumManagement" />
+              <ImageDisplay mode="albumManagement" key="albumManagement"  />
             </Route>
             <Route path="/owner/albums">
-              <ImageDisplay mode="ownerAlbumImages" key="ownerAlbumImages" />
+              <ImageDisplay mode="ownerAlbumImages" key="ownerAlbumImages"  />
             </Route>
 
             {/* <Route path="/owner/posts/add">
               <ImageDisplay mode="addPostToAnAlbum" key="addPostToAnAlbum" />
             </Route> */}
             <Route path="/owner/posts/albums/:albumId/add">
-              <ImageDisplay mode="addPostToAnAlbum" key="addPostToAnAlbum" />
+              <ImageDisplay mode="addPostToAnAlbum" key="addPostToAnAlbum"  />
             </Route>
-        
+
             <Route path="/users/search">
               <UserProfileDisplay />
             </Route>
             <Route path="/posts/users/:userId">
-              <ImageDisplay mode="photoStream" key="photoStream" />
+              <ImageDisplay mode="photoStream" key="photoStream"  />
             </Route>
             <Route path="/user/profile/edit">
               <UserProfileManager />
@@ -101,7 +103,7 @@ function App() {
               <PostDetail />
             </Route>
             <Route path="/albums/users/:userId">
-              <GetAlbums />
+              <GetAlbums  />
             </Route>
             {/* <Route path="/albums/:albumId"> */}
             <Route path="/albums/:albumId/users/:userId">

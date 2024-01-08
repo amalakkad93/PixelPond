@@ -52,6 +52,8 @@ export const deleteImage = (imageUrl) => async (dispatch) => {
 };
 
 export const getPresignedUrl = (filename, contentType) => async (dispatch) => {
+  console.log("🚀 ~ file: aws.js:55 ~ getPresignedUrl ~ contentType:", contentType)
+  console.log("🚀 ~ file: aws.js:55 ~ getPresignedUrl ~ filename:", filename)
   try {
     const response = await fetch(
       `/api/s3/generate_presigned_url?filename=${encodeURIComponent(filename)}&contentType=${contentType}`
@@ -63,7 +65,7 @@ export const getPresignedUrl = (filename, contentType) => async (dispatch) => {
     return { presignedUrl: presigned_url, fileUrl: file_url };
   } catch (error) {
     dispatch(setError(error.message));
-    return null; 
+    return null;
   }
 };
 

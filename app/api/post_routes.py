@@ -353,9 +353,9 @@ def create_post():
 
 
 
-# # ***************************************************************
-# # Endpoint to Edit a Post
-# # ***************************************************************
+# ***************************************************************
+# Endpoint to Edit a Post
+# ***************************************************************
 @post_routes.route('/<int:id>', methods=["PUT"])
 @login_required
 def update_post(id):
@@ -373,6 +373,7 @@ def update_post(id):
             return jsonify({"error": "Post not found or unauthorized"}), 404
 
         data = request.get_json()
+        ic("data:", data)
         updated_tag_names = set(data.get('tags', []))
         logging.debug(f"Received data: {data}")
         logging.debug(f"Updated tag names: {updated_tag_names}")
@@ -382,18 +383,27 @@ def update_post(id):
                 setattr(post_to_update, key, value)
 
         # Handle image_url update
-        if 'image_url' in data:
-            if data['image_url']:
-                image_to_update = Image.query.get(post_to_update.image_id)
-                if image_to_update:
-                    image_to_update.url = data['image_url']
-                else:
-                    new_image = Image(url=data['image_url'])
-                    db.session.add(new_image)
-                    db.session.flush()
-                    post_to_update.image_id = new_image.id
+        # if 'image_url' in data:
+        #     if data['image_url']:
+        #         image_to_update = Image.query.get(post_to_update.image_id)
+        #         if image_to_update:
+        #             image_to_update.url = data['image_url']
+        #         else:
+        #             new_image = Image(url=data['image_url'])
+        #             db.session.add(new_image)
+        #             db.session.flush()
+        #             post_to_update.image_id = new_image.id
+        #     else:
+        #         post_to_update.image_id = None
+        if 'image_url' in data and data['image_url']:
+            image_to_update = Image.query.filter_by(id=post_to_update.image_id).first()
+            if image_to_update:
+                image_to_update.url = data['image_url']
             else:
-                post_to_update.image_id = None
+                new_image = Image(url=data['image_url'])
+                db.session.add(new_image)
+                db.session.flush()
+                post_to_update.image_id = new_image.id
 
 
         # Fetch existing tags associated with the post

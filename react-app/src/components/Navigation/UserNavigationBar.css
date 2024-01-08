@@ -92,13 +92,9 @@
   width: 100%;
 }
 
-
-
-
-
 .user-navigation-bar {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
   padding: 10px;
   border-bottom: 2px solid #e8e8e8;

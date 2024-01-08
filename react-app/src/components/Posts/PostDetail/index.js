@@ -93,7 +93,7 @@ export default function PostDetail() {
   useEffect(() => {
     dispatch(thunkFetchAllFavorites(sessionUser?.id));
     fetchData();
-  }, [fetchData, dispatch, sessionUser?.id]);
+  }, [fetchData, dispatch, sessionUser?.id, postId]);
 
   useEffect(() => {
     dispatch(clearPostDetails());
@@ -117,7 +117,8 @@ export default function PostDetail() {
             {/* Image Container */}
             <div className="image-container">
               <LazyLoadImage
-                src={post.image_url}
+                // src={post.image_url}
+                src={`${post.image_url}?v=${new Date().getTime()}`} 
                 alt={post.title}
                 effect="blur"
                 className="displayed-image"

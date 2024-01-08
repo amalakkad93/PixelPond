@@ -116,6 +116,8 @@ export const uploadImageToAWS = async (file, dispatch) => {
 };
 
 
+
+
 export const createInputChangeHandler = (setterFunction, setValidationObj, validationField) => (e) => {
   // Update the value using the provided setter function
   setterFunction(e.target.value);

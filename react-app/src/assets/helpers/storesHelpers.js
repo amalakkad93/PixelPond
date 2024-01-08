@@ -16,20 +16,19 @@ import { setLoading, setError } from "../../store/ui";
 
 //   return { byId, allIds };
 // };
-export const normalizeArray = (items, idKey = 'id') => {
+export const normalizeArray = (items, idKey = "id") => {
   console.log("---normalizeArray - items:", items);
   if (!Array.isArray(items)) {
-    console.warn('---normalizeArray called with non-array:', items);
+    console.warn("---normalizeArray called with non-array:", items);
     return { byId: {}, allIds: [] };
   }
   const byId = items.reduce((acc, item) => {
     acc[item[idKey]] = { ...item };
     return acc;
   }, {});
-  const allIds = items.map(item => item[idKey]);
+  const allIds = items.map((item) => item[idKey]);
   return { byId, allIds };
 };
-
 
 // export const normalizeArray = (items, idKey = 'id') => {
 //   console.log("---normalizeArray - items:", items);
@@ -43,3 +42,49 @@ export const normalizeArray = (items, idKey = 'id') => {
 
 //   return { byId, allIds };
 // };
+// export const uploadFileWithProgress = (presignedUrl, file, onProgress) => {
+//   return new Promise((resolve, reject) => {
+//     const xhr = new XMLHttpRequest();
+
+//     xhr.open("PUT", presignedUrl);
+//     xhr.setRequestHeader("Content-Type", file.type);
+
+//     xhr.upload.onprogress = (event) => {
+//       if (event.lengthComputable) {
+//         const progress = (event.loaded / event.total) * 100;
+//         onProgress(progress);
+//       }
+//     };
+
+//     xhr.onload = () => {
+//       if (xhr.status === 200) {
+//         resolve();
+//       } else {
+//         reject(new Error("Upload failed"));
+//       }
+//     };
+
+//     xhr.onerror = () => reject(new Error("Upload failed"));
+
+//     xhr.send(file);
+//   });
+// };
+export const uploadFileWithProgress = (url, file, onProgress) => {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", url);
+
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        const progress = (event.loaded / event.total) * 100;
+        onProgress(progress);
+      }
+    };
+
+    xhr.onload = () =>
+      xhr.status === 200 ? resolve() : reject(new Error("Upload failed"));
+    xhr.onerror = () => reject(new Error("Upload error"));
+    xhr.setRequestHeader("Content-Type", file.type);
+    xhr.send(file);
+  });
+};

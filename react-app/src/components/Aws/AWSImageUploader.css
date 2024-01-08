@@ -1,6 +1,7 @@
 .aws-input {
   display: none;
 }
+
 .custom-file-upload {
   display: inline-block;
   padding: 6px 12px;
@@ -10,6 +11,7 @@
   border-radius: 4px;
   text-align: center;
 }
+
 .profile-preview {
   border: 1px solid #ddd;
   padding: 5px;
@@ -71,4 +73,3 @@
 .light .custom-file-upload:hover {
   background-color: #FF7EB3;
 }
-

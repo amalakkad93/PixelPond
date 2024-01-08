@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import CreatableSelect from "react-select/creatable";
 
@@ -27,6 +27,8 @@ import "./Tag.css";
 const PostForm = ({ postId, formType, onPostCreated, fetchPostDetailData }) => {
   const dispatch = useDispatch();
   const { closeShortModal } = useShortModal();
+  const hiddenFileInput = useRef(null);
+
   const sessionUser = useSelector(selectSessionUser);
 
   const [title, setTitle] = useState("");
@@ -39,16 +41,19 @@ const PostForm = ({ postId, formType, onPostCreated, fetchPostDetailData }) => {
   const [availableTags, setAvailableTags] = useState([]);
   const [validationObj, setValidationObj] = useState({});
   const [imageFile, setImageFile] = useState(null);
+  const [profilePicPreview, setProfilePicPreview] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
     const fetchAndSetPostData = async () => {
       if (sessionUser && formType === "Edit" && postId) {
         try {
           const fetchedPost = await dispatch(thunkGetPostDetails(postId));
+          console.log("===fetchAndSetPostData ~ fetchedPost:", fetchedPost);
           if (fetchedPost) {
             setTitle(fetchedPost.title);
             setDescription(fetchedPost.description);
-            setImageFile(fetchedPost.image);
+            setImageFile(fetchedPost.image_url);
             // Update here to set the existing tags in selectedTags
             const existingTags = fetchedPost.tags.map((tag) => ({
               value: tag.name,
@@ -118,11 +123,29 @@ const PostForm = ({ postId, formType, onPostCreated, fetchPostDetailData }) => {
         tags: selectedTags.map((tag) => tag.value),
       };
 
+      let imageToUpdate = null;
+      if (imageFile instanceof File) {
+        imageToUpdate = imageFile;
+      }
+
       let response;
       if (formType === "Create") {
         response = await dispatch(thunkCreatePost(postData, imageFile));
-      } else {
-        response = await dispatch(thunkUpdatePost(postId, postData, imageFile));
+      }
+      console.log(
+        "===image file before dispatching the thunkUpdatePost:",
+        imageFile
+      );
+      if (formType === "Edit") {
+        const onUploadProgress = (progress) => {
+          setUploadProgress(progress);
+          if (progress === 100) {
+            setTimeout(() => setUploadProgress(0), 2000);
+          }
+        };
+        response = await dispatch(
+          thunkUpdatePost(postId, postData, imageToUpdate, onUploadProgress)
+        );
       }
 
       if (response && response.id) {
@@ -149,6 +172,7 @@ const PostForm = ({ postId, formType, onPostCreated, fetchPostDetailData }) => {
     setIsUploading(false);
   };
 
+  console.log("===image file state before the return jsx:", imageFile);
   return (
     <form className="post-form" onSubmit={handleSubmit}>
       <div className="form-group">
@@ -189,23 +213,42 @@ const PostForm = ({ postId, formType, onPostCreated, fetchPostDetailData }) => {
       </div>
 
       <div className="form-group">
-        <label htmlFor="file-upload" className="custom-file-upload">
+        <button
+          type="button"
+          className="post-form-custom-file-upload"
+          onClick={() => hiddenFileInput.current.click()}
+        >
           Upload photos
-        </label>
+        </button>
+
         <input
           id="file-upload"
           type="file"
-          className="aws-input"
+          className="post-form-file-upload"
           onChange={(e) => {
             const file = e.target.files[0];
             if (file) {
               setImageFile(file);
+              const previewURL = URL.createObjectURL(file);
+              setProfilePicPreview(previewURL);
+            } else {
+              setProfilePicPreview(null);
             }
           }}
+          ref={hiddenFileInput}
+          style={{ display: "none" }}
+          accept="image/*"
         />
         <div className="error-container">
           {validationObj.imageFile && (
             <p className="errors">{validationObj.imageFile}</p>
+          )}
+        </div>
+        <div className="image-preview">
+          {profilePicPreview ? (
+            <img src={profilePicPreview} alt="Profile Preview" />
+          ) : (
+            <p>No image selected</p>
           )}
         </div>
       </div>
@@ -222,9 +265,16 @@ const PostForm = ({ postId, formType, onPostCreated, fetchPostDetailData }) => {
         {formType === "Create" ? "Create Post" : "Update Post"}
       </button>
 
-      {isSubmitting && (
+      {/* {isSubmitting && (
         <div className="progress-bar-container">
           <div className="progress-bar"></div>
+        </div>
+      )} */}
+      {uploadProgress > 0 && (
+        <div className="progress-bar-container">
+          <div className="progress-bar" style={{ width: `${uploadProgress}%` }}>
+            {uploadProgress}%
+          </div>
         </div>
       )}
     </form>

@@ -3,6 +3,7 @@ import { useLocation, useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { thunkSearchUsers } from "../../../store/session";
 import { selectSearchedUserDisplay  } from '../../../store/selectors';
+import profileImage1 from "../../../assets/images/profileImage1.png";
 
 import './UserProfileDisplay.css';
 
@@ -31,7 +32,7 @@ const UserProfileDisplay = () => {
          <div key={user?.id} className="user-profile" onClick={() => history.push(`/posts/users/${user?.id}`)}>
           <div className="profile-picture-container">
             <img
-              src={user?.profile_picture || '/default-profile.png'}
+              src={user?.profile_picture || profileImage1}
               alt={`${user?.first_name} ${user?.last_name}`}
               className="profile-picture"
             />

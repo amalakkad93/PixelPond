@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useLocation, useHistory } from "react-router-dom";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-
+import { useLoading } from "../../context/LoadingContext";
 import ProfileButton from "./ProfileButton";
 import PopupsModal from "../Modals/PopupsModal";
 import BannerNavbar from "./BannerNavbar";
 import UserNavigationBar from "./UserNavigationBar";
+import Spinner from "../Spinner";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
 import {
   thunkGetAllTags,
@@ -30,18 +31,25 @@ import TagSearch from "../Tags/TagSearch";
 import SearchBar from "../SearchBar";
 import "./Navigation.css";
 
-function Navigation({ isLoaded }) {
+function Navigation({ isLoaded, }) {
   const location = useLocation();
   const dispatch = useDispatch();
   const history = useHistory();
+  const { isLoading } = useLoading();
 
   const sessionUser = useSelector(selectSessionUser);
   const postUserInfo = useSelector(selectPostUserInfo);
   const albumUserInfo = useSelector(selectAlbumUserInfo);
+  console.log(
+    "🚀 ~ file: index.js:41 ~ Navigation ~ albumUserInfo:",
+    albumUserInfo
+  );
 
   const allTags = useSelector(selectAllTags);
   const [showModal, setShowModal] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [isOwner, setIsOwner] = useState(null);
+  // const [isLoading, setIsLoading] = useState(true);
 
   const isFavoritesPage = location.pathname.includes("/user/favorites-post");
 
@@ -68,6 +76,13 @@ function Navigation({ isLoaded }) {
   }
 
   useEffect(() => {
+    if (userInfo && sessionUser) {
+      setIsOwner(sessionUser.id === userInfo.id);
+      // setIsLoading(false);
+    }
+  }, [userInfo, sessionUser]);
+
+  useEffect(() => {
     dispatch(thunkGetAllTags());
   }, [dispatch]);
 
@@ -92,6 +107,8 @@ function Navigation({ isLoaded }) {
 
     history.push(`/explore?${newQueryParams.toString()}`);
   };
+
+  if (isLoading) return null;
 
   return (
     <>
@@ -144,10 +161,14 @@ function Navigation({ isLoaded }) {
           </ul>
         </nav>
       </div>
-      {shouldDisplayBanner && (
+      {shouldDisplayBanner && !isLoading && (
         <>
           <BannerNavbar userInfo={userInfo} />
-          <UserNavigationBar id={userInfo?.id} userInfo={userInfo} />
+          <UserNavigationBar
+            id={userInfo?.id}
+            userInfo={userInfo}
+            isOwner={isOwner}
+          />
         </>
       )}
     </>

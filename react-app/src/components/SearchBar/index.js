@@ -19,6 +19,7 @@ import { setLoading } from "../../store/ui";
 import { thunkGetPostsByTags } from "../../store/tags";
 import { thunkGetAllPosts } from "../../store/posts";
 import { thunkSearchUsers } from "../../store/session";
+import TagDisplayModal from "../Modals/TagDisplayModal";
 import useResponsivePagination from "../Pagination/useResponsivePagination";
 import { highlightText } from "../../assets/helpers/helpers";
 import "./SearchBar.css";
@@ -46,6 +47,9 @@ const SearchBar = ({ allTags, onTagSelected, onTagClear }) => {
   const [showDropdown, setShowDropdown] = useState(false); // Control visibility of the dropdown.
   const [currentPage, setCurrentPage] = useState(1); // Pagination: current page.
   const [searchResults, setSearchResults] = useState({ users: [], tags: [] }); // Store search results.
+  const [selectedTagInfo, setSelectedTagInfo] = useState(null); // Store info about the selected tag.
+  const [showPopover, setShowPopover] = useState(false);
+
 
   // Pagination hook for responsive page sizes.
   const perPage = useResponsivePagination(10);
@@ -97,15 +101,25 @@ const SearchBar = ({ allTags, onTagSelected, onTagClear }) => {
   // Debounced version of handleSearch
   const debouncedHandleSearch = debounce(handleSearch, 300);
 
-
   // Event handlers for search interactions (input change, tag/user selection, etc.)
+  // const handleSearchChange = (e) => {
+  //   const term = e.target.value;
+  //   setSearchTerm(term);
+  //   debouncedHandleSearch(term);
+  // };
   const handleSearchChange = (e) => {
     const term = e.target.value;
     setSearchTerm(term);
+    setShowDropdown(term.trim().length > 0);
+
+      setShowPopover(false);
+
     debouncedHandleSearch(term);
   };
 
   const handleTagClick = (tag) => {
+    // setSelectedTagInfo(tag);
+
     const updatedTags = selectedTags.includes(tag)
       ? selectedTags.filter((t) => t !== tag)
       : [...selectedTags, tag];
@@ -117,6 +131,8 @@ const SearchBar = ({ allTags, onTagSelected, onTagClear }) => {
 
     dispatch(thunkGetPostsByTags(updatedTags));
     setShowDropdown(false);
+
+    setShowPopover(updatedTags.length > 0);
   };
 
   const handleUserClick = (userId) => {
@@ -132,6 +148,8 @@ const SearchBar = ({ allTags, onTagSelected, onTagClear }) => {
     updatedTags.forEach((t) => newQueryParams.append("tags", t));
     history.push(`/explore?${newQueryParams.toString()}`);
     fetchData();
+
+    setShowPopover(updatedTags.length > 0);
   };
 
   const handleKeyDown = (e) => {
@@ -142,9 +160,15 @@ const SearchBar = ({ allTags, onTagSelected, onTagClear }) => {
     }
   };
 
+  const togglePopover = () => {
+    setShowPopover(!showPopover);
+    setShowDropdown(false);
+  };
+
+
   return (
     <div className="tag-search-container">
-      {/* {searchTerm === "" && <i className="fas fa-search search-icon"></i>} */}
+      {searchTerm === "" && <i className="fas fa-search search-icon"></i>}
       <input
         type="text"
         className="tag-search-input"
@@ -192,7 +216,7 @@ const SearchBar = ({ allTags, onTagSelected, onTagClear }) => {
         </div>
       )}
 
-      <div className="tag-selected-container">
+      {/* <div className="tag-selected-container">
         {selectedTags.map((tag, index) => (
           <button
             key={index}
@@ -202,7 +226,18 @@ const SearchBar = ({ allTags, onTagSelected, onTagClear }) => {
             {tag} <span>X</span>
           </button>
         ))}
-      </div>
+      </div> */}
+           {showPopover && (
+        <div className=" popover">
+          {selectedTags.map((tag, index) => (
+            <div key={index} className="tag-selected-div">
+              {tag}
+              <button className="tag-selected-button" onClick={() => handleClear(tag)}>X</button>
+            </div>
+          ))}
+        </div>
+      )}
+
     </div>
   );
 };

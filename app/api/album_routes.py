@@ -47,24 +47,58 @@ def get_albums_by_user_id(user_id):
     Returns:
         Response: A JSON object with the user's albums or an error message.
     """
+    # try:
+    #     ic(f"Fetching albums for user: {user_id}")
+    #     albums_query = Album.query.filter_by(user_id=user_id)
+    #     albums_with_images = [album.to_dict() for album in albums_query]
+
+    #     paginated_albums = hf.paginate_query(albums_with_images, 'albums', per_page_default=2, is_list=True)
+
+    #     response_data = {
+    #         "albums": paginated_albums['albums'],
+    #         "total_albums": paginated_albums['total_items'],
+    #         "total_pages": paginated_albums['total_pages'],
+    #         "current_page": paginated_albums['current_page'],
+    #         "per_page": paginated_albums['per_page']
+    #     }
+    #     return jsonify(response_data)
+    # except Exception as e:
+    #     logging.error(f"Error fetching albums for user (ID: {user_id}): {e}")
+    #     return jsonify({"error": "An error occurred while fetching the albums."}), 500
     try:
         ic(f"Fetching albums for user: {user_id}")
-        albums_query = Album.query.filter_by(user_id=user_id)
-        albums_with_images = [album.to_dict() for album in albums_query]
 
-        paginated_albums = hf.paginate_query(albums_with_images, 'albums', per_page_default=2, is_list=True)
+        albums_query = Album.query.filter_by(user_id=user_id).all()
+        if albums_query:
+            albums_with_images = [album.to_dict() for album in albums_query]
+            paginated_albums = hf.paginate_query(albums_with_images, 'albums', per_page_default=2, is_list=True)
+            response_data = {
+                "albums": paginated_albums['albums'],
+                "total_albums": paginated_albums['total_items'],
+                "total_pages": paginated_albums['total_pages'],
+                "current_page": paginated_albums['current_page'],
+                "per_page": paginated_albums['per_page']
+            }
+        else:
+            user = User.query.get(user_id)
+            if not user:
+                return jsonify({"error": "User not found"}), 404
 
-        response_data = {
-            "albums": paginated_albums['albums'],
-            "total_albums": paginated_albums['total_items'],
-            "total_pages": paginated_albums['total_pages'],
-            "current_page": paginated_albums['current_page'],
-            "per_page": paginated_albums['per_page']
-        }
+            user_info = user.to_dict()
+            response_data = {
+                "albums": [],
+                "total_albums": 0,
+                "total_pages": 0,
+                "current_page": 1,
+                "per_page": 2,
+                "user_info": user_info
+            }
+
         return jsonify(response_data)
     except Exception as e:
         logging.error(f"Error fetching albums for user (ID: {user_id}): {e}")
         return jsonify({"error": "An error occurred while fetching the albums."}), 500
+
 
 # ***************************************************************
 # Endpoint to Get Images of an Album with Pagination

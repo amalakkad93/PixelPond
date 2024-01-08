@@ -32,8 +32,31 @@ export const actionGetAlbumImages = (
   };
 };
 
-export const actionGetAlbumsByUserId = (albums) => {
-  const normalizedAlbums = albums.map((album) => {
+// export const actionGetAlbumsByUserId = (albums) => {
+//   const normalizedAlbums = albums.map((album) => {
+//     const normalizedImages = normalizeArray(album.images, "id");
+//     return {
+//       id: album.id,
+//       title: album.title,
+//       user_id: album.user_id,
+//       images: normalizedImages,
+//       user_info: album.user_info,
+//     };
+//   });
+//   // const userInfo = albums[0]?.user_info;
+//   return {
+//     type: GET_ALBUMS_BY_USER_ID,
+//     albums: normalizeArray(normalizedAlbums, "id"),
+//     userInfo: albums[0]?.user_info,
+//   };
+// };
+
+export const actionGetAlbumsByUserId = (data) => {
+  // Check if albums are present
+  const hasAlbums = data.albums && data.albums.length > 0;
+
+  // Normalize albums if present
+  const normalizedAlbums = hasAlbums ? data.albums.map((album) => {
     const normalizedImages = normalizeArray(album.images, "id");
     return {
       id: album.id,
@@ -42,14 +65,16 @@ export const actionGetAlbumsByUserId = (albums) => {
       images: normalizedImages,
       user_info: album.user_info,
     };
-  });
-  // const userInfo = albums[0]?.user_info;
+  }) : [];
+
   return {
     type: GET_ALBUMS_BY_USER_ID,
     albums: normalizeArray(normalizedAlbums, "id"),
-    userInfo: albums[0]?.user_info,
+    // Use userInfo from the first album if present, otherwise use top-level userInfo
+    userInfo: hasAlbums ? data.albums[0].user_info : data.user_info,
   };
 };
+
 
 export const actionGetUserInfo = (userInfo) => ({
   type: GET_USER_INFO,
@@ -100,18 +125,35 @@ export const thunkGetAlbumImages = (albumId, page, perPage) => {
   );
 };
 
+// export const thunkGetAlbumsByUserId = (userId, page, perPage) => {
+//   console.log(
+//     "🚀 ~ file: albums.js:99 ~ thunkGetAlbumsByUserId ~ userId:",
+//     userId
+//   );
+//   return fetchPaginatedData(
+//     `/api/albums/user/${userId}`,
+//     [
+//       (data) => {
+//         console.log("-----Fetching albums for data:", data);
+//         // return actionGetAlbumsByUserId(data.albums, data.user_info);
+//         return actionGetAlbumsByUserId(data.albums);
+//       },
+//     ],
+//     page,
+//     perPage,
+//     {},
+//     {},
+//     null,
+//     [false, false],
+//     ["albums", "user_info"]
+//   );
+// };
 export const thunkGetAlbumsByUserId = (userId, page, perPage) => {
-  console.log(
-    "🚀 ~ file: albums.js:99 ~ thunkGetAlbumsByUserId ~ userId:",
-    userId
-  );
   return fetchPaginatedData(
     `/api/albums/user/${userId}`,
     [
       (data) => {
-        console.log("-----Fetching albums for data:", data);
-        // return actionGetAlbumsByUserId(data.albums, data.user_info);
-        return actionGetAlbumsByUserId(data.albums);
+        return actionGetAlbumsByUserId(data);
       },
     ],
     page,
@@ -123,6 +165,7 @@ export const thunkGetAlbumsByUserId = (userId, page, perPage) => {
     ["albums", "user_info"]
   );
 };
+
 
 // Action Creator for setting user info
 export const actionSetUserInfo = (userInfo) => ({
