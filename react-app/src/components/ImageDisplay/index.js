@@ -6,7 +6,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faLayerGroup } from "@fortawesome/free-solid-svg-icons";
 // import { useLoading } from "../../context/LoadingContext";
 import { thunkFetchAllFavorites } from "../../store/favorites";
-import { thunkGetAlbumImages, thunkGetAlbumsByUserId   } from "../../store/albums";
+import {
+  thunkGetAlbumImages,
+  thunkGetAlbumsByUserId,
+} from "../../store/albums";
 import { thunkGetPostsByUserId } from "../../store/posts";
 import { setError, clearUIState } from "../../store/ui";
 import {
@@ -28,39 +31,31 @@ import ImageGrid from "./ImageGrid/ImageGrid";
 import "./ImageDisplay.css";
 
 const ImageDisplay = memo(({ mode }) => {
-  console.log("Mode in ImageDisplay:", mode);
   // Hooks for accessing Redux state and React Router functionality
   const dispatch = useDispatch();
   const history = useHistory();
+  // Ref and state hooks for managing component state and lifecycle
+  const isMounted = useRef(true);
   const { userId, albumId } = useParams();
-
 
   // Selectors to retrieve data from the Redux store
   const userInfo = useSelector(selectPostUserInfo);
-  console.log("🚀 ~ file: index.js:46 ~ ImageDisplay ~ userInfo:", userInfo);
   const loading = useSelector(selectLoading);
-
   const { images: albumImages, title: albumTitle } = useSelector((state) =>
     selectAlbumDetails(state, albumId)
   );
   const sessionUser = useSelector(selectSessionUser);
-  console.log("🚀🚀🚀🚀🚀🚀🚀🚀 userId,:", userId,"type of userId: ", typeof userId)
-  console.log("🚀🚀🚀🚀🚀🚀🚀🚀  sessionUser?.id:", sessionUser?.id,"type of sessionUser Id: ", typeof sessionUser?.id)
   const userPosts = useSelector(selectUserPosts);
-  console.log("🚀 ~ file: index.js:53 ~ ImageDisplay ~ userPosts:", userPosts);
   const userPostsIds = useSelector(selectPostById);
   const albumInfo = useSelector((state) => selectAlbumInfo(state, albumId));
-  console.log("🚀 ~ file: index.js:62 ~ ImageDisplay ~ albumInfo:", albumInfo);
-
-  // Ref and state hooks for managing component state and lifecycle
-  const isMounted = useRef(true);
 
   const [currentAlbumPage, setCurrentAlbumPage] = useState(1);
   const [currentPostPage, setCurrentPostPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [showAbout, setShowAbout] = useState(false);
-  const [isEditingProfilePic, setIsEditingProfilePic] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDataFetched, setIsDataFetched] = useState(false);
+
   const perPage = 10;
 
   // Function to fetch data based on the current mode and page
@@ -107,6 +102,7 @@ const ImageDisplay = memo(({ mode }) => {
         if (response && isMounted.current) {
           setCurrentPostPage(response.current_page);
           setTotalPages(response.total_pages);
+          setIsDataFetched(true);
         }
       } catch (err) {
         console.error("Fetch Data Error:", err);
@@ -139,10 +135,10 @@ const ImageDisplay = memo(({ mode }) => {
   useEffect(() => {
     let idToUse = null;
 
-    if (mode === 'ownerPhotoStream') {
+    if (mode === "ownerPhotoStream") {
       // Use session user ID for ownerPhotoStream mode
       idToUse = sessionUser?.id;
-    } else if (['albumManagement', 'addPostToAnAlbum'].includes(mode)) {
+    } else if (["albumManagement", "addPostToAnAlbum"].includes(mode)) {
       // Convert userId from useParams to number for consistency
       const numericUserId = Number(userId);
 
@@ -154,19 +150,14 @@ const ImageDisplay = memo(({ mode }) => {
     }
 
     if (idToUse !== null) {
-      console.log('Fetching albums data for mode:', mode, 'User ID:', idToUse);
       dispatch(thunkGetAlbumsByUserId(idToUse, currentAlbumPage, perPage));
       fetchData(currentPostPage);
     }
-
   }, [dispatch, userId, currentAlbumPage, perPage, mode, sessionUser?.id]);
 
   useEffect(() => {
     fetchData(currentPostPage);
   }, [fetchData, currentPostPage]);
-
-
-
 
   useEffect(() => {
     if (sessionUser?.id) {
@@ -176,15 +167,7 @@ const ImageDisplay = memo(({ mode }) => {
 
   if (loading) return <Spinner />;
 
-  // Helper functions and variables to process and display images
-  const bannerPhoto = userInfo?.banner_picture || null;
-  console.log(
-    "🚀 ~ file: index.js:147 ~ ImageDisplay ~ bannerPhoto:",
-    bannerPhoto
-  );
-
   const aboutMe = userInfo?.about_me || "No about me information available.";
-
 
   const getImagesAndDisplayedImages = () => {
     switch (mode) {
@@ -219,10 +202,9 @@ const ImageDisplay = memo(({ mode }) => {
   };
 
   // Extracting relevant data for rendering
-  const { displayedImages } =
-    getImagesAndDisplayedImages();
+  const { displayedImages } = getImagesAndDisplayedImages();
 
-  const noContentMessage =
+  const noContentMessage = !isLoading && isDataFetched && 
     (mode === "ownerPhotoStream" ||
       mode === "addPostToAnAlbum" ||
       mode === "albumManagement") &&
@@ -249,10 +231,7 @@ const ImageDisplay = memo(({ mode }) => {
       </div>
     );
   }
-  console.log("User posts:", userPosts);
-  console.log("User post IDs:", userPostsIds);
 
-  console.log("Displayed images:", displayedImages);
   return (
     <div>
       {/* Render logic based on loading state, mode, and data */}
@@ -348,6 +327,5 @@ const ImageDisplay = memo(({ mode }) => {
     </div>
   );
 });
-
 
 export default ImageDisplay;
