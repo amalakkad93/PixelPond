@@ -204,10 +204,11 @@ const ImageDisplay = memo(({ mode }) => {
   // Extracting relevant data for rendering
   const { displayedImages } = getImagesAndDisplayedImages();
 
-  const noContentMessage = !isLoading && isDataFetched && 
+  const noContentMessage = !isLoading && isDataFetched &&
     (mode === "ownerPhotoStream" ||
       mode === "addPostToAnAlbum" ||
       mode === "albumManagement") &&
+      
     displayedImages?.length === 0;
 
   if (albumImages?.length === 0 && mode === "albumImages") {
