@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {  useModal } from "../../../context/Modal";
+import { useShortModal } from "../../../context/ModalShort";
 import {
   thunkCreateAlbum,
  thunkUpdateAlbum,
@@ -8,10 +8,12 @@ import {
 } from "../../../store/albums";
 import { selectUserAlbums } from "../../../store/selectors";
 
+import "./AlbumForm.css";
 
-const AlbumForm = ({ formType, albumId, albumTitle: initialAlbumTitle, currentPage, perPage, setActiveAlbumImages }) => {
+const AlbumForm = ({ formType, albumId, albumTitle: initialAlbumTitle, currentPage, perPage, setActiveAlbumImages,  onEdit }) => {
     const dispatch = useDispatch();
-    const { closeModal } = useModal();
+    const { closeShortModal } = useShortModal();
+
     const [albumTitle, setAlbumTitle] = useState(initialAlbumTitle || "");
     const [newTitle, setNewTitle] = useState("");
     const [error, setError] = useState(null);
@@ -54,7 +56,8 @@ const AlbumForm = ({ formType, albumId, albumTitle: initialAlbumTitle, currentPa
           if (isMounted) {
               setAlbumTitle("");
               setError(null);
-              closeModal();
+              closeShortModal();
+              onEdit && onEdit();
           }
       } else {
           if (isMounted) {
@@ -68,16 +71,17 @@ const AlbumForm = ({ formType, albumId, albumTitle: initialAlbumTitle, currentPa
     };
 
     return (
-      <form onSubmit={handleSubmit}>
+      <form className="album-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <input
+          className="album-form-input"
             type="text"
             value={albumTitle}
             onChange={(e) => setAlbumTitle(e.target.value)}
             placeholder="Album Title"
           />
         </div>
-        <button  type="submit">{formType === "Create" ? "Create Album" : "Update Album"}</button>
+        <button  className="album-form-btn" type="submit">{formType === "Create" ? "Create Album" : "Update Album"}</button>
         {error && <div className="error">{error}</div>}
       </form>
     );

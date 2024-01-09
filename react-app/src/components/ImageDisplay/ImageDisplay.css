@@ -1,25 +1,51 @@
 .photo-stream-container {
   max-width: 1000px;
   margin: 0 auto;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 20px;
+  /* margin-top: 20px; */
+  /* margin-top: 163px; */
 }
 
-.banner-container {
-  /* height: auto; */
+.album-management-banner {
+  background-color: var(--primary-color);
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+  border-bottom: 2px solid #e0e0e0;
+  margin-bottom: 20px;
 }
 
-.banner {
-  /* height: 200px;
-  position: relative; */
-
+.album-management-banner h2 {
+  font-size: 24px;
 }
 
+.album-management-banner p {
+  font-size: 16px;
+}
+
+.user-details-container {
+  /* position: absolute;
+  left: 0;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  padding-left: 20px; */
+
+  position: absolute;
+  bottom: 10px;
+  left: 20px;
+}
 .banner-image {
   width: 100%;
   height: 200px;
   object-fit: cover;
+  /* height: auto;  */
 }
 
-.user-details, .owner-details {
+.user-details,
+.owner-details {
   display: flex;
   align-content: center;
   align-items: center;
@@ -27,32 +53,42 @@
   padding: 5px;
   border-radius: 5px;
   margin: 10px;
-  gap:20px;
+  gap: 20px;
   width: 400px;
   position: relative;
-}
-
-.user-details {
-  margin-top: -218px;
 }
 
 .owner-details {
   margin-top: -220px;
 }
 
-.profile-picture-container {
-  position: relative;
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  overflow: hidden;
+.back-button {
+  background-color: transparent;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
   cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.3s;
+  margin: 4px 2px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
-.profile-picture {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.back-button:hover {
+  background-color: #a64d00;
+}
+
+.back-button:focus {
+  outline: none;
+}
+
+.back-button .faArrowLeft {
+  margin-right: 8px;
+  vertical-align: middle;
 }
 
 .edit-icon-overlay {
@@ -66,30 +102,23 @@
 }
 
 .edit-icon {
-  color: #000;
-
+  /* color: #000; */
 }
 
 .profile-picture-container:hover .edit-icon-overlay {
   opacity: 1;
 }
 
-
-.user-name h1 {
-  margin: 0;
-  font-size: 1.5em;
-
-}
-
 .album-navigation {
-  display: flex;
+  /* display: flex;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 20px; */
+
+  margin-bottom: 20px;
 }
 
 .album-navigation a {
   text-decoration: none;
-  color: #333;
   margin: 0 20px;
   padding: 10px;
   font-weight: bold;
@@ -98,8 +127,8 @@
 
 .album-navigation a.active,
 .album-navigation a:hover {
-  color: #0063dc;
-  border-bottom: 2px solid #0063dc;
+  /* color: #2d545e;
+  border-bottom: 2px solid #c89666; */
 }
 
 .photo-grid {
@@ -107,7 +136,7 @@
   margin-left: -15px;
   margin-top: 18px;
   width: auto;
-  gap:0px;
+  gap: 0px;
 }
 
 .photo-grid_column {
@@ -115,28 +144,149 @@
   padding-right: 5px;
 }
 
-
-.no-content-message {
-  text-align: center;
-  margin-top: 20px;
-}
-
 .create-post-button {
   display: inline-block;
   margin-top: 10px;
   padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
   border: none;
   border-radius: 4px;
   text-decoration: none;
   margin-left: 23px;
   cursor: pointer;
-  margin-bottom:10px;
+  margin-bottom: 10px;
+}
+.create-post-button:hover {
 }
 
-.Images-and-create-btn{
+.Images-and-create-btn {
   /* display: flex;
   justify-content: space-between;
   align-items: center; */
+}
+
+.no-content-message {
+  text-align: center;
+  margin-top: 20px;
+}
+.no-content-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  /* color: #333; */
+  font-size: 1.2rem;
+  /* background-color: #f0f0f0; */
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  flex-direction: column;
+}
+.create-post-container {
+  margin-bottom: 20px;
+}
+
+/* Dark Mode Styles */
+.back-button:hover {
+  background-color: #a64d00;
+}
+
+/* Dark Mode Styles */
+.dark .album-management-banner {
+  background-color: #a64d00;
+  color: #fff;
+}
+
+.dark .user-details,
+.dark .owner-details {
+  background-color: rgba(255, 255, 255, 0.7);
+  color: white;
+}
+
+.dark .edit-icon-overlay {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+.dark .edit-icon {
+  color: white;
+}
+
+.dark .album-navigation a {
+  color: white;
+}
+
+.dark .album-navigation a.active,
+.dark .album-navigation a:hover {
+  border-bottom-color: #FF7EB3;
+}
+
+.dark .create-post-button {
+  background-color: #FF7EB3;
+  color: white;
+}
+
+.dark .create-post-button:hover {
+  background-color: #FF5678;
+}
+
+/* Light Mode Styles */
+.light .album-management-banner {
+  background-color: #ffb3c1; /* Soft, lighter pink */
+  color: #fff;
+}
+
+.light .user-details,
+.light .owner-details {
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #404040;
+}
+
+.light .edit-icon-overlay {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.light .edit-icon {
+  color: #404040;
+}
+
+.light .album-navigation a {
+  color: #404040;
+}
+
+.light .album-navigation a.active,
+.light .album-navigation a:hover {
+  border-bottom-color: #FFA69E;
+}
+
+.light .create-post-button {
+  background-color: #FFA69E;
+  color: white;
+}
+
+.light .create-post-button:hover {
+  background-color: #FF7EB3;
+}
+
+
+@media (max-width: 767px) {
+  .back-button, .create-post-button {
+      padding: 8px 15px;
+      font-size: 12px;
+  }
+
+  .album-management-banner h2 {
+      font-size: 16px;
+  }
+
+  .no-content-message h1, .about-section p {
+      font-size: 14px;
+  }
+
+  .photo-stream-container {
+      padding: 5px;
+      margin: 5px;
+  }
+
+  .create-post-container {
+      text-align: center;
+      margin-bottom: 15px;
+  }
 }

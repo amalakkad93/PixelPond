@@ -1,16 +1,76 @@
-.user-profile-manager {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+.form-user-profile-image-container {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  /* overflow: hidden; */
+  margin-bottom: 20px;
+}
+.form-field.profile-picture-field {
+  position: relative;
 }
 
-.user-profile-manager form {
+.form-user-image,
+.form-user-initials {
+  width: 137%;
+  height: 137%;
+  border-radius: 50%;
+  object-fit: cover;
+
+  border-radius: 50%;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+.form-user-initials {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* background-color: #ff0072; */
+  font-size: 2em;
+  text-align: center;
+}
+
+.form-user-profile-image-container {
+  position: relative;
+  /* Rest of the styles */
+}
+
+.form-camera-icon-overlay {
+  position: absolute;
+  /* bottom: -35px;
+  right: -36px; */
+
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-edit-icon-user-profile {
+  /* color: white; */
+  /* background: rgba(0, 0, 0, 0.6); */
+  border-radius: 50%;
+  padding: 40px;
+  font-size: 1.5em;
+  cursor: pointer;
+}
+
+.form-user-profile-manager {
+  max-width: 500px;
+  margin: 20px auto;
+  padding: 15px;
+  /* background-color: #fff; */
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.form-user-profile-manager form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
 }
 
 .form-field {
@@ -20,29 +80,39 @@
 }
 
 .form-field label {
-  font-size: 1rem;
-  color: #333;
-  font-weight: 600;
+  font-size: 0.9rem;
+  /* color: #333; */
+  font-weight: bold;
 }
 
 .form-field input[type="text"],
 .form-field input[type="email"],
 .form-field textarea {
-  padding: 10px;
-  border: 1px solid #ddd;
+  padding: 8px;
+  /* border: 1px solid #ccc; */
   border-radius: 5px;
   font-size: 0.9rem;
 }
 
 .form-field textarea {
   resize: vertical;
-  min-height: 80px;
+  /* min-height: 80px; */
+  min-height: 60px;
+}
+
+.two-column-grid {
+  display: flex;
+  gap: 10px;
+}
+
+.two-column-grid > .form-field {
+  flex: 1;
 }
 
 .submit-button {
   padding: 10px 20px;
-  background-color: #007bff;;
-  color: white;
+  /* background-color: #ff0072; */
+  /* color: white; */
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -51,47 +121,239 @@
 }
 
 .submit-button:hover {
-  background-color: #065dba;;
+  /* background-color: #e60066; */
 }
 
-/* AWSImageUploader specific styles */
 .aws-image-uploader {
-  margin-top: 10px;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  width: auto;
+  /* background-color: white; */
+  /* border: 1px solid #ccc; */
+  border-radius: 5px;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  display: none;
 }
-
+.form-field.profile-picture-field:hover .aws-image-uploader {
+  display: block;
+}
 .aws-image-uploader input[type="file"] {
   margin-bottom: 10px;
 }
 
-.aws-image-uploader .progress-container {
+/* .aws-image-uploader */
+.progress-container {
   display: flex;
   align-items: center;
-  gap: 10px;
-}
-
-.aws-image-uploader .progress-bar {
-  width: 100%;
-  height: 20px;
-  background-color: #e0e0e0;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.aws-image-uploader .progress-bar-inner {
-  height: 100%;
-  background-color:  #007bff;
-  text-align: center;
-  line-height: 20px;
-  color: white;
-  border-radius: 10px;
-}
-
-.aws-image-uploader .profile-preview img {
+  gap: 15px;
   max-width: 100px;
-  border-radius: 5px;
+  border-radius: 10px;
 }
-.user-image img {
+
+/* .aws-image-uploader */
+.progress-bar {
   width: 100%;
-  height: auto;
-  object-fit: cover;
+  height: 25px;
+  /* background-color: #f0f0f0; */
+  border-radius: 10px;
+}
+
+/* .aws-image-uploader */
+.progress-bar-inner {
+  height: 100%;
+  /* background-color: #ff0072; */
+  text-align: center;
+  line-height: 25px;
+  /* color: white; */
+  border-radius: 10px;
+}
+
+/* .aws-image-uploader */
+.profile-preview img {
+  max-width: 120px;
+  border-radius: 10px;
+}
+
+/* Dark mode styles */
+/* .dark .user-profile-manager {
+  background-color: #282c35;
+  color: white;
+}
+
+.dark .form-field label {
+  color: #fff;
+}
+
+.dark .form-field input[type="text"],
+.dark .form-field input[type="email"],
+.dark .form-field textarea {
+  background-color: #333;
+  color: #fff;
+  border: 1px solid #444;
+}
+
+.dark .submit-button  {
+  background-color: #ff7f47;
+}
+
+.dark .submit-button:hover {
+  background-color: #fd6a2b;
+}
+
+.dark .aws-image-uploader .progress-bar-inner {
+  background-color: #ff7f47;
+}
+
+.dark .form-user-initials {
+  background-color: #ff7f47;
+} */
+/* Dark Mode Styles */
+.dark .user-profile-manager {
+  background-color: #282c35;
+  color: white;
+}
+
+.dark .form-field label {
+  color: white;
+}
+
+.dark .form-field input[type="text"],
+.dark .form-field input[type="email"],
+.dark .form-field textarea {
+  background-color: #333;
+  color: white;
+  border: 1px solid #FF7EB3;
+}
+
+.dark .submit-button {
+  background-image: linear-gradient(to right, #FF758C 0%, #FF7EB3 100%);
+  color: white;
+}
+
+.dark .submit-button:hover {
+  background-image: linear-gradient(to right, #FF5678 0%, #FF6EA1 100%);
+}
+
+.dark .aws-image-uploader .progress-bar-inner {
+  background-color: #FF7EB3;
+}
+
+.dark .form-user-initials {
+  background-color: #FF7EB3;
+}
+
+/* Light Mode Styles */
+.light .user-profile-manager {
+  background-color: #F0F0F0;
+  color: #404040;
+}
+
+.light .form-field label {
+  color: #404040;
+}
+
+.light .form-field input[type="text"],
+.light .form-field input[type="email"],
+.light .form-field textarea {
+  background-color: white;
+  color: #404040;
+  border: 1px solid #FFA69E;
+}
+
+.light .submit-button {
+  background-image: linear-gradient(to right, #FFA69E 0%, #FFC3A0 100%);
+  color: white;
+}
+
+.light .submit-button:hover {
+  background-image: linear-gradient(to right, #FF8B94 0%, #FFB3B3 100%);
+}
+
+.light .aws-image-uploader .progress-bar-inner {
+  background-color: #FFA69E;
+}
+
+.light .form-user-initials {
+  background-color: #FFA69E;
+}
+
+
+/* Media Queries */
+@media (max-width: 600px) {
+  .form-user-profile-image-container {
+    width: 60px;
+    height: 60px;
+  }
+
+  .form-edit-icon-user-profile {
+    font-size: 1em;
+    padding: 5px;
+  }
+
+  .form-field label,
+  .form-field input,
+  .form-field textarea {
+    font-size: 0.8rem;
+  }
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 400px) {
+  .two-column-grid {
+    flex-direction: row;
+  }
+  .form-camera-icon-overlay {
+    bottom: 9px;
+    right: 5px;
+  }
+}
+
+/* Medium devices (tablets, 601px to 768px) */
+@media (min-width: 601px) and (max-width: 768px) {
+  .form-user-profile-image-container {
+    width: 70px;
+    height: 70px;
+  }
+  .form-camera-icon-overlay {
+    bottom: -26px;
+    right: -29px;
+  }
+}
+
+/* Large tablets and small laptops (769px to 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .form-user-profile-manager {
+    max-width: 400px;
+  }
+
+  .form-user-profile-image-container {
+    width: 80px;
+    height: 80px;
+  }
+
+  .form-edit-icon-user-profile {
+    font-size: 1.2em;
+    padding: 8px;
+  }
+
+  .form-field label,
+  .form-field input,
+  .form-field textarea {
+    font-size: 0.9rem;
+  }
+}
+
+/* Large desktops (1025px and up) */
+@media (min-width: 1025px) {
+  .form-user-profile-manager {
+    max-width: 500px;
+  }
+  .form-camera-icon-overlay {
+    bottom: -35px;
+    right: -36px;
+  }
 }

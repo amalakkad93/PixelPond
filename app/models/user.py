@@ -1,7 +1,7 @@
 from .db import db, environment, SCHEMA, add_prefix_for_prod
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
-
+DEFAULT_PROFILE_PICTURE = "https://flask3.s3.amazonaws.com/profileImage1.png"
 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
@@ -19,7 +19,8 @@ class User(db.Model, UserMixin):
     profile_picture = db.Column(db.String(255), nullable=True)
     about_me = db.Column(db.Text, nullable=True)
     country = db.Column(db.String(255), nullable=True)
-
+    banner_picture = db.Column(db.String(500), nullable=True)
+    DEFAULT_PROFILE_PICTURE = "https://flask3.s3.amazonaws.com/profileImage1.png"
     @property
     def password(self):
         return self.hashed_password
@@ -39,7 +40,8 @@ class User(db.Model, UserMixin):
             'age': self.age,
             'username': self.username,
             'email': self.email,
-            'profile_picture': self.profile_picture,
+            'profile_picture': self.profile_picture if self.profile_picture else User.DEFAULT_PROFILE_PICTURE,
             'about_me': self.about_me,
             'country': self.country,
+            'banner_picture': self.banner_picture,
         }

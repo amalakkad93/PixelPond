@@ -1,9 +1,319 @@
-/* body {
-  overflow: hidden;
-} */
+/* Reset CSS (You can replace this with Normalize.css or any other reset you prefer) */
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
 
-/* Reset some basic elements to provide a consistent baseline across browsers */
-html, body, div, span, applet, object, iframe,
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+
+body {
+  line-height: 1;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+blockquote,
+q {
+  quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: "";
+  content: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* Box sizing */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Body Styling */
+body {
+  font-family: "Arial", sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow: initial;
+}
+
+/* Light Mode */
+body.light {
+  background-color: #f0f0f0;
+  color: #404040;
+}
+
+/* Dark Mode */
+body.dark {
+  background-color: #282c35;
+  color: #ffffff;
+}
+
+a {
+  /* color: #ff0072; */
+  text-decoration: none;
+  background-color: transparent;
+}
+
+a:hover {
+  /* color: #ff3399; */
+  text-decoration: underline;
+}
+
+button {
+  /* background-color: #ff0072; */
+  /* color: #ffffff; */
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.25rem;
+  /* transition: background-color 0.15s ease-in-out; */
+  display: inline-block;
+  font-weight: 400;
+  text-align: center;
+  vertical-align: middle;
+  user-select: none;
+  /* background-color: transparent; */
+  border: 1px solid transparent;
+  font-size: 1rem;
+  line-height: 1.5;
+
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    border-radius: 5px;
+
+  /* transition: color .15s ease-in-out, background-color .15s ease-in-out,
+              border-color .15s ease-in-out, box-shadow .15s ease-in-out; */
+}
+
+button:hover {
+  /* background-color: #ff3399;  */
+}
+
+/* Responsive Font Sizes */
+html {
+  font-size: 16px; /* Adjust as needed */
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-bottom: 0.5rem;
+  font-weight: normal;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 2rem;
+}
+h2 {
+  font-size: 1.75rem;
+}
+h3 {
+  font-size: 1.5rem;
+}
+h4 {
+  font-size: 1.25rem;
+}
+h5 {
+  font-size: 1rem;
+}
+h6 {
+  font-size: 0.875rem;
+}
+
+/* Container */
+.container {
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+/* Media Queries */
+@media (min-width: 576px) {
+  .container {
+    max-width: 540px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1140px;
+  }
+}
+
+/* Form Elements Styling */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+select,
+textarea {
+  /* display: block;
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; */
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #ff0072;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(255, 0, 114, 0.25);
+}
+
+/* Accessibility Considerations */
+a:focus,
+button:focus {
+  outline: none;
+  /* box-shadow: 0 0 0 3px rgba(255, 0, 114, 0.25); */
+}
+
+/* Utility Classes */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
 del, dfn, em, img, ins, kbd, q, s, samp,
@@ -16,18 +326,17 @@ article, aside, canvas, details, embed,
 figure, figcaption, footer, header, hgroup,
 menu, nav, output, ruby, section, summary,
 time, mark, audio, video {
-  /* margin: 0; */
   padding: 0;
   border: 0;
   font-size: 100%;
   font: inherit;
   vertical-align: baseline;
- 
+
 }
 ul, li {
   cursor: pointer;
 }
-/* HTML5 display-role reset for older browsers */
+
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
   display: block;
@@ -49,19 +358,15 @@ html, body {
 }
 
 html {
-  /* height: 100%; */
-  /* background: #f0f0f0 url('path-to-your-default-background.jpg') no-repeat center center fixed; */
+  height: 100%;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
 }
 
-/* Ensure the root div fills the entire window */
 #root {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  /* overflow-x: hidden; */
-
-}
+} */

@@ -8,6 +8,8 @@ export default function EditAlbumForm({
   currentPage,
   perPage,
   setActiveAlbumImages,
+  onEdit,
+  closeShortModal,
 }) {
   return (
     <AlbumForm
@@ -16,6 +18,8 @@ export default function EditAlbumForm({
       albumTitle={albumTitle}
       currentPage={currentPage}
       perPage={perPage}
+      closeShortModal={closeShortModal}
+      onEdit={onEdit}
     />
   );
 }

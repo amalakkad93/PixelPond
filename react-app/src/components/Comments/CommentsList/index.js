@@ -13,7 +13,7 @@ import CreateCommentForm from "../CommentForm/CreateCommentForm";
 import LoadMorePagination from "../../Pagination/LoadPaginations/LoadMorePagination";
 import LoadPreviousPagination from "../../Pagination/LoadPaginations/LoadPreviousPagination";
 
-import "./CommentsList.css";
+import "./CommentItem.css";
 
 const CommentsList = ({ postId }) => {
   const dispatch = useDispatch();
@@ -33,6 +33,11 @@ const CommentsList = ({ postId }) => {
   );
 
   const fetchComments = (page) => {
+    if (page < 1) {
+      console.log("Invalid page number");
+      return;
+    }
+
     dispatch(thunkGetPostComments(postId, page, perPage))
       .then((response) => {
         if (response) {
@@ -47,9 +52,20 @@ const CommentsList = ({ postId }) => {
       .catch((err) => console.log("Error fetching comments:", err));
   };
 
+
   useEffect(() => {
-    fetchComments(currentPage);
-  }, [currentPage, postId]);
+    if (totalItems > 0 || currentPage === 1) {
+      fetchComments(currentPage);
+    }
+  }, [currentPage, postId, totalItems]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+    if (totalItems > 0 || currentPage === 1) {
+      fetchComments(1);
+    }
+  }, [postId]);
+
 
   return (
     <div className="comments-list">
@@ -68,58 +84,15 @@ const CommentsList = ({ postId }) => {
 
       {/* comments */}
       {sortedComments.map((comment) => (
-        <div key={comment.id}>
-          {sessionUser && sessionUser.id === comment.user_id && (
-            <div className="comment-actions">
-              <i
-                className="fas fa-ellipsis-h"
-                onClick={() =>
-                  setShowOptionsFor(
-                    showOptionsFor === comment.id ? null : comment.id
-                  )
-                }
-              ></i>
-              {showOptionsFor === comment.id && (
-                <div className="options-modal">
-                  <OpenModalButton
-                    className="edit-comment-button"
-                    buttonText={
-                      <i className="fas fa-edit" aria-hidden="true"></i>
-                    }
-                    modalComponent={
-                      <EditCommentForm
-                        commentId={comment.id}
-                        postId={comment.post_id}
-                        onCommentSuccess={() => {
-                          fetchComments(1);
-                          setShowOptionsFor(null);
-                        }}
-                      />
-                    }
-                  />
-                  <OpenModalButton
-                    className="delete-modal"
-                    buttonText={
-                      <i className="fas fa-trash" aria-hidden="true"></i>
-                    }
-                    modalComponent={
-                      <DeleteComment
-                        postId={postId}
-                        commentId={comment.id}
-                        onDelete={() => {
-                          fetchComments(1);
-                          setShowOptionsFor(null);
-                        }}
-                      />
-                    }
-                  />
-                </div>
-              )}
-            </div>
-          )}
-
-          <CommentItem comment={comment} />
-        </div>
+        <CommentItem
+          key={comment.id}
+          comment={comment}
+          sessionUser={sessionUser}
+          showOptionsFor={showOptionsFor}
+          setShowOptionsFor={setShowOptionsFor}
+          fetchComments={fetchComments}
+          postId={postId}
+        />
       ))}
       <LoadMorePagination
         className="load-more-comments-btn"
@@ -133,10 +106,14 @@ const CommentsList = ({ postId }) => {
           }
         }}
       />
-      <CreateCommentForm
-        postId={postId}
-        onCommentSuccess={() => fetchComments(1)}
-      />
+      {sessionUser && (
+        <div className="create-comment-form">
+        <CreateCommentForm
+          postId={postId}
+          onCommentSuccess={() => fetchComments(1)}
+        />
+      </div>
+      )}
     </div>
   );
 };

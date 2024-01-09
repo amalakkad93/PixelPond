@@ -40,9 +40,13 @@ class Album(db.Model):
                         'url': image.url,
                         'post_id': post.id
                     })
+
+        user = User.query.get(self.user_id)
+        user_info = user.to_dict() if user else {}
         return {
             'id': self.id,
             'user_id': self.user_id,
             'title': self.title,
-            'images': album_images
+            'images': album_images,
+            'user_info': user_info
         }

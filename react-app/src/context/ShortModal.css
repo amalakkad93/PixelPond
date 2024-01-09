@@ -1,0 +1,68 @@
+#short-modal {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100000;
+}
+
+#short-modal-background {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 100001;
+}
+
+#short-modal-content {
+  position: absolute;
+  background-color: white;
+  color: #404040;
+  z-index: 100002;
+  max-height: 80%;
+  overflow-y: auto;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+#short-modal-content h1, #short-modal-content h2, #short-modal-content h3 {
+  /* Style for headings inside modal */
+}
+
+/* Light Mode Styles for Modal */
+.light #short-modal-background {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.light #short-modal-content {
+  background-color: white;
+  color: #404040;
+}
+
+.light #short-modal-content h1,
+.light #short-modal-content h2,
+.light #short-modal-content h3 {
+  color: #ff0072;
+}
+
+/* Dark Mode Styles for Modal */
+.dark #short-modal-background {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.dark #short-modal-content {
+  background-color: #282c35;
+  color: white;
+}
+
+.dark #short-modal-content h1,
+.dark #short-modal-content h2,
+.dark #short-modal-content h3 {
+  color: #ff7f47;
+}

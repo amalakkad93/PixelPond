@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useDispatch } from "react-redux";
+import { getPresignedUrl } from "../../store/aws";
+
 import image1 from "../images/image1.jpg";
 import image2 from "../images/image2.jpg";
 import image3 from "../images/image3.jpg";
@@ -54,36 +57,7 @@ export const useDynamicBackground = (bgContainerRef) => {
   }, [bgImageIndex, images, bgContainerRef]);
 
   return images[bgImageIndex]; // This line is optional, only if you need to use the current image elsewhere
-
-
-    // useEffect(() => {
-  //   // Check if the user is on the login/signup pages or if they're logged in
-  //   const whiteBackgroundRoutes = [
-  //     "/login",
-  //     "/signup",
-  //     "/restaurants/nearby",
-  //     "/favorites",
-  //     "/restaurants",
-  //     "/menu-item"
-  //   ];
-
-  //   const isMenuItemDetailPage = /^\/restaurant\/\d+\/menu-item\/\d+$/.test(location.pathname);
-
-  //   // Using .some() to check if location.pathname matches any of the routes
-  //   if (
-  //     whiteBackgroundRoutes.some((route) => location.pathname.startsWith(route)) ||
-  //     isMenuItemDetailPage
-  //   ) {
-  //     document.documentElement.style.background = "white";
-  //     document.documentElement.style.backgroundImage = "none";
-  //   } else {
-  //     document.documentElement.style.backgroundImage = `url(${images[bgImageIndex]})`;
-  //   }
-  // }, [sessionUser, bgImageIndex, images, location.pathname]);
 };
-
-
-
 
 
 // Custom hook to generate a dynamic greeting based on the time of day
@@ -107,4 +81,64 @@ export const useDynamicGreeting = () => {
   }, [greeting]);
 
   return greeting;
+};
+
+export const uploadImageToAWS = async (file, dispatch) => {
+  if (!file) {
+      throw new Error("No file selected");
+  }
+
+  try {
+      const presignedData = await dispatch(getPresignedUrl(file.name, file.type));
+      if (!presignedData) {
+          throw new Error("Failed to get presigned URL");
+      }
+
+      const xhr = new XMLHttpRequest();
+      xhr.open("PUT", presignedData.presignedUrl);
+      xhr.setRequestHeader("Content-Type", file.type);
+      xhr.send(file);
+
+      return new Promise((resolve, reject) => {
+          xhr.onload = () => {
+              if (xhr.status === 200) {
+                  resolve(presignedData.fileUrl + "?t=" + new Date().getTime());
+              } else {
+                  reject("Failed to upload image");
+              }
+          };
+          xhr.onerror = () => reject("Error during the upload");
+      });
+  } catch (error) {
+      console.error("Error uploading file:", error);
+      throw error;
+  }
+};
+
+
+
+
+export const createInputChangeHandler = (setterFunction, setValidationObj, validationField) => (e) => {
+  // Update the value using the provided setter function
+  setterFunction(e.target.value);
+
+  // Clear the validation error for the specific field
+  setValidationObj((prev) => {
+    const newObj = { ...prev };
+    delete newObj[validationField];
+    return newObj;
+  });
+};
+
+export const highlightText = (text, highlight) => {
+  const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
+  return (
+    <span>
+      {parts.map((part, index) =>
+        part.toLowerCase() === highlight.toLowerCase()
+          ? <span key={index} className="highlighted-text">{part}</span>
+          : part
+      )}
+    </span>
+  );
 };

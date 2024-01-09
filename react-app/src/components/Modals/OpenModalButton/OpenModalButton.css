@@ -8,7 +8,7 @@
 }
 .more-info-button {
   display: inline-block;
-  color: black;
+  color: white;
   /* font-weight: bold; */
   /* font-family: 'Roboto', sans-serif; */
   border-radius: 5px;
@@ -19,4 +19,10 @@
   cursor: pointer;
   transition: background-color 0.3s;
   z-index: 100000;
+}
+.dark .more-info-button {
+  color: #FF5678;
+}
+.light .more-info-button {
+  color:#FFA69E;
 }

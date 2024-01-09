@@ -1,5 +1,6 @@
 import React from 'react';
 import '../LoginFormModal/LoginForm.css'
+import './GoogleAuthButton.css'
 
 function GoogleAuthButton() {
 

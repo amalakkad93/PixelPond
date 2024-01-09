@@ -151,40 +151,207 @@ def get_neighbor_posts(post_id, user_id):
     })
 
 
+# # ***************************************************************
+# # Endpoint to Create a Post
+# # ***************************************************************
+# @post_routes.route('', methods=["POST"])
+# @login_required
+# def create_post():
+#     """
+#     Create a new post. Only accessible by authenticated users.
+#     Returns:
+#         Response: A JSON object with the newly created post details or an error message.
+#     """
+#     try:
+#         data = request.json
+#         # title, description,image_url = data.get('title'), data.get('description', ''), data.get('image_url')
+#         title, description, image_url, tags = data.get('title'), data.get('description', ''), data.get('image_url'), data.get('tags', [])
+
+#         if not title or not image_url:
+#             return jsonify({'error': 'Title and Image URL are required'}), 400
+
+#         image = Image(url=image_url)
+#         db.session.add(image)
+#         db.session.commit()
+
+#         post = Post(owner_id=current_user.id, title=title, description=description, image_id=image.id)
+#         db.session.add(post)
+
+#         existing_tags = Tag.query.filter(Tag.name.in_(tags)).all()
+#         existing_tag_names = set(tag.name for tag in existing_tags)
+
+#         for tag_name in tags:
+#             tag = next((t for t in existing_tags if t.name == tag_name), None)
+#             if not tag:
+#                 tag = Tag(name=tag_name)
+#                 db.session.add(tag)
+#             post_tag = PostTag(post_id=post.id, tag_id=tag.id)
+#             db.session.add(post_tag)
+
+#         db.session.commit()
+#         return jsonify(post.to_dict()), 201
+#     except Exception as e:
+#         db.session.rollback()
+#         print(f"Error in create_post: {e}")
+#         return jsonify({'error': 'An unexpected error occurred'}), 500
+
+# # ***************************************************************
+# # Endpoint to Edit a Post
+# # ***************************************************************
+# @post_routes.route('/<int:id>', methods=["PUT"])
+# @login_required
+# def update_post(id):
+#     """
+#     Update a specific post. Only accessible by the post owner.
+#     Parameters:
+#         - id (int): The ID of the post to update.
+#     Returns:
+#         Response: A JSON object with the updated post or an error message.
+#     """
+#     try:
+#         post_to_update = Post.query.get(id)
+#         if not post_to_update or post_to_update.owner_id != current_user.id:
+#             return jsonify({"error": "Post not found or unauthorized"}), 404
+
+#         data = request.get_json()
+#         updated_tags = data.get('tags', [])
+
+#         for key, value in data.items():
+#             if key != 'image_url':
+#                 setattr(post_to_update, key, value)
+
+#         if 'image_url' in data and data['image_url']:
+#             image_to_update = Image.query.get(post_to_update.image_id)
+#             if image_to_update:
+#                 image_to_update.url = data['image_url']
+#             else:
+#                 new_image = Image(url=data['image_url'])
+#                 db.session.add(new_image)
+#                 db.session.flush()
+#                 post_to_update.image_id = new_image.id
+
+
+#         existing_tags = Tag.query.filter(Tag.name.in_(updated_tags)).all()
+#         existing_tag_names = set(tag.name for tag in existing_tags)
+
+#         # Add new tags and update existing ones
+#         for tag_name in updated_tags:
+#             tag = next((t for t in existing_tags if t.name == tag_name), None)
+#             if not tag:
+#                 tag = Tag(name=tag_name)
+#                 db.session.add(tag)
+#             if not any(pt.tag_id == tag.id for pt in post_to_update.tags):
+#                 post_tag = PostTag(post_id=post_to_update.id, tag_id=tag.id)
+#                 db.session.add(post_tag)
+
+#         # Remove tags that are no longer associated
+#         for post_tag in post_to_update.tags:
+#             if post_tag.tag.name not in updated_tags:
+#                 db.session.delete(post_tag)
+
+#         db.session.commit()
+#         return jsonify(post_to_update.to_dict())
+#     except Exception as e:
+#         logging.error(f"Error updating post (ID: {id}): {e}")
+#         db.session.rollback()
+#         return jsonify({"error": "An error occurred while updating the post."}), 500
+
 # ***************************************************************
 # Endpoint to Create a Post
 # ***************************************************************
+# @post_routes.route('', methods=["POST"])
+# @login_required
+# def create_post():
+#     """
+#     Create a new post. Only accessible by authenticated users.
+#     Returns:
+#         Response: A JSON object with the newly created post details or an error message.
+#     """
+#     try:
+#         data = request.json
+#         ic(f"***************************************Received data: {data}")
+#         ic(data)
+#         # title, description,image_url = data.get('title'), data.get('description', ''), data.get('image_url')
+#         title, description, image_url, tags = data.get('title'), data.get('description', ''), data.get('image_url'), data.get('tags', [])
+
+#         if not title or not image_url:
+#             return jsonify({'error': 'Title and Image URL are required'}), 400
+
+#         # Create and commit the Image instance
+#         image = Image(url=image_url)
+#         db.session.add(image)
+#         db.session.commit()
+
+#         # Create the Post instance with the image_id
+#         post = Post(owner_id=current_user.id, title=title, description=description, image_id=image.id)
+#         db.session.add(post)
+#         db.session.commit()
+
+#         for tag_name in tags:
+#             tag = Tag.query.filter_by(name=tag_name).first()
+#             if not tag:
+#                 tag = Tag(name=tag_name)
+#                 db.session.add(tag)
+#                 db.session.flush()
+
+#             post_tag = PostTag(post_id=post.id, tag_id=tag.id)
+#             db.session.add(post_tag)
+
+#         db.session.commit()
+#         return jsonify(post.to_dict()), 201
+#     except Exception as e:
+#         db.session.rollback()
+#         print(f"Error in create_post: {e}")
+#         return jsonify({'error': 'An unexpected error occurred'}), 500
 @post_routes.route('', methods=["POST"])
 @login_required
 def create_post():
-    """
-    Create a new post. Only accessible by authenticated users.
-    Returns:
-        Response: A JSON object with the newly created post details or an error message.
-    """
     try:
-        data = request.json
-        title, description,image_url = data.get('title'), data.get('description', ''), data.get('image_url')
+        data = request.get_json()
+        ic("*****************************************************************")
+        ic("                   Received data:", data)
+        ic("*****************************************************************")
+        title = data.get('title')
+        description = data.get('description', '')
+        image_url = data.get('image_url')
 
         if not title or not image_url:
             return jsonify({'error': 'Title and Image URL are required'}), 400
 
-        # Create and commit the Image instance
-        image = Image(url=image_url)
-        db.session.add(image)
+        image = Image.query.filter_by(url=image_url).first()
+        if not image:
+            image = Image(url=image_url)
+            db.session.add(image)
+            db.session.flush()
+
+        new_post = Post(owner_id=current_user.id, title=title, description=description, image_id=image.id)
+        db.session.add(new_post)
+        db.session.flush()
+
+        tag_names = data.get('tags', [])
+        for tag_name in tag_names:
+
+            ic("*****************************************************************")
+            ic("                   Processing tag:", tag_name)
+            ic("*****************************************************************")
+
+            tag = Tag.query.filter_by(name=tag_name).first()
+            if not tag:
+                tag = Tag(name=tag_name)
+                db.session.add(tag)
+                db.session.flush()
+
+            post_tag = PostTag(post_id=new_post.id, tag_id=tag.id)
+            db.session.add(post_tag)
+
         db.session.commit()
-
-        # Create the Post instance with the image_id
-        post = Post(owner_id=current_user.id, title=title, description=description, image_id=image.id)
-        db.session.add(post)
-        db.session.commit()
-
-        return jsonify(post.to_dict()), 201
-
+        return jsonify(new_post.to_dict()), 201
     except Exception as e:
         db.session.rollback()
         print(f"Error in create_post: {e}")
         return jsonify({'error': 'An unexpected error occurred'}), 500
+
+
 
 # ***************************************************************
 # Endpoint to Edit a Post
@@ -199,19 +366,37 @@ def update_post(id):
     Returns:
         Response: A JSON object with the updated post or an error message.
     """
+
     try:
         post_to_update = Post.query.get(id)
         if not post_to_update or post_to_update.owner_id != current_user.id:
             return jsonify({"error": "Post not found or unauthorized"}), 404
 
         data = request.get_json()
+        ic("data:", data)
+        updated_tag_names = set(data.get('tags', []))
+        logging.debug(f"Received data: {data}")
+        logging.debug(f"Updated tag names: {updated_tag_names}")
+        # Update post attributes except 'image_url'
         for key, value in data.items():
             if key != 'image_url':
                 setattr(post_to_update, key, value)
 
+        # Handle image_url update
         # if 'image_url' in data:
+        #     if data['image_url']:
+        #         image_to_update = Image.query.get(post_to_update.image_id)
+        #         if image_to_update:
+        #             image_to_update.url = data['image_url']
+        #         else:
+        #             new_image = Image(url=data['image_url'])
+        #             db.session.add(new_image)
+        #             db.session.flush()
+        #             post_to_update.image_id = new_image.id
+        #     else:
+        #         post_to_update.image_id = None
         if 'image_url' in data and data['image_url']:
-            image_to_update = Image.query.get(post_to_update.image_id)
+            image_to_update = Image.query.filter_by(id=post_to_update.image_id).first()
             if image_to_update:
                 image_to_update.url = data['image_url']
             else:
@@ -220,12 +405,107 @@ def update_post(id):
                 db.session.flush()
                 post_to_update.image_id = new_image.id
 
+
+        # Fetch existing tags associated with the post
+        existing_post_tags = PostTag.query.filter(PostTag.post_id == post_to_update.id).all()
+        existing_tag_names = {Tag.query.get(pt.tag_id).name for pt in existing_post_tags}
+
+        # Determine tags to add and remove
+        tags_to_remove = existing_tag_names - updated_tag_names
+        tags_to_add = updated_tag_names - existing_tag_names
+
+        # Remove tags not in the updated list
+        for tag_name in tags_to_remove:
+            tag = Tag.query.filter_by(name=tag_name).first()
+            if tag:
+                PostTag.query.filter_by(post_id=post_to_update.id, tag_id=tag.id).delete()
+                logging.debug(f"Removed tag: {tag_name}")
+
+        # Add new tags from the updated list
+        for tag_name in tags_to_add:
+            tag = Tag.query.filter_by(name=tag_name).first()
+            if not tag:
+                tag = Tag(name=tag_name)
+                db.session.add(tag)
+                db.session.flush()
+                logging.debug(f"Added new tag: {tag_name}")
+            new_post_tag = PostTag(post_id=post_to_update.id, tag_id=tag.id)
+            db.session.add(new_post_tag)
+            logging.debug(f"Linked post with new tag: {tag_name}")
+
         db.session.commit()
         return jsonify(post_to_update.to_dict())
     except Exception as e:
         logging.error(f"Error updating post (ID: {id}): {e}")
         db.session.rollback()
         return jsonify({"error": "An error occurred while updating the post."}), 500
+# @post_routes.route('/<int:id>', methods=["PUT"])
+# @login_required
+# def update_post(id):
+#     """
+#     Update a specific post. Only accessible by the post owner.
+#     Parameters:
+#         - id (int): The ID of the post to update.
+#     Returns:
+#         Response: A JSON object with the updated post or an error message.
+#     """
+#     try:
+#         post_to_update = Post.query.get(id)
+#         if not post_to_update or post_to_update.owner_id != current_user.id:
+#             return jsonify({"error": "Post not found or unauthorized"}), 404
+
+#         data = request.get_json()
+#         updated_tags = data.get('tags', [])
+
+#         for key, value in data.items():
+#             if key != 'image_url':
+#                 setattr(post_to_update, key, value)
+
+#         # if 'image_url' in data and data['image_url']:
+#         #     image_to_update = Image.query.get(post_to_update.image_id)
+#         #     if image_to_update:
+#         #         image_to_update.url = data['image_url']
+#         #     else:
+#         #         new_image = Image(url=data['image_url'])
+#         #         db.session.add(new_image)
+#         #         db.session.flush()
+#         #         post_to_update.image_id = new_image.id
+#         if 'image_url' in data:
+#             if data['image_url']:
+#                 # Update or create new image
+#                 image_to_update = Image.query.get(post_to_update.image_id)
+#                 if image_to_update:
+#                     image_to_update.url = data['image_url']
+#                 else:
+#                     new_image = Image(url=data['image_url'])
+#                     db.session.add(new_image)
+#                     db.session.flush()
+#                     post_to_update.image_id = new_image.id
+#             else:
+#                 # Handle case if image is removed
+#                 post_to_update.image_id = None
+
+#         for post_tag in post_to_update.tags:
+#             if post_tag.name not in updated_tags:
+#                 db.session.delete(post_tag)
+
+#         for tag_name in updated_tags:
+#             tag = Tag.query.filter_by(name=tag_name).first()
+#             if not tag:
+#                 tag = Tag(name=tag_name)
+#                 db.session.add(tag)
+#                 db.session.flush()
+
+#             if not any(pt.tag_id == tag.id for pt in post_to_update.tags):
+#                 post_tag = PostTag(post_id=post_to_update.id, tag_id=tag.id)
+#                 db.session.add(post_tag)
+
+#         db.session.commit()
+#         return jsonify(post_to_update.to_dict())
+#     except Exception as e:
+#         logging.error(f"Error updating post (ID: {id}): {e}")
+#         db.session.rollback()
+#         return jsonify({"error": "An error occurred while updating the post."}), 500
 
 # ***************************************************************
 # Endpoint to Add a Post to an Album
@@ -584,20 +864,57 @@ def get_posts_by_tag(tag_name):
 # ***************************************************************
 # Endpoint to Get Posts by Multiple Tags
 # ***************************************************************
+# @post_routes.route('/by_tags')
+# def get_posts_by_tags():
+#     try:
+#         tag_names = request.args.getlist('tags')
+
+#         if not tag_names:
+#             return jsonify({"error": "No tags provided"}), 400
+
+#         subquery = db.session.query(PostTag.post_id)\
+#             .join(Tag, PostTag.tag_id == Tag.id)\
+#             .filter(Tag.name.in_(tag_names))\
+#             .group_by(PostTag.post_id)\
+#             .having(func.count(PostTag.tag_id) == len(tag_names)).subquery()
+
+#         posts_query = Post.query\
+#             .join(subquery, Post.id == subquery.c.post_id)
+
+#         paginated_posts = hf.paginate_query(posts_query, 'posts', process_item_callback=lambda post, _: post.to_dict())
+
+#         owner_ids = set(post['owner_id'] for post in paginated_posts['posts'])
+#         users = User.query.filter(User.id.in_(owner_ids)).all()
+#         users_dict = {user.id: user.to_dict() for user in users}
+
+#         for post in paginated_posts['posts']:
+#             post['user_info'] = users_dict.get(post['owner_id'])
+
+#         return jsonify(paginated_posts)
+#     except Exception as e:
+#         logging.error(f"Error fetching posts by tags {tag_names}: {e}")
+#         return jsonify({"error": str(e)}), 500
+
 @post_routes.route('/by_tags')
 def get_posts_by_tags():
     try:
         tag_names = request.args.getlist('tags')
 
+        # Log received tags
+        logging.info(f"Received tags: {tag_names}")
+        ic(f"Received tags: {tag_names}")
+
         if not tag_names:
             return jsonify({"error": "No tags provided"}), 400
 
+        # Subquery to find post IDs that have the required number of matching tags
         subquery = db.session.query(PostTag.post_id)\
             .join(Tag, PostTag.tag_id == Tag.id)\
             .filter(Tag.name.in_(tag_names))\
             .group_by(PostTag.post_id)\
-            .having(func.count(PostTag.tag_id) == len(tag_names)).subquery()
+            .having(db.func.count(PostTag.tag_id) == len(tag_names)).subquery()
 
+        # Main query to fetch posts that match the subquery
         posts_query = Post.query\
             .join(subquery, Post.id == subquery.c.post_id)
 
@@ -614,6 +931,7 @@ def get_posts_by_tags():
     except Exception as e:
         logging.error(f"Error fetching posts by tags {tag_names}: {e}")
         return jsonify({"error": str(e)}), 500
+
 
 
 # ***************************************************************

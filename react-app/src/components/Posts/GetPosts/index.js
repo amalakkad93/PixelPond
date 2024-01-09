@@ -22,6 +22,7 @@ import {
 } from "../../../store/selectors";
 
 import Pagination from "../../Pagination";
+import useResponsivePagination from "../../Pagination/useResponsivePagination";
 
 import "./GetAllPosts.css";
 
@@ -44,12 +45,14 @@ export default function GetPosts({ mode = "all" }) {
   const [totalPages, setTotalPages] = useState(0);
 
   const userId = selectSessionUser?.id;
-  const perPage = 10;
+  // const perPage = 10;
+  const perPage = useResponsivePagination(10);
   const { posts, ownerIds } = useSelector(
     mode === "owner" ? selectOwnerPosts : selectAllPosts
   );
   const usersById = useSelector((state) => state.session.byId);
   console.log("🚀 ~ file: index.js:46 ~ GetPosts ~ usersById :", usersById )
+  console.log("PerPage value in GetPosts: ", perPage);
 
   // useEffect(() => {
   //   ownerIds.forEach(id => {
@@ -95,7 +98,11 @@ export default function GetPosts({ mode = "all" }) {
           <div
             key={post?.id}
             className="post-item"
-            onClick={() => history.push(`/posts/users/${post?.owner_id}`)}
+            // onClick={() => history.push(`/posts/users/${post?.owner_id}`)}
+            onClick={() => {
+              const path = post?.owner_id === sessionUser.id ? `/owner/photostream` : `/posts/users/${post?.owner_id}`;
+              history.push(path);
+            }}
           >
             <img
               className="main-image"
@@ -123,13 +130,6 @@ export default function GetPosts({ mode = "all" }) {
         itemsPerPage={perPage}
         currentPage={currentPage}
         onPageChange={(newPage) => fetchData(newPage)}
-        // onPageChange={(newPage) => {
-        //   if (mode === "owner") {
-        //     dispatch(thunkGetOwnerPosts(userId, newPage, perPage));
-        //   } else {
-        //     dispatch(thunkGetAllPosts(newPage, perPage));
-        //   }
-        // }}
       />
     </div>
   );

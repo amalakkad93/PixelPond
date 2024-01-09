@@ -1,10 +1,11 @@
-/* html,
-body {
+html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
-} */
+}
+.no-scroll {
+  overflow: hidden;
+}
 
 
 .signup-modal {
@@ -14,68 +15,120 @@ body {
   height: 660px;
 }
 .home-container {
+  background-color: #F0F0F0;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  margin-top: 381px;
+  position: relative;
+  z-index: 1;
+
+  margin: 0;
+  padding: 0;
 }
 
 .background-image-container {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
   width: 100%;
   height: 100%;
-  background-repeat: no-repeat;
   background-size: cover;
-  background-position: 50%;
-  background-position: center;
   z-index: -1;
 }
 
 /* Styles for the greeting title */
-.Search-bar-title {
-  /* font-size: 2em; */
-  margin-bottom: 20px;
+.greeting-h1 {
   color: #fff;
-
-  font-size: 26px;
+  margin-bottom: 20px;
+  font-size: 2em;
   font-weight: 600;
-  line-height: 32px;
+  line-height: 1.2;
 }
 
+/* Button styles */
 /* Button styles */
 .home-page-modal {
   padding: 10px 20px;
   font-size: 1em;
-  color: #000;
-  background-color: #fff;
+  color: #fff;
+  background-color: #FFA69E;
+  border: none;
   border-radius: 5px;
   cursor: pointer;
   margin-top: 20px;
-  transition: background-color 0.3s;
-
-  font-size: 26px;
+  transition: background-color 0.3s, color 0.3s;
   font-weight: 600;
-  line-height: 32px;
 }
 
 .home-page-modal:hover {
-  background-color: #e6e6e6;
-  color: #000;
+  background-color: #FF7EB3;
+  color: #fff;
 }
 
-/* Media query for smaller screens */
+/* Dark Mode for Home Container and Modal Button */
+.dark .home-container {
+  background-color: #282c35;
+  color: white;
+}
+
+.dark .home-page-modal {
+  background-color: #FF7EB3;
+  color: white;
+}
+
+.dark .home-page-modal:hover {
+  background-color: #FF5678;
+}
+
+.dark .greeting-h1 {
+  color: white;
+}
+
+/* Light Mode for Home Container and Modal Button */
+.light .home-container {
+  background-color: #F0F0F0;
+  color: #404040;
+}
+
+.light .home-page-modal {
+  background-color: #FFA69E;
+  color: white;
+}
+
+.light .home-page-modal:hover {
+  background-color: #FF7EB3;
+}
+
+.light .greeting-h1 {
+  color: #404040;
+}
+
+/* Media Queries */
 @media (max-width: 768px) {
-  .Search-bar-title {
+  .greeting-h1 {
     font-size: 1.5em;
   }
-
   .center-menu {
+    font-size: 0.8em;
+  }
+  .home-page-modal {
+    font-size: 0.9em;
+    padding: 8px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .greeting-h1 {
+    font-size: 1.2em;
+  }
+
+  .home-page-modal {
     font-size: 0.8em;
   }
 }

@@ -4,6 +4,8 @@ const REMOVE_USER = "session/REMOVE_USER";
 const GET_USER_INFO_BY_ID = "session/GET_USER_INFO_BY_ID";
 const SET_USER_INFO = "session/SET_USER_INFO";
 const UPDATE_USER_PROFILE = "session/UPDATE_USER_PROFILE";
+const SEARCH_USERS = "session/SEARCH_USERS";
+const SET_SEARCHED_USERS = "session/SET_SEARCHED_USERS";
 
 export const setUser = (user) => ({
   type: SET_USER,
@@ -14,14 +16,19 @@ const removeUser = () => ({
   type: REMOVE_USER,
 });
 
-const setUserInfoById = (userInfo) => ({
-  type: GET_USER_INFO_BY_ID,
-  payload: userInfo,
-});
-
 const actionUpdateUserProfile = (updatedUser) => ({
   type: SET_USER,
   payload: updatedUser,
+});
+
+export const searchUsers = (searchTerm) => ({
+  type: SEARCH_USERS,
+  searchTerm,
+});
+
+export const setSearchedUsers = (users) => ({
+  type: SET_SEARCHED_USERS,
+  payload: users,
 });
 
 export const authenticate = () => async (dispatch) => {
@@ -110,20 +117,6 @@ export const signUp =
     }
   };
 
-// export const fetchUserInfoById = (userId) => async (dispatch) => {
-//   try {
-//     const response = await fetch(`/api/users/${userId}/info`);
-//     if (response.ok) {
-//       const userInfo = await response.json();
-//       dispatch(setUserInfoById(userInfo));
-//     } else {
-//       // Handle error response
-//     }
-//   } catch (error) {
-//     console.error("Error fetching user info:", error);
-//     // Handle network error
-//   }
-// };
 export const fetchUserInfoById = (userId) => async (dispatch, getState) => {
   const existingUserInfo = getState().session.byId[userId];
   if (existingUserInfo) return;
@@ -142,30 +135,6 @@ export const fetchUserInfoById = (userId) => async (dispatch, getState) => {
   }
 };
 
-// Thunk action to update user profile picture
-// Thunk action to update user profile picture
-export const updateUserProfilePic = (newProfilePicUrl) => async (dispatch) => {
-  try {
-    const response = await fetch("/api/users/update-profile-pic", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ profile_picture: newProfilePicUrl }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to update profile picture.");
-    }
-
-    const updatedUser = await response.json();
-    dispatch(setUser(updatedUser));
-    return updatedUser;
-  } catch (error) {
-    console.error("Error updating profile picture:", error);
-    throw error;
-  }
-};
 
 // Update user profile action
 export const updateUserProfile = (userData) => async (dispatch) => {
@@ -190,11 +159,27 @@ export const updateUserProfile = (userData) => async (dispatch) => {
   }
 };
 
+// User search thunk action
+export const thunkSearchUsers = (searchTerm) => async (dispatch) => {
+  try {
+    const response = await fetch(`/api/users/search?query=${encodeURIComponent(searchTerm)}`);
+    if (response.ok) {
+      const users = await response.json();
+      console.log('******************Fetched users:', users);
+      dispatch(setSearchedUsers(users));
+      return users;
+    }
+  } catch (error) {
+    console.error("Error during user search:", error);
+  }
+};
+
 const initialState = {
   user: null,
   usersById: {},
   byId: {},
   userInfoForDisplay: null,
+  searchedUsers: [],
 };
 
 export default function reducer(state = initialState, action) {
@@ -202,14 +187,6 @@ export default function reducer(state = initialState, action) {
     case SET_USER:
       return { user: action.payload };
 
-    // case GET_USER_INFO_BY_ID:
-    //   return {
-    //     ...state,
-    //     usersById: {
-    //       ...state.usersById,
-    //       [action.payload.id]: action.payload,
-    //     },
-    //   };
     case GET_USER_INFO_BY_ID:
       return {
         ...state,
@@ -231,6 +208,11 @@ export default function reducer(state = initialState, action) {
     case REMOVE_USER:
       return { user: null };
 
+    case SET_SEARCHED_USERS:
+      return {
+        ...state,
+        searchedUsers: action.payload,
+      };
     default:
       return state;
   }

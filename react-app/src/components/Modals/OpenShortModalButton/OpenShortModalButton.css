@@ -1,0 +1,21 @@
+
+.short-modal-more-info-button {
+  display: inline-block;
+  color: white;
+  background-color: transparent;
+  border-radius: 5px;
+  padding: 10px 15px;
+  border-radius: 5px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  z-index: 100000;
+}
+.dark .short-modal-more-info-button {
+
+  color: #FF5678;
+}
+.light .short-modal-more-info-button {
+  color:#FFA69E;
+}
