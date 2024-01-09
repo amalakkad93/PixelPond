@@ -25,11 +25,11 @@ const LoadPreviousPagination = ({
 
   if (!showLoadPreviousButton) return null;
   return (
-    <div className="load-more-pagination">
+    <div className="load-previous-pagination">
       {showLoadPreviousButton && (
         <button onClick={onLoadPrevious} className="load-previous-btn">
           {/* <i className="fa fa-chevron-up"></i> Load previous comments */}
-          <i className="fa fa-chevron-up"></i> 
+          <i className="fa fa-chevron-up"></i>
         </button>
       )}
     </div>

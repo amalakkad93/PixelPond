@@ -1,88 +1,74 @@
-import React, {
-  memo,
-  useEffect,
-  useState,
-  useRef,
-  useCallback,
-} from "react";
-import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import React, { memo, useEffect, useState, useRef, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams, useHistory, useLocation, Link } from "react-router-dom";
 
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import Pagination from "../Pagination";
-import UserNavigationBar from "../Navigation/UserNavigationBar";
-import Spinner from "../Spinner";
-import { thunkGetAlbumImages } from "../../store/albums";
-import {
-  thunkGetPostsByUserId,
-} from "../../store/posts";
-import { setLoading, setError, clearUIState } from "../../store/ui";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft, faLayerGroup } from "@fortawesome/free-solid-svg-icons";
+// import { useLoading } from "../../context/LoadingContext";
+import { thunkFetchAllFavorites } from "../../store/favorites";
+import { thunkGetAlbumImages, thunkGetAlbumsByUserId   } from "../../store/albums";
+import { thunkGetPostsByUserId } from "../../store/posts";
+import { setError, clearUIState } from "../../store/ui";
 import {
   selectAlbumDetails,
   selectUserPosts,
   selectPostById,
-  selectUserInfo,
+  selectPostUserInfo,
   selectLoading,
   selectSessionUser,
   selectAlbumInfo,
 } from "../../store/selectors";
-import defult_banner_image from "../../assets/images/defult_banner_image.png";
-import OpenModalButton from "../Modals/OpenModalButton";
+
+import OpenShortModalButton from "../Modals/OpenShortModalButton";
+import Pagination from "../Pagination";
+import Spinner from "../Spinner";
 import CreatePostForm from "../Posts/PostForms/CreatePostForm";
-import UserProfileManager from "../Users/UserProfile/UserProfileManager";
-import ProfilePictureUpdater from "../Users/UserProfile/ProfilePictureUpdater";
-import AddToAlbumModal from "../Albums/AddToAlbumModal";
-import ImageItem from "./ImageItem/ImageItem";
-import {thunkFetchAllFavorites} from "../../store/favorites";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faUserCircle,
-  faEdit,
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
-import "./ImageDisplay.css";
 import ImageGrid from "./ImageGrid/ImageGrid";
 
-const ImageDisplay = memo(({ mode, albumId }) => {
+import "./ImageDisplay.css";
+
+const ImageDisplay = memo(({ mode }) => {
+  console.log("Mode in ImageDisplay:", mode);
   // Hooks for accessing Redux state and React Router functionality
   const dispatch = useDispatch();
-  const { userId } = useParams();
+  const history = useHistory();
+  const { userId, albumId } = useParams();
 
 
   // Selectors to retrieve data from the Redux store
-  const userInfo = useSelector(selectUserInfo);
+  const userInfo = useSelector(selectPostUserInfo);
+  console.log("🚀 ~ file: index.js:46 ~ ImageDisplay ~ userInfo:", userInfo);
   const loading = useSelector(selectLoading);
 
   const { images: albumImages, title: albumTitle } = useSelector((state) =>
     selectAlbumDetails(state, albumId)
   );
   const sessionUser = useSelector(selectSessionUser);
+  console.log("🚀🚀🚀🚀🚀🚀🚀🚀 userId,:", userId,"type of userId: ", typeof userId)
+  console.log("🚀🚀🚀🚀🚀🚀🚀🚀  sessionUser?.id:", sessionUser?.id,"type of sessionUser Id: ", typeof sessionUser?.id)
   const userPosts = useSelector(selectUserPosts);
+  console.log("🚀 ~ file: index.js:53 ~ ImageDisplay ~ userPosts:", userPosts);
   const userPostsIds = useSelector(selectPostById);
   const albumInfo = useSelector((state) => selectAlbumInfo(state, albumId));
+  console.log("🚀 ~ file: index.js:62 ~ ImageDisplay ~ albumInfo:", albumInfo);
 
   // Ref and state hooks for managing component state and lifecycle
   const isMounted = useRef(true);
-  const [currentPage, setCurrentPage] = useState(1);
+
+  const [currentAlbumPage, setCurrentAlbumPage] = useState(1);
+  const [currentPostPage, setCurrentPostPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [showAbout, setShowAbout] = useState(false);
   const [isEditingProfilePic, setIsEditingProfilePic] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const perPage = 10;
 
-  // Function to toggle the 'about' section
-  const toggleAbout = useCallback(() => {
-    setShowAbout((prevShowAbout) => !prevShowAbout);
-  }, []);
-
-
-
   // Function to fetch data based on the current mode and page
   const fetchData = useCallback(
     async (page) => {
       setIsLoading(true);
       try {
-        dispatch(setLoading(true));
+        // dispatch(setLoading(true));
 
         // Determine the user ID based on the mode
         const selectedUserId =
@@ -98,13 +84,20 @@ const ImageDisplay = memo(({ mode, albumId }) => {
               thunkGetAlbumImages(albumId, page, perPage)
             );
             break;
-
+          // case "albumManagement":
           case "ownerPhotoStream":
           case "photoStream":
           case "addPostToAnAlbum":
             response = await dispatch(
               thunkGetPostsByUserId(selectedUserId, page, perPage)
             );
+
+            break;
+          case "albumManagement":
+            response = await dispatch(
+              thunkGetPostsByUserId(sessionUser?.id, page, perPage)
+            );
+
             break;
           default:
             response = null;
@@ -112,7 +105,7 @@ const ImageDisplay = memo(({ mode, albumId }) => {
         }
 
         if (response && isMounted.current) {
-          setCurrentPage(response.current_page);
+          setCurrentPostPage(response.current_page);
           setTotalPages(response.total_pages);
         }
       } catch (err) {
@@ -120,7 +113,7 @@ const ImageDisplay = memo(({ mode, albumId }) => {
         dispatch(setError("An error occurred"));
       } finally {
         if (isMounted.current) {
-          dispatch(setLoading(false));
+          // dispatch(setLoading(false));
           setIsLoading(false);
         }
       }
@@ -131,19 +124,49 @@ const ImageDisplay = memo(({ mode, albumId }) => {
   // useEffect to fetch data when component mounts or dependencies change
   useEffect(() => {
     dispatch(clearUIState());
-    fetchData(currentPage);
+    fetchData(currentPostPage);
 
     return () => (isMounted.current = false);
-
-  }, [dispatch, fetchData, currentPage, mode]);
+  }, [dispatch, fetchData, currentPostPage, mode]);
 
   // Effect to re-fetch data if the album title changes
   useEffect(() => {
-    if (mode === "albumImages") {
-      fetchData(currentPage);
-
+    if (mode === "albumImages" && albumId) {
+      fetchData(currentPostPage);
     }
-  }, [albumTitle, fetchData, currentPage, mode]);
+  }, [fetchData, currentPostPage, mode, albumId]);
+
+  useEffect(() => {
+    let idToUse = null;
+
+    if (mode === 'ownerPhotoStream') {
+      // Use session user ID for ownerPhotoStream mode
+      idToUse = sessionUser?.id;
+    } else if (['albumManagement', 'addPostToAnAlbum'].includes(mode)) {
+      // Convert userId from useParams to number for consistency
+      const numericUserId = Number(userId);
+
+      // Use userId from useParams if it matches session user ID,
+      // or if sessionUser is viewing their own albums
+      if (numericUserId === sessionUser?.id) {
+        idToUse = numericUserId;
+      }
+    }
+
+    if (idToUse !== null) {
+      console.log('Fetching albums data for mode:', mode, 'User ID:', idToUse);
+      dispatch(thunkGetAlbumsByUserId(idToUse, currentAlbumPage, perPage));
+      fetchData(currentPostPage);
+    }
+
+  }, [dispatch, userId, currentAlbumPage, perPage, mode, sessionUser?.id]);
+
+  useEffect(() => {
+    fetchData(currentPostPage);
+  }, [fetchData, currentPostPage]);
+
+
+
 
   useEffect(() => {
     if (sessionUser?.id) {
@@ -151,21 +174,21 @@ const ImageDisplay = memo(({ mode, albumId }) => {
     }
   }, [dispatch, sessionUser?.id]);
 
-
-  if (isLoading) return <Spinner />;
+  if (loading) return <Spinner />;
 
   // Helper functions and variables to process and display images
-  const profilePhoto = userInfo?.profile_picture || null;
-  const userName = `${userInfo?.first_name || ""} ${userInfo?.last_name || ""}`;
+  const bannerPhoto = userInfo?.banner_picture || null;
+  console.log(
+    "🚀 ~ file: index.js:147 ~ ImageDisplay ~ bannerPhoto:",
+    bannerPhoto
+  );
+
   const aboutMe = userInfo?.about_me || "No about me information available.";
-  const getNavigationUserId = () => {
-    return mode === "ownerPhotoStream" || mode === "addPostToAnAlbum"
-      ? sessionUser?.id
-      : userId;
-  };
+
 
   const getImagesAndDisplayedImages = () => {
     switch (mode) {
+      case "albumManagement":
       case "photoStream":
       case "ownerPhotoStream":
       case "addPostToAnAlbum":
@@ -177,6 +200,7 @@ const ImageDisplay = memo(({ mode, albumId }) => {
             ...userPosts[id],
             image_url: userPosts[id]?.image_url,
           })),
+          // userInfo:
         };
       case "albumImages":
         return {
@@ -195,14 +219,40 @@ const ImageDisplay = memo(({ mode, albumId }) => {
   };
 
   // Extracting relevant data for rendering
-  const navigationUserId = getNavigationUserId();
-  const { images, imageLength, displayedImages } =
+  const { displayedImages } =
     getImagesAndDisplayedImages();
 
   const noContentMessage =
-    (mode === "ownerPhotoStream" || mode === "addPostToAnAlbum") &&
+    (mode === "ownerPhotoStream" ||
+      mode === "addPostToAnAlbum" ||
+      mode === "albumManagement") &&
     displayedImages?.length === 0;
 
+  if (albumImages?.length === 0 && mode === "albumImages") {
+    return (
+      <div className="no-content-message">
+        <p>No images found in this album.</p>
+        {sessionUser?.id === parseInt(userId) ? (
+          <div className="add-posts-to-an-album-button-container">
+            <button
+              className="add-posts-to-an-album-button"
+              // onClick={() => history.push(`/owner/posts/add`)}
+              onClick={() => history.push(`/owner/posts/albums/${albumId}/add`)}
+            >
+              <FontAwesomeIcon icon={faLayerGroup} />
+              <span>Add a Post to an Album</span>
+            </button>
+          </div>
+        ) : (
+          <p>This album has no images.</p>
+        )}
+      </div>
+    );
+  }
+  console.log("User posts:", userPosts);
+  console.log("User post IDs:", userPostsIds);
+
+  console.log("Displayed images:", displayedImages);
   return (
     <div>
       {/* Render logic based on loading state, mode, and data */}
@@ -210,67 +260,25 @@ const ImageDisplay = memo(({ mode, albumId }) => {
         <Spinner />
       ) : (
         <>
-          {mode !== "albumImages" && (
-            <div className="banner-container">
-              <div className="banner">
-                {images && images[0] ? (
-                  <LazyLoadImage
-                    src={images[0]}
-                    effect="blur"
-                    className="banner-image"
-                    width={"100%"}
-                    height={"300px"}
-                  />
-                ) : (
-                  <LazyLoadImage
-                    src={defult_banner_image}
-                    effect="blur"
-                    className="banner-image"
-                    width={"100%"}
-                    height={"300px"}
-                  />
-                )}
-
-                <div
-                  className={
-                    mode === "ownerPhotoStream"
-                      ? "owner-details"
-                      : "user-details"
-                  }
-                >
-                  <div
-                    className="profile-picture-container"
-                    onClick={() =>
-                      mode === "ownerPhotoStream" &&
-                      setIsEditingProfilePic(true)
-                    }
-                  >
-                    {profilePhoto && profilePhoto ? (
-                      <img
-                        src={profilePhoto}
-                        alt="Profile"
-                        className="profile-picture"
-                      />
-                    ) : (
-                      <FontAwesomeIcon
-                        icon={faUserCircle}
-                        className="profile-picture"
-                      />
-                    )}
-                  </div>
-
-                  <div className="user-name">
-                    <h1>{userName || "User Name"}</h1>
-                  </div>
-                </div>
-              </div>
+          {mode === "albumImages" && (
+            <button
+              className="back-button"
+              onClick={() => history.push(`/albums/users/${userId}`)}
+            >
+              <FontAwesomeIcon icon={faArrowLeft} /> Back to Albums
+            </button>
+          )}
+          {mode === "albumManagement" && (
+            <div className="album-management-banner">
+              <h2>Album Management</h2>
+              <p>Select posts to add or remove from albums</p>
             </div>
           )}
           <div className="photo-stream-container">
             {noContentMessage && (
               <div className="no-content-message">
                 <h1>You have no public photos.</h1>
-                <OpenModalButton
+                <OpenShortModalButton
                   className="create-post-button"
                   buttonText="Create Post"
                   modalComponent={
@@ -279,7 +287,7 @@ const ImageDisplay = memo(({ mode, albumId }) => {
                         dispatch(
                           thunkGetPostsByUserId(
                             sessionUser?.id,
-                            currentPage,
+                            currentPostPage,
                             10
                           )
                         )
@@ -289,16 +297,6 @@ const ImageDisplay = memo(({ mode, albumId }) => {
                 />
               </div>
             )}
-            {mode !== "albumImages" && (
-              <nav className="album-navigation">
-                <UserNavigationBar
-                  id={navigationUserId}
-                  onAboutClick={toggleAbout}
-                  photoCount={imageLength}
-                  currentPage={currentPage}
-                />
-              </nav>
-            )}
 
             {showAbout && (
               <div className="about-section">
@@ -306,9 +304,9 @@ const ImageDisplay = memo(({ mode, albumId }) => {
               </div>
             )}
             {/* <div className="Images-and-create-btn"> */}
-            {mode === "ownerPhotoStream" && (
+            {mode === "ownerPhotoStream" && displayedImages.length > 0 && (
               <div className="create-post-container">
-                <OpenModalButton
+                <OpenShortModalButton
                   className="create-post-button"
                   buttonText="Create Post"
                   modalComponent={
@@ -317,7 +315,7 @@ const ImageDisplay = memo(({ mode, albumId }) => {
                         dispatch(
                           thunkGetPostsByUserId(
                             sessionUser?.id,
-                            currentPage,
+                            currentPostPage,
                             10
                           )
                         )
@@ -330,33 +328,26 @@ const ImageDisplay = memo(({ mode, albumId }) => {
             {displayedImages && displayedImages.length > 0 && (
               <ImageGrid
                 displayedImages={displayedImages}
+                albumId={albumId}
                 mode={mode}
                 albumInfo={albumInfo}
                 sessionUser={sessionUser}
               />
             )}
-            {/* {mode === "favoritesPost" && (
-              <ImageGrid
-                displayedImages={displayedImages}
-                mode={mode}
-                albumInfo={albumInfo}
-                sessionUser={sessionUser?.id}
-
+            {displayedImages.length > 0 && (
+              <Pagination
+                totalItems={totalPages * perPage}
+                itemsPerPage={perPage}
+                currentPostPage={currentPostPage}
+                onPageChange={(newPage) => fetchData(newPage)}
               />
-            )} */}
-            {/* </div> */}
-            {/* Pagination */}
-            <Pagination
-              totalItems={totalPages * perPage}
-              itemsPerPage={perPage}
-              currentPage={currentPage}
-              onPageChange={(newPage) => fetchData(newPage)}
-            />
+            )}
           </div>
         </>
       )}
     </div>
   );
 });
+
 
 export default ImageDisplay;

@@ -1,19 +1,19 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { useModal } from '../../../context/Modal';
+import { useShortModal } from '../../../context/ModalShort';
 import { thunkDeleteAlbum } from '../../../store/albums';
 import './DeleteAlbum.css'; // You may need to create this CSS file
 
-export default function DeleteAlbum({ albumId, onDelete }) {
+export default function DeleteAlbum({ albumId, onDelete, userId }) {
   const dispatch = useDispatch();
-  const { closeModal } = useModal();
+  const { closeShortModal } = useShortModal();
 
   const handleDelete = async () => {
     try {
       await dispatch(thunkDeleteAlbum(albumId));
 
-      closeModal();
-      onDelete && onDelete(); 
+      closeShortModal();
+      onDelete && onDelete();
     } catch (error) {
       console.error("Error:", error);
     }
@@ -32,7 +32,7 @@ export default function DeleteAlbum({ albumId, onDelete }) {
           <button id="delete-item-btn" onClick={handleDelete}>
             Yes (Delete)
           </button>
-          <button id="cancel-item-btn" onClick={closeModal}>
+          <button id="cancel-item-btn" onClick={closeShortModal}>
             No (Keep)
           </button>
         </div>

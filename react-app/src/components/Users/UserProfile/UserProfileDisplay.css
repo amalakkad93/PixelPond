@@ -1,0 +1,37 @@
+.user-profiles-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.profile-picture-container {
+  flex-shrink: 0;
+}
+
+.profile-picture {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.user-info-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.user-username {
+  font-size: 1em;
+  color: #666;
+}

@@ -25,10 +25,52 @@
 #modal-content {
   position: absolute;
   background-color:white;
+  color: #404040;
   z-index: 100002;
 
   max-height: 80%;
   overflow-y: auto;
   border-radius: 10px;
   padding: 20px;
+
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-top: 72px;
+}
+#modal-content h1, #modal-content h2, #modal-content h3 {
+  /* color: #ff0072; */
+}
+
+/* Light Mode Styles for Modal */
+.light #modal-background {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.light #modal-content {
+  color: #404040;
+  color: white;
+  background-color: #fff;
+
+}
+
+.light #modal-content h1,
+.light #modal-content h2,
+.light #modal-content h3 {
+  color: #FFA69E;
+}
+/* Dark Mode Styles for Modal */
+.dark #modal-background {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.dark #modal-content {
+  color: white;
+  background-color: #2D2D2D;
+}
+
+.dark #modal-content h1,
+.dark #modal-content h2,
+.dark #modal-content h3 {
+  color: #FF7EB3;
+
 }

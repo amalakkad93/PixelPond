@@ -1,0 +1,253 @@
+
+.search-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 10px;
+  top: 37%;
+  transform: translateY(-50%);
+  bottom: 20px;
+  margin-top: 5px;
+  color: #ccc;
+  z-index: 10;
+}
+
+.tag-search-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  z-index: 1000;
+  animation: fadeIn 0.3s;
+
+}
+
+.tag-search-dropdown::-webkit-scrollbar {
+  width: 5px;
+}
+
+.tag-search-dropdown::-webkit-scrollbar-thumb {
+  background-color: #FFA69E;
+  border-radius: 10px;
+}
+
+.tag-search-dropdown::-webkit-scrollbar-track {
+  background-color: #f0f0f0;
+}
+
+.dropdown-section-header {
+  padding: 10px 12px;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.user-search-item, .tag-search-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.user-search-item:first-child, .tag-search-item:first-child {
+  margin-top: 5px;
+}
+
+.user-search-item:last-child, .tag-search-item:last-child {
+  border-bottom: none;
+}
+
+.user-profile-picture {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+  object-fit: cover;
+}
+
+.tag-icon {
+  margin-right: 5px;
+}
+
+.highlighted-text {
+  font-weight: bold;
+}
+
+.tag-search-input {
+  width: 100%;
+  padding: 10px 20px;
+  border-radius: 20px;
+  background-color: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.2);
+  transition: width 0.3s, box-shadow 0.3s;
+  font-size: 16px;
+  border: 3px solid transparent;
+  padding-left: 30px;
+}
+
+.tag-search-input:focus {
+  /* width: 110%; */
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+}
+
+.tag-search-input::placeholder {
+  color: #a9a9a9;
+  font-style: italic;
+}
+
+.tag-selected-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding-top: 5px;
+  position: relative;
+  z-index: 1001;
+}
+
+.tag-selected-button{
+  border: none;
+  border-radius: 4px;
+  padding: 0px 10px;
+  margin-right: -11px;
+  cursor: pointer;
+}
+
+.popover {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  padding: 10px;
+  padding: 0px 10px;
+  border-radius: 5px;
+  /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); */
+  z-index: 1001;
+  margin-right: 5px;
+  border: none;
+
+  cursor: pointer;
+}
+
+.popover.hidden {
+  display: none;
+}
+
+.tag-selected-div {
+  display: inline-block;
+  border: none;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 0px 10px;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+
+/* Dark Mode Styles */
+.dark .tag-search-container {
+
+}
+
+.dark .tag-search-input {
+  background-color: #2D2D2D;
+  color: white;
+  border: 2px solid #FF7EB3;
+}
+
+.dark .tag-search-input:focus {
+  border-color: #FF5678;
+}
+
+.dark .tag-search-input::placeholder {
+  color: white;
+  opacity: 1;
+}
+
+.dark .tag-search-dropdown {
+  background-color: #333333;
+  color: white;
+}
+
+.dark .tag-search-item {
+  background-color: #404040;
+  color: white;
+}
+
+.dark .tag-search-item:hover {
+  background-color: #FF5678;
+  color: white;
+}
+
+.dark .tag-selected-div {
+  background-color: #FF7EB3;
+  color: white;
+}
+
+.dark .tag-selected-div:hover {
+  background-color: #FF5678;
+}
+.dark .tag-selected-button{
+  background-color: transparent;
+  color: white;
+}
+
+/* Light Mode Styles */
+.light .tag-search-container {
+
+}
+
+.light .tag-search-input {
+  background-color: #FAFAFA;
+  color: #404040;
+  border: 2px solid #FFA69E;
+}
+
+.light .tag-search-input:focus {
+  border-color: #FF7EB3;
+}
+
+.light .tag-search-input::placeholder {
+  color: black;
+  opacity: 1;
+}
+
+.light .tag-search-dropdown {
+  background-color: white;
+  color: #404040;
+}
+
+.light .tag-search-item {
+  background-color: white;
+  color: #404040;
+}
+
+.light .tag-search-item:hover {
+  background-color: #FFA69E;
+  color: white;
+}
+
+.light .tag-selected-div{
+  background-color: #FFA69E;
+  color: white;
+}
+.light .tag-selected-button{
+  background-color: transparent;
+  color: white;
+}
+
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .tag-search-input {
+    width: 100%;
+  }
+}

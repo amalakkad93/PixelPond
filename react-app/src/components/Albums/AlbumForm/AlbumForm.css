@@ -1,0 +1,131 @@
+.album-form{
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-group {
+  margin-bottom: 15px;
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+}
+
+.form-group .album-form-input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.album-form-btn[type="submit"] {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.error {
+  color: #ff6b6b;
+  margin-top: 10px;
+}
+.dark .album-form {
+  color: white;
+  background-color: #282c35;
+}
+
+.dark .form-group .album-form-input[type="text"] {
+  background-color: #404040;
+  color: white;
+  border-color: #FF7EB3;
+}
+
+.dark .album-form-btn[type="submit"] {
+  background-color: #FF7EB3;
+  color: white;
+  background-image: linear-gradient(to right, #FF758C 0%, #FF7EB3 100%);
+}
+
+.dark .album-form-btn[type="submit"]:hover {
+  background-color: #FF5678;
+  background-image: linear-gradient(to right, #FF5678 0%, #FF6EA1 100%);
+}
+
+.light .album-form  {
+  color: #404040;
+  background-color: #ffffff;
+}
+
+.light .form-group .album-form-input[type="text"] {
+  background-color: #f0f0f0;
+  color: #404040;
+  border-color: #FFA69E;
+}
+
+.light .album-form-btn[type="submit"] {
+  background-color: #FFA69E;
+  color: white;
+  background-image: linear-gradient(to right, #FFA69E 0%, #FFC3A0 100%);
+}
+
+.light .album-form-btn[type="submit"]:hover {
+  background-color: #FF7EB3;
+  background-image: linear-gradient(to right, #FFB3B3 0%, #FFD1C1 100%);
+}
+
+/* .dark .album-form {
+  color: white;
+  background-color: #282c35;
+}
+
+.dark .form-group .album-form-input[type="text"] {
+  background-color: #404040;
+  color: white;
+  border-color: #ff7f47;
+}
+
+.dark .album-form-btn[type="submit"] {
+  background-color: #ff7f47;
+  color: white;
+}
+
+.dark.album-form-btn[type="submit"]:hover {
+  background-color: #e66a3f;
+}
+
+.light .album-form  {
+  color: #404040;
+  background-color: #ffffff;
+}
+
+.light .form-group .album-form-input[type="text"] {
+  background-color: #f0f0f0;
+  color: #404040;
+  border-color: #ff0072;
+}
+
+.light .album-form-btn[type="submit"] {
+  background-color: #ff0072;
+  color: white;
+}
+
+.light .album-form-btn[type="submit"]:hover {
+  background-color: #e60066;
+} */
+
+@media screen and (max-width: 768px) {
+  .form-group .album-form-input[type="text"] {
+    padding: 8px;
+  }
+
+  .album-form-btn[type="submit"] {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+
+}

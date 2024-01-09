@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { useModal } from '../../../context/Modal';
+import { useShortModal } from '../../../context/ModalShort';
 import {thunkDeletePost} from '../../../store/posts';
 import './DeletePost.css';
 
@@ -10,13 +10,13 @@ export default function DeletePost({
   onDelete
 }) {
   const dispatch = useDispatch();
-  const { closeModal } = useModal();
+  const { closeShortModal } =useShortModal();
 
   const handleDelete = async () => {
     try {
       await dispatch(thunkDeletePost(postId));
 
-      closeModal();
+      closeShortModal();
       onDelete();
     } catch (error) {
       console.error("Error:", error);
@@ -36,7 +36,7 @@ export default function DeletePost({
           <button id="delete-item-btn" onClick={handleDelete}>
             Yes (Delete)
           </button>
-          <button id="cancel-item-btn" onClick={closeModal}>
+          <button id="cancel-item-btn" onClick={closeShortModal}>
             No (Keep)
           </button>
         </div>

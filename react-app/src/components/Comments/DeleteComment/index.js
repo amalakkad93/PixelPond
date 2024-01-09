@@ -1,18 +1,19 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { useModal } from '../../../context/Modal';
+import { useShortModal } from '../../../context/ModalShort';
 import { thunkDeleteComment } from '../../../store/comments';
 import './DeleteComment.css';
 
 export default function DeleteComment({ postId, commentId, onDelete }) {
   const dispatch = useDispatch();
   const { closeModal } = useModal();
-
+  const { closeShortModal } =useShortModal();
   const handleDelete = async () => {
     try {
       await dispatch(thunkDeleteComment(postId, commentId));
 
-      closeModal();
+      closeShortModal();
       if (onDelete) onDelete();
     } catch (error) {
       console.error("Error:", error);
@@ -30,7 +31,7 @@ export default function DeleteComment({ postId, commentId, onDelete }) {
           <button id="delete-item-btn" onClick={handleDelete}>
             Yes (Delete)
           </button>
-          <button id="cancel-item-btn" onClick={closeModal}>
+          <button id="cancel-item-btn" onClick={closeShortModal}>
             No (Keep)
           </button>
         </div>

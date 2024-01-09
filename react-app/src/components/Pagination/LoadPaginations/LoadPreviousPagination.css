@@ -1,4 +1,4 @@
-.load-previous-btn {
+/* .load-previous-btn {
   background-color: #f0f0f0;
   border: none;
   cursor: pointer;
@@ -11,4 +11,83 @@
 
 .load-previous-btn i {
   margin-right: 5px;
+}
+.load-previous-pagination{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+.load-previous-pagination button {
+  background-color: transparent;
+  color: #ff0072;
+}
+
+
+.dark .load-previous-pagination button {
+  background-color: transparent;
+  color:#ff7f47;
+}
+
+.dark .load-previous-pagination button:hover {
+  background-color:#e66a3f;
+} */
+.load-previous-btn {
+  background-color: #FFA69E; 
+  border: 1px solid #FFA69E;
+  cursor: pointer;
+  padding: 10px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.load-previous-btn i {
+  margin-right: 5px;
+}
+
+.load-previous-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.load-previous-pagination button {
+  background-color: transparent;
+  color: #FFA69E;
+  border: 1px solid #FFA69E;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.load-previous-pagination button:hover {
+  background-color: #FF8B94;
+  color: white;
+}
+
+.light .load-previous-pagination button {
+  color: #FFA69E;
+  border-color: #FFA69E;
+}
+
+.light .load-previous-pagination button:hover {
+  background-color: #FF7EB3;
+  color: white;
+}
+
+.dark .load-previous-pagination button {
+  color: #FF7EB3;
+  border-color: #FF7EB3;
+}
+
+.dark .load-previous-pagination button:hover {
+  background-color: #FF5678;
+  color: white;
 }

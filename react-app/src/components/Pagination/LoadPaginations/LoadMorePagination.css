@@ -1,11 +1,11 @@
-.load-more-pagination {
+/* .load-more-pagination {
   text-align: center;
   margin-top: 20px;
 }
 
 .load-more-pagination button {
-  background-color: #007bff;
-  color: white;
+  background-color: transparent;
+  color: #ff0072;
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
@@ -20,5 +20,59 @@
 }
 
 .load-more-pagination button:hover {
-  background-color: #0056b3;
+  background-color:#a8004c;
+}
+
+.dark .load-more-pagination button {
+  background-color: transparent;
+  color:#ff7f47;
+}
+
+.dark .load-more-pagination button:hover {
+  background-color:#e66a3f;
+} */
+.load-more-pagination {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.load-more-pagination button {
+  background-color: transparent;
+  color: #FFA69E; 
+  padding: 10px 20px;
+  border: 1px solid #FFA69E;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 20px 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  display: block;
+  width: max-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.load-more-pagination button:hover {
+  background-color: #FF8B94;
+  color: white;
+}
+
+.light .load-more-pagination button {
+  border-color: #FFA69E;
+  color: #FFA69E;
+}
+
+.light .load-more-pagination button:hover {
+  background-color: #FF7EB3;
+  color: white;
+}
+
+.dark .load-more-pagination button {
+  border-color: #FF7EB3;
+  color: #FF7EB3;
+}
+
+.dark .load-more-pagination button:hover {
+  background-color: #FF5678;
+  color: white;
 }

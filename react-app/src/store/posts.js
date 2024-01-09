@@ -1,5 +1,9 @@
 // import { normalizeArray, fetchPaginatedData } from "../assets/helpers/storesHelpers";
-import { normalizeArray } from "../assets/helpers/storesHelpers";
+import {
+  normalizeArray,
+  uploadFileWithProgress,
+} from "../assets/helpers/storesHelpers";
+import { getPresignedUrl } from "./aws";
 import {
   fetchPaginatedData,
   actionSetCurrentPage,
@@ -56,11 +60,6 @@ const SET_TOTAL_PAGES_POST = "posts/SET_TOTAL_PAGES";
 const CLEAR_POSTS_DATA = "CLEAR_POSTS_DATA";
 
 export const CLEAR_POST_DETAILS = "posts/CLEAR_POST_DETAILS";
-
-export const SET_TAGS = "posts/tags/SET_TAGS";
-
-export const GET_POSTS_BY_TAG = "posts/GET_POSTS_BY_TAG";
-
 
 // Action Creators
 
@@ -167,17 +166,6 @@ export const clearPostsData = (dataType) => ({
 export const actionAddPostToAlbum = (post) => ({
   type: ADD_POST_TO_ALBUM,
   post,
-});
-
-// Action to set tags in the Redux store
-const actionSetTags = (tags) => ({
-  type: SET_TAGS,
-  tags,
-});
-
-const actionGetPostsByTag = (posts) => ({
-  type: GET_POSTS_BY_TAG,
-  posts,
 });
 
 /** Creates an action to handle errors during post operations */
@@ -312,80 +300,177 @@ export const thunkGetNeighborPosts = (postId, userId) => async (dispatch) => {
 // ***************************************************************
 //  Thunk to Create a New Post
 // ***************************************************************
-export const thunkCreatePost = (postData) => async (dispatch, getState) => {
-  try {
-    const response = await fetch("/api/posts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(postData),
-    });
+export const thunkCreatePost = (postData, image) => {
+  return async (dispatch) => {
+    try {
+      if (image) {
+        const { presignedUrl, fileUrl } = await dispatch(
+          getPresignedUrl(image.name, image.type)
+        );
+        if (!presignedUrl) {
+          throw new Error("Failed to upload image");
+        }
 
-    if (response.ok) {
-      const post = await response.json();
+        await fetch(presignedUrl, {
+          method: "PUT",
+          body: image,
+          headers: {
+            "Content-Type": image.type,
+          },
+        });
 
-      dispatch(actionCreatePost(post));
+        postData.image_url = fileUrl;
+      }
 
-      return { type: "SUCCESS", data: post };
-    } else {
-      const errors = await response.json();
-      dispatch(actionSetPostError(errors.error || "Error creating post."));
-      return { type: "FAILURE", error: errors };
+      const postResponse = await fetch("/api/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(postData),
+      });
+
+      if (!postResponse.ok) {
+        const errorData = await postResponse.json();
+        throw new Error(errorData.error);
+      }
+
+      const postDataResult = await postResponse.json();
+      return postDataResult;
+    } catch (error) {
+      dispatch(
+        setError(
+          error.message ||
+            "An unexpected error occurred while creating the post"
+        )
+      );
+      throw error;
     }
-  } catch (error) {
-    console.error("Error in thunkCreatePost: ", error);
-    dispatch(actionSetPostError("An error occurred while creating the post."));
-    return { type: "ERROR", error };
-  }
+  };
 };
 
 // ***************************************************************
 //  Thunk to Update a Post
 // ***************************************************************
-export const thunkUpdatePost = (postId, updatedData) => async (dispatch) => {
-  if (!postId) {
-    return { type: "ERROR", error: { message: "Invalid post ID" } };
-  }
+export const thunkUpdatePost =
+  (postId, updatedData, image, onProgress) => async (dispatch) => {
+    if (!postId) {
+      return { type: "ERROR", error: { message: "Invalid post ID" } };
+    }
 
-  try {
-    const response = await fetch(`/api/posts/${postId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedData),
-    });
+    try {
+      // Check if 'image' is a File object for a new image upload
+      if (image && image instanceof File) {
+        const { presignedUrl, fileUrl } = await dispatch(
+          getPresignedUrl(image.name, image.type)
+        );
 
-    if (response.ok) {
+        if (!presignedUrl) {
+          throw new Error("Failed to upload image");
+        }
+
+        await fetch(presignedUrl, {
+          method: "PUT",
+          body: image,
+          headers: {
+            "Content-Type": image.type,
+          },
+        });
+
+        // Upload file with progress tracking
+        await uploadFileWithProgress(presignedUrl, image, onProgress);
+        // Update the image URL in the post data
+        updatedData.image_url = fileUrl;
+      }
+      // If no new image is provided or image is not a File object, the existing image URL remains unchanged
+      const response = await fetch(`/api/posts/${postId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedData),
+      });
+
+      if (!response.ok) {
+        const errors = await response.json();
+        console.error("Update Post Error: ", errors);
+        dispatch(
+          actionSetPostError(
+            errors.error || `Error updating post with ID ${postId}.`
+          )
+        );
+        return { type: "FAILURE", error: errors };
+      }
+
       const data = await response.json();
-
       dispatch(actionUpdatePost(data));
-
       dispatch(thunkGetPostDetails(postId));
-
-      return { type: "SUCCESS", data };
-    } else {
-      const errors = await response.json();
-      console.error("Update Post Error: ", errors);
+      return data;
+    } catch (error) {
+      console.error("Error in thunkUpdatePost: ", error);
       dispatch(
         actionSetPostError(
-          errors.error || `Error updating post with ID ${postId}.`
+          `An error occurred while updating post with ID ${postId}.`
         )
       );
-      return { type: "FAILURE", error: errors };
+      return { type: "ERROR", error };
     }
-  } catch (error) {
-    console.error("Error in thunkUpdatePost: ", error);
-    dispatch(
-      actionSetPostError(
-        `An error occurred while updating post with ID ${postId}.`
-      )
-    );
-    return { type: "ERROR", error };
-  }
-};
+  };
+
+// export const thunkUpdatePost = (postId, updatedData, image) => async (dispatch) => {
+//   if (!postId) {
+//     return { type: "ERROR", error: { message: "Invalid post ID" } };
+//   }
+
+//   try {
+//     if (image) {
+//       const { presignedUrl, fileUrl } = await dispatch(getPresignedUrl(image.name, image.type));
+//       if (!presignedUrl) {
+//         throw new Error('Failed to upload image');
+//       }
+
+//       await fetch(presignedUrl, {
+//         method: "PUT",
+//         body: image,
+//         headers: {
+//           "Content-Type": image.type,
+//         },
+//       });
+
+//       updatedData.image_url = fileUrl;
+//     }
+
+//     const response = await fetch(`/api/posts/${postId}`, {
+//       method: "PUT",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify(updatedData),
+//     });
+
+//     if (response.ok) {
+//       const data = await response.json();
+//       dispatch(actionUpdatePost(data));
+//       dispatch(thunkGetPostDetails(postId));
+//       return data;
+//     } else {
+//       const errors = await response.json();
+//       console.error("Update Post Error: ", errors);
+//       dispatch(
+//         actionSetPostError(
+//           errors.error || `Error updating post with ID ${postId}.`
+//         )
+//       );
+//       return { type: "FAILURE", error: errors };
+//     }
+//   } catch (error) {
+//     console.error("Error in thunkUpdatePost: ", error);
+//     dispatch(
+//       actionSetPostError(
+//         `An error occurred while updating post with ID ${postId}.`
+//       )
+//     );
+//     return { type: "ERROR", error };
+//   }
+// };
 
 // ***************************************************************
 //  Thunk to Delete a Post
 // ***************************************************************
-
 export const thunkDeletePost = (postId) => async (dispatch) => {
   try {
     const response = await fetch(`/api/posts/${postId}`, {
@@ -430,62 +515,6 @@ export const thunkGetUserPostsNotInAlbum = (userId, page, perPage) => {
     null,
     [true, false],
     ["user_posts", "user_info"]
-  );
-};
-
-// Thunk to Fetch All Tags
-export const thunkGetAllTags = () => async (dispatch) => {
-  try {
-    const response = await fetch("/api/posts/tags");
-    if (response.ok) {
-      const data = await response.json();
-      console.log("🚀 ~ file: posts.js:440 ~ thunkGetAllTags ~ data:", data);
-      dispatch(actionSetTags(data.tags));
-      return data.tags;
-    } else {
-      const error = await response.json();
-      throw new Error(error.message);
-    }
-  } catch (error) {
-    console.error("Error fetching tags:", error);
-  }
-};
-
-export const thunkGetPostsByTag = (tag, page, perPage) => {
-  console.log("thunkGetPostsByTag called", { tag, page, perPage });
-  return fetchPaginatedData(
-    `/api/posts/by_tag/${tag}`,
-    [actionGetPostsByTag],
-    page,
-    perPage,
-    {},
-    {},
-    null,
-    [true],
-    ["posts"],
-    "postsByTag"
-  );
-};
-export const thunkGetPostsByTags = (tags, page, perPage) => {
-  console.log("thunkGetPostsByTag called", { tags, page, perPage });
-
-
-  const queryParams = new URLSearchParams();
-  tags.forEach(tag => queryParams.append('tags', tag));
-  queryParams.append('page', page);
-  queryParams.append('per_page', perPage);
-
-  return fetchPaginatedData(
-    `/api/posts/by_tags?${queryParams.toString()}`,
-    [actionGetPostsByTag],
-    page,
-    perPage,
-    {},
-    {},
-    null,
-    [true],
-    ["posts"],
-    "postsByTag"
   );
 };
 
@@ -775,22 +804,6 @@ export default function reducer(state = initialState, action) {
         singlePost: {},
         // neighborPosts: {},
       };
-
-    case SET_TAGS:
-      return {
-        ...state,
-        tags: action.tags,
-      };
-
-    case GET_POSTS_BY_TAG:
-      newState = { ...state, postsByTag: { byId: {}, allIds: [] } };
-      newState.postsByTag = {
-        byId: { ...newState.postsByTag.byId, ...action.posts.byId },
-        allIds: [
-          ...new Set([...newState.postsByTag.allIds, ...action.posts.allIds]),
-        ],
-      };
-      return newState;
     default:
       return state;
   }

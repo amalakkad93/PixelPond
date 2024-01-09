@@ -10,15 +10,10 @@
   width: 100%;
   padding: 10px 15px;
   border-radius: 20px;
-  border: 2px solid #5d3b8b;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   outline: none;
   font-size: 16px;
   transition: border-color 0.3s;
-}
-
-.tag-search-input:focus {
-  border-color: #b39ddb;
 }
 
 .tag-search-dropdown {
@@ -26,7 +21,6 @@
   top: 100%;
   left: 0;
   width: 100%;
-  background-color: #ffffff;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   border-radius: 8px;
   overflow: hidden;
@@ -39,13 +33,7 @@
   transition: background-color 0.2s;
 }
 
-.tag-search-item:hover {
-  background-color: #ffcc00;
-  color: #303030;
-}
-
 .tag-selected-button {
-  background-color: #ffcc00;
   color: #303030;
   border: none;
   padding: 6px 12px;
@@ -55,24 +43,181 @@
   transition: background-color 0.3s;
 }
 
-.tag-selected-button:hover {
-  background-color: #e6b800;
-}
-
 .tag-selected-button span {
   margin-left: 5px;
   font-weight: bold;
 }
-
-
-.tag-search-input::placeholder {
-  color: #5d3b8b;
-  opacity: 1;
-}
-
 .tag-search-input:focus::placeholder {
   color: transparent;
 }
+
+/* Dark Mode for Tag Search */
+.dark .tag-search-container {
+
+}
+/* .dark .tag-search-input::placeholder {
+  color: white;
+  opacity: 1;
+}
+.dark .tag-search-input {
+  background-color: #282c35;
+  color: white;
+  border: 2px solid #ff7f47;
+}
+
+.dark .tag-search-input:focus {
+  border-color: #ff7f47;
+}
+
+.dark .tag-search-dropdown {
+  background-color: #333333;
+  color: white;
+}
+
+.dark .tag-search-item {
+
+  background-color: #404040;
+  color: white;
+}
+
+.dark .tag-search-item:hover {
+  background-color: #ff7f47;
+  color: white;
+}
+
+.dark .tag-selected-button {
+  background-color: #ff7f47;
+  color: white;
+}
+
+.dark .tag-selected-button:hover {
+  background-color: #fd6a2b;
+} */
+
+/* Light Mode for Tag Search */
+/* .light .tag-search-container {
+
+}
+.light .tag-search-input::placeholder {
+  color: black;
+  opacity: 1;
+}
+.light .tag-search-input {
+  background-color: #F0F0F0;
+  color: #404040;
+  border: 2px solid #ff0072;
+}
+
+.light .tag-search-input:focus {
+  border-color: #ff0072;
+}
+
+.light .tag-search-dropdown {
+  background-color: white;
+  color: #404040;
+}
+
+.light .tag-search-item {
+
+  background-color: white;
+  color: #404040;
+}
+
+.light .tag-search-item:hover {
+  background-color: #ff0072;
+  color: white;
+}
+
+.light .tag-selected-button {
+  background-color: #ff0072;
+  color: white;
+}
+
+.light .tag-selected-button:hover {
+  background-color: #e60066;
+} */
+.dark .tag-search-input::placeholder {
+  color: white;
+  opacity: 1;
+}
+
+.dark .tag-search-input {
+  background-color: #2D2D2D;
+  color: white;
+  border: 2px solid #FF7EB3;
+}
+
+.dark .tag-search-input:focus {
+  border-color: #FF5678;
+}
+
+.dark .tag-search-dropdown {
+  background-color: #333333;
+  color: white;
+}
+
+.dark .tag-search-item {
+  background-color: #404040;
+  color: white;
+}
+
+.dark .tag-search-item:hover {
+  background-color: #FF5678;
+  color: white;
+}
+
+.dark .tag-selected-button {
+  background-color: #FF7EB3;
+  color: white;
+}
+
+.dark .tag-selected-button:hover {
+  background-color: #FF5678;
+}
+
+.light .tag-search-container {
+  /* Your container styles (if any) */
+}
+
+.light .tag-search-input::placeholder {
+  color: black;
+  opacity: 1;
+}
+
+.light .tag-search-input {
+  background-color: #FAFAFA;
+  color: #404040;
+  border: 2px solid #FFA69E;
+}
+
+.light .tag-search-input:focus {
+  border-color: #FF7EB3;
+}
+
+.light .tag-search-dropdown {
+  background-color: white;
+  color: #404040;
+}
+
+.light .tag-search-item {
+  background-color: white;
+  color: #404040;
+}
+
+.light .tag-search-item:hover {
+  background-color: #FFA69E;
+  color: white;
+}
+
+.light .tag-selected-button {
+  background-color: #FFA69E;
+  color: white;
+}
+
+.light .tag-selected-button:hover {
+  background-color: #FF7EB3;
+}
+
 
 /* Media query for tablets */
 @media (max-width: 768px) {

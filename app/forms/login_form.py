@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField
-from wtforms.validators import DataRequired, Email, ValidationError
+from wtforms.validators import DataRequired, ValidationError
 from app.models import User
 
 def user_exists(form, field):
@@ -8,21 +8,20 @@ def user_exists(form, field):
     user_input = field.data
     user = User.query.filter((User.email == user_input) | (User.username == user_input)).first()
     if not user:
-        raise ValidationError('User not found.')
+        raise ValidationError('The email or username provided does not match our records.')
 
 def password_matches(form, field):
     # Check if password matches
     password = field.data
     user_input = form.data['username_or_email']
     user = User.query.filter((User.email == user_input) | (User.username == user_input)).first()
-    if not user:
-        raise ValidationError('No such user exists.')
-    if not user.check_password(password):
-        raise ValidationError('Password was incorrect.')
+    if user and not user.check_password(password):
+        raise ValidationError('The password you entered is incorrect.')
 
 class LoginForm(FlaskForm):
-    username_or_email = StringField('username_or_email', validators=[DataRequired(), user_exists])
-    password = StringField('password', validators=[DataRequired(), password_matches])
+    username_or_email = StringField('Username or Email', validators=[DataRequired(), user_exists])
+    password = StringField('Password', validators=[DataRequired(), password_matches])
+
 
 # from flask_wtf import FlaskForm
 # from wtforms import StringField

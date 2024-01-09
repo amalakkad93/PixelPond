@@ -13,6 +13,7 @@ export const selectLoading = (state) => state.ui.loading;
 export const selectSessionUser = state => state?.session?.user;
 export const selectUserId = selectSessionUser?.id;
 export const selectUserById = state => state.session.usersById
+export const selectSearchedUserDisplay = (state) => state.session.searchedUsers
 
 
 // =========================================================
@@ -37,15 +38,7 @@ export const selectAllPostsImages = (state) => {
   });
 };
 
-export const selectPostsByTag = (state) => {
-  return state.posts.postsByTag.allIds.map(postId => {
-    const post = state.posts.postsByTag?.byId?.[postId];
-    return {
-      post_id: post.id,
-      image_url: post.image_url
-    };
-  });
-};
+
 
 export const selectOwnerPosts = (state) => state.posts?.ownerPosts?.allIds.map((id) => state.posts.ownerPosts.byId[id]|| {});
 // Select all posts by ID as an object
@@ -58,7 +51,7 @@ export const selectPostById = (state) => state.posts.userPosts.allIds
 export const selectUserPostsWithNoAlbumId = (state) => state.posts.userPostsNoAlbum.byId || {};
 export const selectPostWithNoAlbumIdById = (state) => state.posts.userPostsNoAlbum.allIds
 
-export const selectUserInfo= (state) => state.posts?.userInfo
+export const selectPostUserInfo= (state) => state.posts?.userInfo
 
 
 export const selectNeighborPosts = (state) => {
@@ -78,25 +71,6 @@ export const selectUserPostImages = (state) => {
 //               ****Album UseSelectors****
 // =========================================================
 
-// export const selectAlbumImages =  (state, albumId) => {
-//   const album = state.albums.singleAlbum.byId[albumId];
-//   return album ? album.imageIds.map(id => album.images[id]) : [];
-// };
-
-
-// export const selectAlbumImages = (state, albumId) => {
-//   const album = state.albums?.singleAlbum?.byId?.[albumId];
-//   if (!album || !album?.images) return [];
-
-//   return album.imageIds?.map(id => {
-//     const image = album.images?.[id];
-//     return {
-//       ...image,
-//       post_id: image?.post_id,
-//     };
-//   });
-// };
-
 export const selectAlbumDetails = (state, albumId) => {
   const album = state.albums?.singleAlbum?.byId?.[albumId];
   if (!album) return { images: [], title: '' };
@@ -115,7 +89,7 @@ export const selectAlbumDetails = (state, albumId) => {
   };
 };
 
-
+export const selectAlbumUserInfo= (state) => state.albums?.userInfo
 
 export const selectAllAlbums = (state) => {
   const { userAlbums } = state?.albums;
@@ -132,15 +106,16 @@ export const selectAllAlbums = (state) => {
 };
 
 
-
-
 export const selectTotalAlbums = (state) => state.albums?.userAlbums?.allIds?.length;
 export const selectAlbumInfo = (state, albumId) => state.albums?.singleAlbum?.byId?.[albumId];
 
 export const selectUserAlbums = (state) => {
+  console.log("Current state:", state);
   const albumsById = state.albums?.userAlbums?.byId;
+  console.log("Albums by ID:", albumsById);
   return albumsById ? Object.values(albumsById) : [];
 };
+
 // =========================================================
 //               ****Comment UseSelectors****
 // =========================================================
@@ -177,9 +152,25 @@ export const selectAllFavorites = (state) => {
 
 
 // Selector to check if a post is favorited
+// export const isPostFavorited = (state, postId) => {
+//   const favorites = Object.values(state.favorites.favoritesById);
+//   console.log("🚀 ~ file: selectors.js:202 ~ isPostFavorited ~ favorites", favorites)
+//   let res = favorites.some(favorite => favorite.post_id === postId);
+//   console.log("🚀 ~ file: selectors.js:202 ~ isPostFavorited ~ res", res)
+//   return res;
+//   // return favorites.some(favorite => favorite.post_id === postId);
+// };
 export const isPostFavorited = (state, postId) => {
   const favorites = Object.values(state.favorites.favoritesById);
-  return favorites.some(favorite => favorite.post_id === postId);
+  console.log("🚀 ~ favorites:", favorites);
+  console.log("🚀 ~ postId:", postId, "Type:", typeof postId);
+
+  // Ensuring postId is a number, adjust as needed based on your data type
+  const numericPostId = Number(postId);
+
+  let res = favorites.some(favorite => Number(favorite.post_id) === numericPostId);
+  console.log("🚀 ~ isPostFavorited ~ res:", res);
+  return res;
 };
 
 // Selector to get a favorite by ID
@@ -190,7 +181,17 @@ export const selectFavoriteById = (state, favoriteId) => {
 // =========================================================
 //               ****Tags UseSelectors****
 // =========================================================
-export const selectAllTags = (state) => state.posts?.tags || [];
+export const selectAllTags = (state) => state.tags?.allTags || [];
+
+export const selectPostsByTag = (state) => {
+  return state.tags.postsByTag.allIds.map(postId => {
+    const post = state.tags.postsByTag?.byId?.[postId];
+    return {
+      post_id: post.id,
+      image_url: post.image_url
+    };
+  });
+};
 // =========================================================
 //               ****Paginations UseSelectors****
 // =========================================================
