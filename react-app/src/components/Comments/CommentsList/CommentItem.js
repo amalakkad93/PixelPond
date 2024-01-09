@@ -56,7 +56,7 @@ const CommentItem = ({
                     }
                   ></i>
                   {showOptionsFor === comment.id && (
-                    <div className="options-modal">
+                    <div className="comments-options-modal">
                       <OpenShortModalButton
                         className="edit-comment-button"
                         buttonText={

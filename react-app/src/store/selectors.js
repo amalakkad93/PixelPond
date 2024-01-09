@@ -110,9 +110,12 @@ export const selectTotalAlbums = (state) => state.albums?.userAlbums?.allIds?.le
 export const selectAlbumInfo = (state, albumId) => state.albums?.singleAlbum?.byId?.[albumId];
 
 export const selectUserAlbums = (state) => {
+  console.log("Current state:", state);
   const albumsById = state.albums?.userAlbums?.byId;
+  console.log("Albums by ID:", albumsById);
   return albumsById ? Object.values(albumsById) : [];
 };
+
 // =========================================================
 //               ****Comment UseSelectors****
 // =========================================================

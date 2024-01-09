@@ -79,7 +79,6 @@ const GetAlbums = () => {
 
 
   const renderAlbumImages = (album) => {
-    // Ensure album.images is defined and is an array
     const imagesToShow = album.images && Array.isArray(album.images)
       ? (activeAlbumId === album.id ? album.images : album.images.slice(0, 4))
       : [];
@@ -160,6 +159,8 @@ const GetAlbums = () => {
                 >
                   {album?.title}
                 </div>
+                {isCurrentUserProfile && (
+                  <>
                 <div className="album-delete-edit-button">
                   <OpenShortModalButton
                     className="delete-edit-modal"
@@ -196,6 +197,8 @@ const GetAlbums = () => {
                     />
                   </button>
                 </div>
+                  </>
+              )}
               </div>
               {renderAlbumImages(album)}
             </div>

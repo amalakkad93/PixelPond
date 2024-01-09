@@ -23,6 +23,7 @@ import "./ImageItem.css";
 const ImageItem = memo(
   ({ imageUrl, postId, onClick, addPostToAlbumMode, showRemoveIcon, mode,   albumId, hasAlbums, showOptionsButton, }) => {
     console.log("🚀 ~ file: ImageItem.js:25 ~ mode:", mode);
+    
     const dispatch = useDispatch();
     const optionsRef = useRef(null);
     const [showOptions, setShowOptions] = useState(false);
@@ -32,6 +33,14 @@ const ImageItem = memo(
     const userId = sessionUser?.id;
     const favorite = useSelector((state) => isPostFavorited(state, postId));
 
+    const isAlbumImagesMode = mode === "albumImages";
+    const isAddToAlbumMode = mode === "addPostToAnAlbum";
+    const isPhotoStreamMode = mode === "photoStream";
+
+  showOptionsButton = true;
+    if (isPhotoStreamMode) {
+      showOptionsButton = false;
+    }
     // UseEffect for handling click outside
     useEffect(() => {
       document.addEventListener("mousedown", handleClickOutside);
@@ -54,8 +63,8 @@ const ImageItem = memo(
       }
     };
 
-    const isAlbumImagesMode = mode === "albumImages";
-    const isAddToAlbumMode = mode === "addPostToAnAlbum";
+
+
 
     return (
       <div className="photo-item">
@@ -72,6 +81,7 @@ const ImageItem = memo(
               className="favorite-icon"
             />
           </button>
+          {console.log("Rendering Options Button: ", hasAlbums, showOptionsButton)}
           {hasAlbums && (
             <>
             {showOptionsButton && (
@@ -141,65 +151,3 @@ const ImageItem = memo(
 );
 
 export default ImageItem;
-
-// const ImageItem = memo(
-//   ({ imageUrl, postId, onClick, addPostToAlbumMode, showRemoveIcon }) => {
-//     const dispatch = useDispatch();
-//     const { closeShortModal } = useShortModal();
-//     const { openShortModal } = useShortModal();
-//     const sessionUser = useSelector(selectSessionUser);
-//     const userId = sessionUser?.id;
-//     const favorite = useSelector(state => isPostFavorited(state, postId));
-
-//     const handleFavoriteToggle = (e) => {
-//       e.stopPropagation();
-//       if (userId) {
-//         dispatch(thunkToggleFavorite(userId, postId));
-//       }
-//     };
-
-//     return (
-//       <div className="photo-item">
-// <div className="image-wrapper">
-//   <LazyLoadImage
-//     src={imageUrl}
-//     alt="Photo"
-//     effect="blur"
-//     onClick={() => onClick(postId)}
-//   />
-// <button onClick={handleFavoriteToggle} className="favorite-button">
-
-//    <FontAwesomeIcon icon={favorite ? solidStar : regularStar} className="favorite-icon" />
-// </button>
-// </div>
-//         {addPostToAlbumMode && (
-//           <OpenShortModalButton
-//             className="add-to-album-modal-trigger"
-//             modalComponent={
-//               <AddToAlbumModal postId={postId} onClose={closeShortModal} />
-//             }
-//             buttonText={
-//               <FontAwesomeIcon icon={faPlus} className="add-to-album-icon" />
-//             }
-//           />
-//         )}
-//         {showRemoveIcon && (
-//           <OpenShortModalButton
-//             className="remove-from-album-modal-trigger"
-//             modalComponent={
-//               <RemoveFromAlbumModal postId={postId} onClose={openShortModal } />
-//             }
-//             buttonText={
-//               <FontAwesomeIcon
-//                 icon={faTrash}
-//                 className="remove-from-album-icon"
-//               />
-//             }
-//           />
-//         )}
-//       </div>
-//     );
-//   }
-// );
-
-// export default ImageItem;

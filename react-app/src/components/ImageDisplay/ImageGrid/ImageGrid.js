@@ -13,6 +13,8 @@ const breakpointColumnsObj = {
 
 const ImageGrid = memo(({ displayedImages, mode, albumInfo, sessionUser, albumId }) => {
   const userAlbums = useSelector(selectUserAlbums);
+  console.log("User Albums:", userAlbums);
+
   const hasAlbums = userAlbums && userAlbums.length > 0;
 
 

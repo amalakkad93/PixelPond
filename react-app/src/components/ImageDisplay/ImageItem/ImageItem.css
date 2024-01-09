@@ -13,6 +13,7 @@
 
 .options-button {
   position: absolute;
+  /* position: relative; */
   top: 0px;
   left: 0px;
   background-color: transparent;
@@ -24,20 +25,22 @@
   background-color: transparent;
   border: none;
   cursor: pointer;
-  /* Additional styles as needed */
+
 }
 .options-modal {
   display: flex;
   position: absolute;
-  top: 10px; /* Adjust as necessary */
-  left: 10px; /* Adjust as necessary */
-  background-color: #fff;
+  top: 100%;
+  top: calc(14% + 10px);
+  left: 0%;
+  background-color: rgba(255, 255, 255, 0.7); 
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   padding: 5px;
   gap: 10px;
-  z-index: 10; /* Ensure it's above other elements */
+  z-index: 100000;
 }
+
 
 .photo-item .favorite-button {
   position: absolute;

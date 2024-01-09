@@ -31,7 +31,10 @@ export const actionGetAlbumImages = (
     payload: { albumId, images: normalizedImages, userId, albumTitle },
   };
 };
-
+export const actionSetUserInfo = (userInfo) => ({
+  type: GET_USER_INFO,
+  userInfo,
+});
 // export const actionGetAlbumsByUserId = (albums) => {
 //   const normalizedAlbums = albums.map((album) => {
 //     const normalizedImages = normalizeArray(album.images, "id");
@@ -167,11 +170,8 @@ export const thunkGetAlbumsByUserId = (userId, page, perPage) => {
 };
 
 
-// Action Creator for setting user info
-export const actionSetUserInfo = (userInfo) => ({
-  type: GET_USER_INFO,
-  userInfo,
-});
+
+
 
 // ***************************************************************
 // Thunk to Add Post to Album

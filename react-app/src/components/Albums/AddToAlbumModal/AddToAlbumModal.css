@@ -115,7 +115,11 @@
   color: black;
   z-index: 2;
 }
-
+.disabled-button {
+  color: grey;
+  pointer-events: none;
+  opacity: 0.5;
+}
 .dark .add-to-album-modal-main {
   background-color: #282c35;
   color: white;

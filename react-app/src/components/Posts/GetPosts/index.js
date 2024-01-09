@@ -98,7 +98,11 @@ export default function GetPosts({ mode = "all" }) {
           <div
             key={post?.id}
             className="post-item"
-            onClick={() => history.push(`/posts/users/${post?.owner_id}`)}
+            // onClick={() => history.push(`/posts/users/${post?.owner_id}`)}
+            onClick={() => {
+              const path = post?.owner_id === sessionUser.id ? `/owner/photostream` : `/posts/users/${post?.owner_id}`;
+              history.push(path);
+            }}
           >
             <img
               className="main-image"
