@@ -1,3 +1,14 @@
+/**
+ * CommentsList Component
+ *
+ * This component is responsible for displaying a list of comments for a specific post. It handles
+ * fetching comments from the server and manages pagination. The component sorts comments by their
+ * creation date and allows users to load previous or more comments. It integrates with the Redux
+ * store for state management and dispatching actions. Additionally, the component provides a form
+ * for creating new comments.
+ *
+ * @param {number} postId - The ID of the post for which the comments are being displayed.
+ */
 import React, { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { thunkGetPostComments } from "../../../store/comments";
@@ -6,9 +17,6 @@ import {
   selectSessionUser,
 } from "../../../store/selectors";
 import CommentItem from "./CommentItem";
-import OpenModalButton from "../../Modals/OpenModalButton";
-import EditCommentForm from "../CommentForm/EditCommentForm";
-import DeleteComment from "../DeleteComment";
 import CreateCommentForm from "../CommentForm/CreateCommentForm";
 import LoadMorePagination from "../../Pagination/LoadPaginations/LoadMorePagination";
 import LoadPreviousPagination from "../../Pagination/LoadPaginations/LoadPreviousPagination";
@@ -16,8 +24,8 @@ import LoadPreviousPagination from "../../Pagination/LoadPaginations/LoadPreviou
 import "./CommentItem.css";
 
 const CommentsList = ({ postId }) => {
+  // Setup of hooks and state management variables
   const dispatch = useDispatch();
-  const commentsRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
@@ -28,10 +36,13 @@ const CommentsList = ({ postId }) => {
 
   const comments = useSelector((state) => selectPostComments(state, postId));
 
+  // Sorting comments by creation date in descending order
+  // This ensures that the most recent comments are displayed first
   const sortedComments = comments.sort(
     (a, b) => new Date(b.created_at) - new Date(a.created_at)
   );
 
+  // Function to fetch comments
   const fetchComments = (page) => {
     if (page < 1) {
       console.log("Invalid page number");
@@ -41,7 +52,6 @@ const CommentsList = ({ postId }) => {
     dispatch(thunkGetPostComments(postId, page, perPage))
       .then((response) => {
         if (response) {
-          console.log("Response:", response);
           setCurrentPage(response.current_page);
           setTotalPages(response.total_pages);
           setTotalItems(response.total_items);
@@ -52,23 +62,25 @@ const CommentsList = ({ postId }) => {
       .catch((err) => console.log("Error fetching comments:", err));
   };
 
-
+  // useEffect hooks for initial fetch and re-fetch based on dependencies
   useEffect(() => {
+    // ... useEffect implementation for fetching comments on current page change ...
     if (totalItems > 0 || currentPage === 1) {
       fetchComments(currentPage);
     }
   }, [currentPage, postId, totalItems]);
 
   useEffect(() => {
+    // ... useEffect implementation for fetching comments on postId change ...
     setCurrentPage(1);
     if (totalItems > 0 || currentPage === 1) {
       fetchComments(1);
     }
   }, [postId]);
 
-
   return (
     <div className="comments-list">
+      {/* Load previous comments pagination */}
       <LoadPreviousPagination
         className="load-previous-comments-btn"
         currentPage={currentPage}
@@ -82,10 +94,10 @@ const CommentsList = ({ postId }) => {
         }}
       />
 
-      {/* comments */}
+      {/* Rendering each comment using CommentItem component */}
       {sortedComments.map((comment) => (
         <CommentItem
-          key={comment.id}
+          key={comment?.id}
           comment={comment}
           sessionUser={sessionUser}
           showOptionsFor={showOptionsFor}
@@ -94,6 +106,7 @@ const CommentsList = ({ postId }) => {
           postId={postId}
         />
       ))}
+      {/* Load more comments pagination */}
       <LoadMorePagination
         className="load-more-comments-btn"
         currentPage={currentPage}
@@ -106,13 +119,14 @@ const CommentsList = ({ postId }) => {
           }
         }}
       />
+      {/* CreateCommentForm for adding new comments */}
       {sessionUser && (
         <div className="create-comment-form">
-        <CreateCommentForm
-          postId={postId}
-          onCommentSuccess={() => fetchComments(1)}
-        />
-      </div>
+          <CreateCommentForm
+            postId={postId}
+            onCommentSuccess={() => fetchComments(1)}
+          />
+        </div>
       )}
     </div>
   );

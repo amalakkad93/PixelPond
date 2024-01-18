@@ -21,7 +21,6 @@ export const selectSearchedUserDisplay = (state) => state.session.searchedUsers
 // =========================================================
 
 // Select all posts as an array
-// export const selectAllPosts = (state) => state.posts?.allPosts?.allIds.map((id) => state.posts.allPosts.byId[id]|| {});
 export const selectAllPosts = (state) => {
   const posts = state.posts?.allPosts?.allIds.map((id) => state.posts.allPosts.byId[id] || {});
   const ownerIds = [...new Set(posts.map(post => post.owner_id))];
@@ -110,9 +109,7 @@ export const selectTotalAlbums = (state) => state.albums?.userAlbums?.allIds?.le
 export const selectAlbumInfo = (state, albumId) => state.albums?.singleAlbum?.byId?.[albumId];
 
 export const selectUserAlbums = (state) => {
-  console.log("Current state:", state);
   const albumsById = state.albums?.userAlbums?.byId;
-  console.log("Albums by ID:", albumsById);
   return albumsById ? Object.values(albumsById) : [];
 };
 
@@ -134,42 +131,21 @@ export const selectUploadedImageUrl = (state) => state.aws?.uploadedImageUrl;
 // =========================================================
 //               ****Favorite UseSelectors****
 // =========================================================
-// export const selectFavoritePosts = (state) => state.favorites?.allFavorites || {};
 export const selectFavoritePosts = (state) => {
 
   return state.favorites.allFavorites;
 };
-
-// export const selectFavoriteById =  (state) => state.favorites?.favoritesById || {};
-
-
-
 
 // Selector to get all favorites
 export const selectAllFavorites = (state) => {
   return Object.values(state.favorites.favoritesById);
 };
 
-
-// Selector to check if a post is favorited
-// export const isPostFavorited = (state, postId) => {
-//   const favorites = Object.values(state.favorites.favoritesById);
-//   console.log("🚀 ~ file: selectors.js:202 ~ isPostFavorited ~ favorites", favorites)
-//   let res = favorites.some(favorite => favorite.post_id === postId);
-//   console.log("🚀 ~ file: selectors.js:202 ~ isPostFavorited ~ res", res)
-//   return res;
-//   // return favorites.some(favorite => favorite.post_id === postId);
-// };
 export const isPostFavorited = (state, postId) => {
   const favorites = Object.values(state.favorites.favoritesById);
-  console.log("🚀 ~ favorites:", favorites);
-  console.log("🚀 ~ postId:", postId, "Type:", typeof postId);
-
-  // Ensuring postId is a number, adjust as needed based on your data type
   const numericPostId = Number(postId);
 
   let res = favorites.some(favorite => Number(favorite.post_id) === numericPostId);
-  console.log("🚀 ~ isPostFavorited ~ res:", res);
   return res;
 };
 

@@ -1,7 +1,5 @@
 import React, { useRef, useState, useContext, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-// import { Modal, ShortModal } from './ModalShort';
-
 import './ShortModal.css'
 
 const ShortModalContext = React.createContext();

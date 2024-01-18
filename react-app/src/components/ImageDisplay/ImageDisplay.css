@@ -4,8 +4,6 @@
   margin-left: auto;
   margin-right: auto;
   padding: 0 20px;
-  /* margin-top: 20px; */
-  /* margin-top: 163px; */
 }
 
 .album-management-banner {
@@ -26,22 +24,15 @@
 }
 
 .user-details-container {
-  /* position: absolute;
-  left: 0;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  padding-left: 20px; */
-
   position: absolute;
   bottom: 10px;
   left: 20px;
 }
+
 .banner-image {
   width: 100%;
   height: 200px;
   object-fit: cover;
-  /* height: auto;  */
 }
 
 .user-details,
@@ -101,19 +92,11 @@
   cursor: pointer;
 }
 
-.edit-icon {
-  /* color: #000; */
-}
-
 .profile-picture-container:hover .edit-icon-overlay {
   opacity: 1;
 }
 
 .album-navigation {
-  /* display: flex;
-  justify-content: center;
-  margin-top: 20px; */
-
   margin-bottom: 20px;
 }
 
@@ -123,12 +106,6 @@
   padding: 10px;
   font-weight: bold;
   transition: color 0.3s;
-}
-
-.album-navigation a.active,
-.album-navigation a:hover {
-  /* color: #2d545e;
-  border-bottom: 2px solid #c89666; */
 }
 
 .photo-grid {
@@ -155,14 +132,6 @@
   cursor: pointer;
   margin-bottom: 10px;
 }
-.create-post-button:hover {
-}
-
-.Images-and-create-btn {
-  /* display: flex;
-  justify-content: space-between;
-  align-items: center; */
-}
 
 .no-content-message {
   text-align: center;
@@ -173,9 +142,7 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  /* color: #333; */
   font-size: 1.2rem;
-  /* background-color: #f0f0f0; */
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   flex-direction: column;
@@ -184,12 +151,12 @@
   margin-bottom: 20px;
 }
 
-/* Dark Mode Styles */
+/* Dark Mode */
 .back-button:hover {
   background-color: #a64d00;
 }
 
-/* Dark Mode Styles */
+/* Dark Mode */
 .dark .album-management-banner {
   background-color: #a64d00;
   color: #fff;
@@ -215,21 +182,21 @@
 
 .dark .album-navigation a.active,
 .dark .album-navigation a:hover {
-  border-bottom-color: #FF7EB3;
+  border-bottom-color: #ff7eb3;
 }
 
 .dark .create-post-button {
-  background-color: #FF7EB3;
+  background-color: #ff7eb3;
   color: white;
 }
 
 .dark .create-post-button:hover {
-  background-color: #FF5678;
+  background-color: #ff5678;
 }
 
 /* Light Mode Styles */
 .light .album-management-banner {
-  background-color: #ffb3c1; /* Soft, lighter pink */
+  background-color: #ffb3c1;
   color: #fff;
 }
 
@@ -253,40 +220,41 @@
 
 .light .album-navigation a.active,
 .light .album-navigation a:hover {
-  border-bottom-color: #FFA69E;
+  border-bottom-color: #ffa69e;
 }
 
 .light .create-post-button {
-  background-color: #FFA69E;
+  background-color: #ffa69e;
   color: white;
 }
 
 .light .create-post-button:hover {
-  background-color: #FF7EB3;
+  background-color: #ff7eb3;
 }
 
-
 @media (max-width: 767px) {
-  .back-button, .create-post-button {
-      padding: 8px 15px;
-      font-size: 12px;
+  .back-button,
+  .create-post-button {
+    padding: 8px 15px;
+    font-size: 12px;
   }
 
   .album-management-banner h2 {
-      font-size: 16px;
+    font-size: 16px;
   }
 
-  .no-content-message h1, .about-section p {
-      font-size: 14px;
+  .no-content-message h1,
+  .about-section p {
+    font-size: 14px;
   }
 
   .photo-stream-container {
-      padding: 5px;
-      margin: 5px;
+    padding: 5px;
+    margin: 5px;
   }
 
   .create-post-container {
-      text-align: center;
-      margin-bottom: 15px;
+    text-align: center;
+    margin-bottom: 15px;
   }
 }

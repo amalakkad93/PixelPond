@@ -165,7 +165,6 @@ export const thunkSearchUsers = (searchTerm) => async (dispatch) => {
     const response = await fetch(`/api/users/search?query=${encodeURIComponent(searchTerm)}`);
     if (response.ok) {
       const users = await response.json();
-      console.log('******************Fetched users:', users);
       dispatch(setSearchedUsers(users));
       return users;
     }

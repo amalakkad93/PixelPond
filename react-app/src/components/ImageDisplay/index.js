@@ -1,10 +1,20 @@
+/**
+ * ImageDisplay Component
+ *
+ * This component is responsible for displaying images in various modes such as 'albumImages',
+ * 'photoStream', 'ownerPhotoStream', and 'albumManagement'. It fetches and displays images based on
+ * the selected mode, handling pagination and user interactions. The component uses Redux for state
+ * management and dispatching actions related to fetching images and posts. It also provides a modal
+ * button for creating new posts and integrates dynamic navigation based on the mode and user actions.
+ *
+ * @param {string} mode - The mode of the component which determines the type of content to display.
+ */
 import React, { memo, useEffect, useState, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams, useHistory, useLocation, Link } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faLayerGroup } from "@fortawesome/free-solid-svg-icons";
-// import { useLoading } from "../../context/LoadingContext";
 import { thunkFetchAllFavorites } from "../../store/favorites";
 import {
   thunkGetAlbumImages,
@@ -34,9 +44,9 @@ const ImageDisplay = memo(({ mode }) => {
   // Hooks for accessing Redux state and React Router functionality
   const dispatch = useDispatch();
   const history = useHistory();
-  // Ref and state hooks for managing component state and lifecycle
-  const isMounted = useRef(true);
   const { userId, albumId } = useParams();
+  // State and ref hooks for managing component state and lifecycle
+  const isMounted = useRef(true);
 
   // Selectors to retrieve data from the Redux store
   const userInfo = useSelector(selectPostUserInfo);
@@ -63,9 +73,7 @@ const ImageDisplay = memo(({ mode }) => {
     async (page) => {
       setIsLoading(true);
       try {
-        // dispatch(setLoading(true));
-
-        // Determine the user ID based on the mode
+        // Determine the user ID based on the mode for fetching data
         const selectedUserId =
           mode === "ownerPhotoStream" || mode === "addPostToAnAlbum"
             ? sessionUser?.id
@@ -73,32 +81,34 @@ const ImageDisplay = memo(({ mode }) => {
 
         let response;
 
+        // Fetch data based on the current mode
         switch (mode) {
           case "albumImages":
+            // Fetching images for a specific album
             response = await dispatch(
               thunkGetAlbumImages(albumId, page, perPage)
             );
             break;
-          // case "albumManagement":
           case "ownerPhotoStream":
           case "photoStream":
           case "addPostToAnAlbum":
+            // Fetching user's posts for photo stream or adding posts to an album
             response = await dispatch(
               thunkGetPostsByUserId(selectedUserId, page, perPage)
             );
-
             break;
           case "albumManagement":
+            // Fetching posts for album management
             response = await dispatch(
               thunkGetPostsByUserId(sessionUser?.id, page, perPage)
             );
-
             break;
           default:
             response = null;
             break;
         }
 
+        // Update state with the fetched data if component is still mounted
         if (response && isMounted.current) {
           setCurrentPostPage(response.current_page);
           setTotalPages(response.total_pages);
@@ -109,7 +119,6 @@ const ImageDisplay = memo(({ mode }) => {
         dispatch(setError("An error occurred"));
       } finally {
         if (isMounted.current) {
-          // dispatch(setLoading(false));
           setIsLoading(false);
         }
       }
@@ -117,11 +126,12 @@ const ImageDisplay = memo(({ mode }) => {
     [dispatch, mode, albumId, userId, sessionUser?.id, perPage]
   );
 
-  // useEffect to fetch data when component mounts or dependencies change
+  // useEffect to initialize data fetching when component mounts
   useEffect(() => {
     dispatch(clearUIState());
     fetchData(currentPostPage);
 
+    // Cleanup function to set isMounted ref to false when the component unmounts
     return () => (isMounted.current = false);
   }, [dispatch, fetchData, currentPostPage, mode]);
 
@@ -132,9 +142,11 @@ const ImageDisplay = memo(({ mode }) => {
     }
   }, [fetchData, currentPostPage, mode, albumId]);
 
+  // Effect to fetch data based on mode and user ID
   useEffect(() => {
     let idToUse = null;
 
+    // Determine the user ID to use based on the mode
     if (mode === "ownerPhotoStream") {
       // Use session user ID for ownerPhotoStream mode
       idToUse = sessionUser?.id;
@@ -155,26 +167,27 @@ const ImageDisplay = memo(({ mode }) => {
     }
   }, [dispatch, userId, currentAlbumPage, perPage, mode, sessionUser?.id]);
 
-  useEffect(() => {
-    fetchData(currentPostPage);
-  }, [fetchData, currentPostPage]);
-
+  // Effect to fetch all favorites if a session user exists
   useEffect(() => {
     if (sessionUser?.id) {
       dispatch(thunkFetchAllFavorites(sessionUser?.id));
     }
   }, [dispatch, sessionUser?.id]);
 
-  if (loading) return <Spinner />;
+  // Conditional rendering based on the loading state
+  if (loading) return <Spinner />; // Display a spinner while data is loading
 
+  // 'aboutMe' variable to store user's 'about me' information or a default message
   const aboutMe = userInfo?.about_me || "No about me information available.";
 
+  // Function to determine the images and displayed images based on the current mode
   const getImagesAndDisplayedImages = () => {
     switch (mode) {
       case "albumManagement":
       case "photoStream":
       case "ownerPhotoStream":
       case "addPostToAnAlbum":
+        // For these modes, fetch and format images from user posts
         return {
           images: userPostsIds
             .map((id) => userPosts[id]?.image || userPosts[id]?.image_url)
@@ -183,9 +196,9 @@ const ImageDisplay = memo(({ mode }) => {
             ...userPosts[id],
             image_url: userPosts[id]?.image_url,
           })),
-          // userInfo:
         };
       case "albumImages":
+        // For 'albumImages' mode, fetch and format images from album images
         return {
           images: albumImages?.map((image) => image?.url).filter(Boolean),
           imageLength: albumImages?.length,
@@ -197,29 +210,33 @@ const ImageDisplay = memo(({ mode }) => {
         };
 
       default:
+        // Default case when the mode does not match any of the above
         return { images: [], displayedImages: [] };
     }
   };
 
-  // Extracting relevant data for rendering
+  // Extract relevant data for rendering based on the current mode
   const { displayedImages } = getImagesAndDisplayedImages();
 
-  const noContentMessage = !isLoading && isDataFetched &&
+  // Determine if a no content message should be displayed
+  const noContentMessage =
+    !isLoading &&
+    isDataFetched &&
     (mode === "ownerPhotoStream" ||
       mode === "addPostToAnAlbum" ||
       mode === "albumManagement") &&
-      
     displayedImages?.length === 0;
 
+  // Conditional rendering for the case where an album has no images
   if (albumImages?.length === 0 && mode === "albumImages") {
     return (
       <div className="no-content-message">
         <p>No images found in this album.</p>
         {sessionUser?.id === parseInt(userId) ? (
+          // Offer the option to add a post to the album if the session user owns the album
           <div className="add-posts-to-an-album-button-container">
             <button
               className="add-posts-to-an-album-button"
-              // onClick={() => history.push(`/owner/posts/add`)}
               onClick={() => history.push(`/owner/posts/albums/${albumId}/add`)}
             >
               <FontAwesomeIcon icon={faLayerGroup} />
@@ -227,6 +244,7 @@ const ImageDisplay = memo(({ mode }) => {
             </button>
           </div>
         ) : (
+          // Display a message if there are no images in the album
           <p>This album has no images.</p>
         )}
       </div>
@@ -283,7 +301,7 @@ const ImageDisplay = memo(({ mode }) => {
                 <p>{aboutMe}</p>
               </div>
             )}
-            {/* <div className="Images-and-create-btn"> */}
+
             {mode === "ownerPhotoStream" && displayedImages.length > 0 && (
               <div className="create-post-container">
                 <OpenShortModalButton

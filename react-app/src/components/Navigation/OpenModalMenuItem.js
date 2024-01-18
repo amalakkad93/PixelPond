@@ -1,4 +1,3 @@
-// frontend/src/components/Navigation/OpenModalMenuItem.js
 import React from 'react';
 import { useModal } from '../../context/Modal';
 
@@ -11,7 +10,6 @@ function OpenModalMenuItem({
   const { setModalContent, setOnModalClose } = useModal();
 
   const onClick = () => {
-    console.log('---Modal item clicked');
     if (onModalClose) setOnModalClose(onModalClose);
     setModalContent(modalComponent);
     if (onItemClick) onItemClick();

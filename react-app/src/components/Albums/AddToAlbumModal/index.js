@@ -61,7 +61,7 @@ const AddToAlbumModal = ({ postId, onClose, mode, albumId }) => {
   // useEffect to fetch user's albums when the modal is opened or the session user changes
   useEffect(() => {
     if (sessionUser) {
-      dispatch(thunkGetAlbumsByUserId(sessionUser.id));
+      dispatch(thunkGetAlbumsByUserId(sessionUser?.id));
     }
   }, [dispatch, sessionUser]);
 
@@ -89,7 +89,7 @@ const AddToAlbumModal = ({ postId, onClose, mode, albumId }) => {
       const response = await dispatch(
         thunkGetAlbumImages(albumIdToCheck, page, ITEMS_PER_PAGE)
       );
-      found = response.images.some((image) => image.post_id === postId);
+      found = response.images.some((image) => image?.post_id === postId);
       // Break the loop if the image is found or if all pages have been checked
       if (found || page >= Math.ceil(response.total_images / ITEMS_PER_PAGE)) {
         break;
@@ -145,10 +145,10 @@ const AddToAlbumModal = ({ postId, onClose, mode, albumId }) => {
               {userAlbums.map((album) => (
                 <option
                   className="add-to-album-option"
-                  key={album.id}
-                  value={album.id}
+                  key={album?.id}
+                  value={album?.id}
                 >
-                  {album.title}
+                  {album?.title}
                 </option>
               ))}
             </select>
@@ -174,11 +174,11 @@ const AddToAlbumModal = ({ postId, onClose, mode, albumId }) => {
                   {albumImages.map((image) => (
                     <div
                       className={`thumbnail ${
-                        image.post_id === postId ? "in-album" : ""
+                        image?.post_id === postId ? "in-album" : ""
                       }`}
                     >
-                      <img src={image.url} alt="Album Thumbnail" />
-                      {image.post_id === postId && (
+                      <img src={image?.url} alt="Album Thumbnail" />
+                      {image?.post_id === postId && (
                         <div className="checkmark-overlay">
                           <FontAwesomeIcon icon={faCheck} />
                         </div>
