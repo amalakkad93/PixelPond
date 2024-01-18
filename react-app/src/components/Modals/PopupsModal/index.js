@@ -51,7 +51,6 @@ export default function PopupsModal({ showModal, onClose }) {
               className="btn-photo-stream"
               onClick={() => {
                 history.push(`/user/profile`);
-                // setModalVisible(false);
                 onClose();
               }}
             >
@@ -64,11 +63,9 @@ export default function PopupsModal({ showModal, onClose }) {
               className="btn-photo-stream"
               onClick={() => {
                 history.push(`/owner/photostream`);
-                // setModalVisible(false);
                 onClose();
               }}
             >
-              {/* <FontAwesomeIcon icon={faStream} /> */}
               <FontAwesomeIcon icon={faImages} />
               <span>My PhotoStream</span>
             </button>
@@ -76,7 +73,6 @@ export default function PopupsModal({ showModal, onClose }) {
             <button
               onClick={() => {
                 history.push(`/albums/users/${userId}`);
-                // setModalVisible(false);
                 onClose();
               }}
               className="btn-albums"

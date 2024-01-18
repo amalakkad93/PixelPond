@@ -18,17 +18,10 @@ const UserNavigationBar = ({
   const location = useLocation();
   const history = useHistory();
   const sessionUser = useSelector(selectSessionUser);
-  // if (isLoading) return <Spinner />;
-  console.log("🚀 ~ file: UserNavigationBar.js:95 ~  userInfo:",  userInfo)
   const [showAboutModal, setShowAboutModal] = useState(false);
-  // const [isOwner, setIsOwner] = useState(false);
 
   const isActive = (path) => location.pathname.startsWith(path);
   const effectiveId = id || sessionUser?.id;
-  console.log("🚀 ~ file: UserNavigationBar.js:103 ~ id:", id)
-  // const isOwner = sessionUser?.id === effectiveId;
-  console.log("🚀 ~ file: UserNavigationBar.js:104 ~ sessionUser?.id:", sessionUser?.id)
-  console.log("🚀 ~ file: UserNavigationBar.js:104 ~ isOwner:", isOwner)
   const about = userInfo?.about_me;
   const aboutContent = about || "No 'About Me' information available.";
 

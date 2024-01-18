@@ -156,7 +156,6 @@ export default function FormContainer(props) {
       })}
       <button
         disabled={isSubmitDisabled}
-        // onClick={() => console.log("Button was clicked!")}
         type="submit"
         style={{ opacity: 1, cursor: "pointer" }}
       >

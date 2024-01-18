@@ -44,7 +44,7 @@ const RemoveFromAlbumModal = ({ postId, mode }) => {
   // useEffect to fetch user's albums when the modal is opened or the session user changes
   useEffect(() => {
     if (sessionUser) {
-      dispatch(thunkGetAlbumsByUserId(sessionUser.id));
+      dispatch(thunkGetAlbumsByUserId(sessionUser?.id));
     }
   }, [dispatch, sessionUser]);
 
@@ -54,15 +54,15 @@ const RemoveFromAlbumModal = ({ postId, mode }) => {
     if (userAlbums && userAlbums.length > 0) {
       const postIdInt = parseInt(postId, 10); // Converting postId to an integer for comparison
       const filteredAlbums = userAlbums.filter((album) => {
-        const imageIds = album.images?.allIds; // Retrieve image IDs from the album
+        const imageIds = album?.images?.allIds; // Retrieve image IDs from the album
         return imageIds?.some((imageId) => {
-          const image = album.images.byId[imageId];
+          const image = album?.images?.byId?.[imageId];
           return image?.post_id === postIdInt; // Check if the image's post ID matches the given postId
         });
       });
       setAlbumsContainingPost(filteredAlbums); // Update state with filtered albums
       if (filteredAlbums.length > 0) {
-        setSelectedAlbumId(filteredAlbums[0].id); // Set the first filtered album as selected by default
+        setSelectedAlbumId(filteredAlbums[0]?.id); // Set the first filtered album as selected by default
       }
     }
   }, [userAlbums, postId]);
@@ -78,7 +78,7 @@ const RemoveFromAlbumModal = ({ postId, mode }) => {
           thunkGetAlbumImages(selectedAlbumId, currentPage, ITEMS_PER_PAGE)
         );
         dispatch(
-          thunkGetAlbumsByUserId(sessionUser.id, currentPage, ITEMS_PER_PAGE)
+          thunkGetAlbumsByUserId(sessionUser?.id, currentPage, ITEMS_PER_PAGE)
         );
         closeShortModal(); // Close the modal after successful removal
       } catch (error) {
@@ -97,8 +97,8 @@ const RemoveFromAlbumModal = ({ postId, mode }) => {
         >
           <option value="">Select Album</option>
           {albumsContainingPost.map((album) => (
-            <option key={album.id} value={album.id}>
-              {album.title}
+            <option key={album?.id} value={album?.id}>
+              {album?.title}
             </option>
           ))}
         </select>

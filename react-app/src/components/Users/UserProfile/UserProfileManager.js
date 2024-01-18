@@ -59,15 +59,14 @@ const UserProfileManager = () => {
       [event.target.name]: event.target.value,
     };
     setProfileData(updatedProfileData);
-    console.log(updatedProfileData);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
 
-    let imageProfileUrl = profileData.profile_picture;
-    let imageBannerUrl = profileData.banner_picture;
+    let imageProfileUrl = profileData?.profile_picture;
+    let imageBannerUrl = profileData?.banner_picture;
     try {
       if (uploadProfileImage) {
         const newProfileImageUrl = await uploadProfileImage();
@@ -107,12 +106,11 @@ const UserProfileManager = () => {
         >
           <div
             className="form-user-profile-image-container"
-            // ref={profileImageRef}
           >
-            {user.profile_picture ? (
+            {user?.profile_picture ? (
               <img
                 className="form-user-image"
-                src={user.profile_picture}
+                src={user?.profile_picture}
                 alt="Profile"
               />
             ) : (
@@ -142,7 +140,7 @@ const UserProfileManager = () => {
             <input
               type="text"
               name="first_name"
-              value={profileData.first_name}
+              value={profileData?.first_name}
               onChange={handleInputChange}
             />
           </div>
@@ -151,7 +149,7 @@ const UserProfileManager = () => {
             <input
               type="text"
               name="last_name"
-              value={profileData.last_name}
+              value={profileData?.last_name}
               onChange={handleInputChange}
             />
           </div>
@@ -162,7 +160,7 @@ const UserProfileManager = () => {
           <input
             type="email"
             name="email"
-            value={profileData.email}
+            value={profileData?.email}
             onChange={handleInputChange}
           />
         </div>
@@ -172,7 +170,7 @@ const UserProfileManager = () => {
           <input
             type="text"
             name="username"
-            value={profileData.username}
+            value={profileData?.username}
             onChange={handleInputChange}
           />
         </div>
@@ -181,7 +179,7 @@ const UserProfileManager = () => {
           <label>About Me</label>
           <textarea
             name="about_me"
-            value={profileData.about_me}
+            value={profileData?.about_me}
             onChange={handleInputChange}
           />
         </div>
@@ -191,12 +189,10 @@ const UserProfileManager = () => {
           <input
             type="text"
             name="country"
-            value={profileData.country}
+            value={profileData?.country}
             onChange={handleInputChange}
           />
         </div>
-
-        {/* <button type="submit"  onClick={ () => history.push('/user/profile')} className="submit-button">Save Changes</button> */}
         <button type="submit" className="submit-button">
           Save Changes
         </button>

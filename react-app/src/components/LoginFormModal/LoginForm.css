@@ -1,60 +1,57 @@
-.sign-up-container{
-  height:100%;
- }
+.sign-up-container {
+  height: 100%;
+}
 
- .google-auth-btn {
-   width: 300px;
-   height: 40px;
-   border: none;
-   border-radius: 4px;
-   cursor: pointer;
-   transition: background-color 0.3s;
-   background-color: transparent;
-   color: white;
- }
+.google-auth-btn {
+  width: 300px;
+  height: 40px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  background-color: transparent;
+  color: white;
+}
 
- .login-form {
-   display: flex;
-   flex-direction: column;
-   align-items: center;
-   gap: 10px;
-   padding: 20px;
-   /* background-color: #404040; */
-   color: white;
- }
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  color: white;
+}
 
- .login-input {
-   width: 300px;
-   height: 40px;
-   padding: 5px 10px;
-   border: 1px solid #ccc;
-   border-radius: 4px;
-   margin-bottom: 10px;
-
-   background-color: #F0F0F0;
-   color: #404040;
-   border: 1px solid #ff0072;
-
-   border: 2px solid transparent;
- }
+.login-input {
+  width: 300px;
+  height: 40px;
+  padding: 5px 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  background-color: #f0f0f0;
+  color: #404040;
+  border: 2px solid transparent;
+}
 
 .disabled-btn {
   background-color: grey;
   color: white;
 }
 
- .login-btn, .demo-user-btn {
-   width: 300px;
-   height: 40px;
-   background-color: #ff0072;
-   color: white;
-   border: none;
-   border-radius: 4px;
-   cursor: pointer;
-   transition: background-color 0.3s;
- }
+.login-btn,
+.demo-user-btn {
+  width: 300px;
+  height: 40px;
+  background-color: #ff0072;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
 
-.login-btn:hover, .demo-user-btn:hover {
+.login-btn:hover,
+.demo-user-btn:hover {
   background-color: #e6006f;
   cursor: pointer;
 }
@@ -67,22 +64,18 @@
   font-size: small;
 }
 
-
-
- .login-h1 {
-   text-align: center;
- }
-
+.login-h1 {
+  text-align: center;
+}
 
 .google-login-text {
-  color:white;
+  color: white;
 }
 
 /* Dark Mode */
 .dark .login-h1,
 .dark .google-login-text {
-  /* color: #ff7f47; */
-  color: #FF7EB3;
+  color: #ff7eb3;
 }
 
 .dark .login-form {
@@ -96,9 +89,8 @@
 }
 
 .dark .login-btn {
-  background-color: #ff7f47;
   color: white;
-  background-image: linear-gradient(to right, #FF758C 0%, #FF7EB3 100%);
+  background-image: linear-gradient(to right, #ff758c 0%, #ff7eb3 100%);
   color: #ffffff;
 }
 .dark .demo-user-btn {
@@ -107,10 +99,10 @@
 }
 
 .dark-mode .login-btn:hover {
-  background-image: linear-gradient(to right, #FF5678 0%, #FF6EA1 100%);
+  background-image: linear-gradient(to right, #ff5678 0%, #ff6ea1 100%);
   color: #ffffff;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .dark-mode .demo-user-btn:hover {
@@ -121,24 +113,23 @@
 /* Light Mode */
 .light .login-h1,
 .light .google-auth-btn {
-  color: #ff0072;
-  color: #FFA69E;
+  color: #ffa69e;
 }
 
 .light .login-form {
   color: white;
-  background-color: #FAFAFA;
+  background-color: #fafafa;
   color: #333333;
 }
 
 .light .login-input {
   color: #404040;
-  background-color: #F0F0F0;
+  background-color: #f0f0f0;
   border: 1px solid #ddd;
 }
 
-.light .login-btn{
-  background-image: linear-gradient(to right, #FFA69E 0%, #FFC3A0 100%);
+.light .login-btn {
+  background-image: linear-gradient(to right, #ffa69e 0%, #ffc3a0 100%);
   color: #333333;
 }
 .light .demo-user-btn {
@@ -150,10 +141,10 @@
 }
 
 .light .login-btn:hover {
-  background-image: linear-gradient(to right, #FFB3B3 0%, #FFD1C1 100%);
+  background-image: linear-gradient(to right, #ffb3b3 0%, #ffd1c1 100%);
   color: #333333;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .light .demo-user-btn:hover {
@@ -162,7 +153,8 @@
 }
 
 button {
-  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .disabled-btn,
@@ -173,16 +165,15 @@ button {
   background-color: grey;
   color: white;
   cursor: not-allowed;
-
-  /* pointer-events: none;
-  opacity: 0.7; */
 }
 
-
-
-/* Responsive Design */
+/* Media Query */
 @media screen and (max-width: 599px) {
-  .login-input, .login-btn, .demo-user-btn, .google-auth-btn, .error-message {
+  .login-input,
+  .login-btn,
+  .demo-user-btn,
+  .google-auth-btn,
+  .error-message {
     width: 90%;
   }
 }

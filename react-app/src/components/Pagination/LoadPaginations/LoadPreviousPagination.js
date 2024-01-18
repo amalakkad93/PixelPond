@@ -2,19 +2,14 @@ import React, { useState, useEffect } from "react";
 
 import "./LoadPreviousPagination.css";
 
-
 const LoadPreviousPagination = ({
   currentPage,
   totalPages,
   perPage,
   totalItems,
   onLoadPrevious,
-
 }) => {
-
   const [loading, setLoading] = useState(false);
-
-  // const showLoadPreviousButton = currentPage > 1 || (totalItems > currentPage * perPage);
   const showLoadPreviousButton = currentPage > 1;
 
   useEffect(() => {
@@ -28,7 +23,6 @@ const LoadPreviousPagination = ({
     <div className="load-previous-pagination">
       {showLoadPreviousButton && (
         <button onClick={onLoadPrevious} className="load-previous-btn">
-          {/* <i className="fa fa-chevron-up"></i> Load previous comments */}
           <i className="fa fa-chevron-up"></i>
         </button>
       )}

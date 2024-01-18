@@ -12,7 +12,6 @@ function OpenShortModalButton({
   const {  setShortModalContent, setOnShortModalClose } = useShortModal();
 
   const onClick = () => {
-    // setIsShortModal(useShortModal);
     setShortModalContent(modalComponent);
     if (onModalShortClose) setOnShortModalClose(onModalShortClose);
     if (onButtonClick) onButtonClick();
@@ -20,7 +19,6 @@ function OpenShortModalButton({
 
   return (
     <button className={`short-modal-more-info-button ${className}`} onClick={onClick}>{buttonText}</button>
-    // <button onClick={onClick}>{buttonText}</button>
   );
 }
 

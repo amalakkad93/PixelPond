@@ -45,7 +45,6 @@ export const thunkToggleFavorite = (userId, postId) => async (dispatch) => {
       body: JSON.stringify({ user_id: userId, post_id: postId }),
     });
     const data = await response.json();
-    console.log('---------------Favorite Toggled', data);
     if (data.action === 'added') {
       dispatch(actionAddFavorite(data.favorite));
     } else if (data.action === 'removed') {

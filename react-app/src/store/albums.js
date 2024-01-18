@@ -35,24 +35,6 @@ export const actionSetUserInfo = (userInfo) => ({
   type: GET_USER_INFO,
   userInfo,
 });
-// export const actionGetAlbumsByUserId = (albums) => {
-//   const normalizedAlbums = albums.map((album) => {
-//     const normalizedImages = normalizeArray(album.images, "id");
-//     return {
-//       id: album.id,
-//       title: album.title,
-//       user_id: album.user_id,
-//       images: normalizedImages,
-//       user_info: album.user_info,
-//     };
-//   });
-//   // const userInfo = albums[0]?.user_info;
-//   return {
-//     type: GET_ALBUMS_BY_USER_ID,
-//     albums: normalizeArray(normalizedAlbums, "id"),
-//     userInfo: albums[0]?.user_info,
-//   };
-// };
 
 export const actionGetAlbumsByUserId = (data) => {
   // Check if albums are present
@@ -128,29 +110,6 @@ export const thunkGetAlbumImages = (albumId, page, perPage) => {
   );
 };
 
-// export const thunkGetAlbumsByUserId = (userId, page, perPage) => {
-//   console.log(
-//     "🚀 ~ file: albums.js:99 ~ thunkGetAlbumsByUserId ~ userId:",
-//     userId
-//   );
-//   return fetchPaginatedData(
-//     `/api/albums/user/${userId}`,
-//     [
-//       (data) => {
-//         console.log("-----Fetching albums for data:", data);
-//         // return actionGetAlbumsByUserId(data.albums, data.user_info);
-//         return actionGetAlbumsByUserId(data.albums);
-//       },
-//     ],
-//     page,
-//     perPage,
-//     {},
-//     {},
-//     null,
-//     [false, false],
-//     ["albums", "user_info"]
-//   );
-// };
 export const thunkGetAlbumsByUserId = (userId, page, perPage) => {
   return fetchPaginatedData(
     `/api/albums/user/${userId}`,
@@ -168,10 +127,6 @@ export const thunkGetAlbumsByUserId = (userId, page, perPage) => {
     ["albums", "user_info"]
   );
 };
-
-
-
-
 
 // ***************************************************************
 // Thunk to Add Post to Album
@@ -276,7 +231,6 @@ export const thunkUpdateAlbum =
       if (response.ok) {
         const updatedAlbum = await response.json();
         dispatch(actionUpdateAlbum(updatedAlbum));
-        // dispatch(actionGetAlbumsByUserId(updatedAlbum.user_id, currentPage, perPage));
         return { type: "SUCCESS", data: updatedAlbum };
       } else {
         const errors = await response.json();
@@ -361,7 +315,6 @@ export default function reducer(state = initialState, action) {
       return newState;
 
     case ADD_POST_TO_ALBUM: {
-      // const { updatedPost } = action;
       const updatedPost = action.updatedPost;
 
       if (!updatedPost || !updatedPost.album_id) {

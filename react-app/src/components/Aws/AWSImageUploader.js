@@ -1,17 +1,35 @@
+/**
+ * AWSImageUploader Component
+ *
+ * This component is designed for uploading images to AWS S3. It allows users to select an image file
+ * and uploads it to S3 using a presigned URL obtained from the server. The component uses Redux for
+ * dispatching the action to get the presigned URL. It handles the file upload asynchronously and
+ * provides a preview of the selected image.
+ *
+ * The component's structure includes:
+ * - State management for the file, upload status, progress, and image preview.
+ * - An effect hook to set up the upload function when a file is selected.
+ * - A file input for users to select an image.
+ * - Display of upload progress and image preview.
+ *
+ * @param {function} setUploadImage - Callback function to set the image upload handler.
+ */
 import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getPresignedUrl, deleteImage } from "../../store/aws";
+import { useDispatch, } from "react-redux";
+import { getPresignedUrl, } from "../../store/aws";
 
 import "./AWSImageUploader.css";
 
 const AWSImageUploader = ({ setUploadImage }) => {
   const dispatch = useDispatch();
+  // State for the file, upload status, progress, and image preview
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [preview, setPreview] = useState(null);
-
   const [fileForUpload, setFileForUpload] = useState(null);
+
+  // useEffect hook to set up the file upload process
   useEffect(() => {
     if (file) {
       const upload = async () => {
@@ -41,6 +59,7 @@ const AWSImageUploader = ({ setUploadImage }) => {
     }
   }, [file, dispatch, setUploadImage]);
 
+  // Function to handle file selection and set up state
   const handleFileChange = (e) => {
     const newFile = e.target.files[0];
     if (newFile) {
@@ -52,7 +71,7 @@ const AWSImageUploader = ({ setUploadImage }) => {
 
   return (
     <div className="aws-main-container">
-      {/* <input className="aws-input" type="file" onChange={handleFileChange} /> */}
+      {/* File input and upload button */}
       <label htmlFor="file-upload" className="custom-file-upload">
         Upload photos
       </label>
@@ -62,7 +81,7 @@ const AWSImageUploader = ({ setUploadImage }) => {
         type="file"
         onChange={handleFileChange}
       />
-
+      {/* Conditional rendering for upload progress and image preview */}
       {uploading && (
         <div className="progress-container">
           <div className="progress-bar">

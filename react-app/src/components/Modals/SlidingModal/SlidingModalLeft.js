@@ -12,16 +12,3 @@ export default function SlidingModalLeft({ isVisible, onClose, children }) {
       </div>
   );
 }
-
-
-// export default function SlidingModal({ isVisible, onClose, children }) {
-//   console.log("SlidingModal render check:", isVisible);
-//     return (
-//         <div className={`sliding-modal ${isVisible ? 'visible' : ''}`}>
-//             <div className="sliding-modal-content">
-//                 {children}
-//             </div>
-//             <button className="close-btn" onClick={onClose}></button>
-//         </div>
-//     );
-// }

@@ -34,8 +34,6 @@ function ProfileButton({ user }) {
 
     document.addEventListener("click", closeMenu);
 
-    console.log("---Menu visibility changed:", showMenu);
-
     return () => document.removeEventListener("click", closeMenu);
   }, [showMenu]);
   const closeMenu = () => setShowMenu(false);
@@ -72,7 +70,6 @@ function ProfileButton({ user }) {
           <li className="profile-info">
 
             <OpenModalMenuItem
-              // className="center-menu black-text-button"
               className="login-modal"
               itemText="Log In"
               onItemClick={closeMenu}
@@ -85,7 +82,6 @@ function ProfileButton({ user }) {
           </li>
             <li className="profile-info">
             <OpenModalMenuItem
-              // className="center-menu black-text-button"
               className="signup-modal"
               itemText="Sign Up"
               onItemClick={closeMenu}

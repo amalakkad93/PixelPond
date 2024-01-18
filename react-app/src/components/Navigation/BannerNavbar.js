@@ -33,9 +33,6 @@ const BannerNavbar = ({ userInfo }) => {
     return images[Math.floor(Math.random() * images.length)];
   };
 
-
-  // const bannerPhoto = userInfo?.banner_picture || getRandomDefaultBannerImage();
-
   if(!isDataAvailable) return null;
   return (
     <div className="banner-nav-container">
@@ -71,10 +68,6 @@ const BannerNavbar = ({ userInfo }) => {
                   className="banner-nav-profile-picture"
                 />
               ) : (
-                // <FontAwesomeIcon
-                //   icon={faUserCircle}
-                //   className="banner-nav-profile-picture"
-                // />
                 <img className="banner-nav-profile-picture" src={ getRandomDefaultImage()} alt="Profile" />
               )}
             </div>
