@@ -5,15 +5,6 @@ import './TagDisplayModal.css'
 
 const TagDisplayModal = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
-
-//   return (
-//     <div className="tag-modal-overlay" onClick={onClose}>
-//       <div className="tag-modal-content" onClick={(e) => e.stopPropagation()}>
-//         {children}
-//       </div>
-//     </div>
-//   );
-// };
 return ReactDOM.createPortal(
   <div className="tag-modal-overlay">
     <div className="tag-modal-content">

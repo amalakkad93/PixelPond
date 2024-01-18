@@ -42,7 +42,6 @@ html, body {
   z-index: -1;
 }
 
-/* Styles for the greeting title */
 .greeting-h1 {
   color: #fff;
   margin-bottom: 20px;
@@ -51,8 +50,6 @@ html, body {
   line-height: 1.2;
 }
 
-/* Button styles */
-/* Button styles */
 .home-page-modal {
   padding: 10px 20px;
   font-size: 1em;
@@ -71,7 +68,7 @@ html, body {
   color: #fff;
 }
 
-/* Dark Mode for Home Container and Modal Button */
+/* Dark Mode */
 .dark .home-container {
   background-color: #282c35;
   color: white;
@@ -90,7 +87,7 @@ html, body {
   color: white;
 }
 
-/* Light Mode for Home Container and Modal Button */
+/* Light Mode */
 .light .home-container {
   background-color: #F0F0F0;
   color: #404040;
@@ -106,7 +103,7 @@ html, body {
 }
 
 .light .greeting-h1 {
-  color: #404040;
+  color: white;
 }
 
 /* Media Queries */

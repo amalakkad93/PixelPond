@@ -82,7 +82,6 @@ export const thunkGetAllTags = () => async (dispatch) => {
     const response = await fetch("/api/posts/tags");
     if (response.ok) {
       const data = await response.json();
-      console.log("🚀 ~ file: posts.js:440 ~ thunkGetAllTags ~ data:", data);
       dispatch(actionSetTags(data.tags));
       return data.tags;
     } else {
@@ -95,7 +94,6 @@ export const thunkGetAllTags = () => async (dispatch) => {
 };
 
 export const thunkGetPostsByTag = (tag, page, perPage) => {
-  console.log("thunkGetPostsByTag called", { tag, page, perPage });
   return fetchPaginatedData(
     `/api/posts/by_tag/${tag}`,
     [actionGetPostsByTag],
@@ -111,8 +109,6 @@ export const thunkGetPostsByTag = (tag, page, perPage) => {
 };
 
 export const thunkGetPostsByTags = (tags, page, perPage) => {
-  console.log("thunkGetPostsByTag called", { tags, page, perPage });
-
   const queryParams = new URLSearchParams();
   tags.forEach((tag) => queryParams.append("tags", tag));
   queryParams.append("page", page);
@@ -162,7 +158,6 @@ export default function reducer(state = initialState, action) {
       return newState;
 
     case CREATE_TAG:
-      console.log("Creating tag in reducer:", action.tag);
       return {
         ...state,
         allTags: [...state.allTags, action.tag],

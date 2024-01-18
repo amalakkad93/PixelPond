@@ -1,10 +1,21 @@
+/**
+ * CommentForm Component
+ *
+ * This component is a form for creating and editing comments on posts. It allows users to add textual content
+ * and optionally an image to their comment. The form supports two modes: 'Create' for adding new comments and
+ * 'Edit' for modifying existing ones. It uses Redux for dispatching actions related to comments and integrates
+ * with a modal control context. The component also fetches comment details for editing and integrates an image
+ * uploader for adding images to comments.
+ *
+ * @param {number} postId - The ID of the post to which the comment is related.
+ * @param {string} formType - The type of form, either 'Create' or 'Edit'.
+ * @param {number} [commentId] - The ID of the comment being edited (required for 'Edit' formType).
+ * @param {function} [onCommentSuccess] - Callback function executed after successful comment submission.
+ */
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUserCircle, faArrowRight } from "@fortawesome/free-solid-svg-icons";
-
-import { useModal } from "../../../context/Modal";
+import { faUserCircle, } from "@fortawesome/free-solid-svg-icons";
 import { useShortModal } from "../../../context/ModalShort";
 import {
   thunkAddComment,
@@ -13,8 +24,7 @@ import {
 } from "../../../store/comments";
 import { selectSessionUser } from "../../../store/selectors";
 import AWSImageUploader from "../../Aws/AWSImageUploader";
-import OpenModalButton from "../../Modals/OpenModalButton";
-import SignupFormModal from "../../SignupFormModal";
+
 import "./CommentForm.css";
 
 export default function CommentForm({
@@ -25,8 +35,8 @@ export default function CommentForm({
   onCommentSuccess,
 }) {
   const dispatch = useDispatch();
-  const history = useHistory();
 
+  // Setup of hooks and state management variables
   const { closeShortModal } = useShortModal();
   const [content, setContent] = useState("");
   const [uploadImage, setUploadImage] = useState(null);
@@ -36,6 +46,7 @@ export default function CommentForm({
   const sessionUser = useSelector(selectSessionUser);
   const profilePic = sessionUser?.profile_picture;
 
+  // useEffect hook to fetch and set comment data for editing
   useEffect(() => {
     const fetchAndSetCommentData = async () => {
       if (sessionUser && formType === "Edit" && postId && commentId) {
@@ -56,6 +67,7 @@ export default function CommentForm({
     fetchAndSetCommentData();
   }, [dispatch, postId, commentId, sessionUser, formType]);
 
+  // Function to handle the form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -98,6 +110,7 @@ export default function CommentForm({
 
   return (
     <div className="comment-area">
+       {/* Display user profile picture or default icon */}
       {formType === "Create" && (
         <div className="comment-user-profile-picture">
           {profilePic ? (
@@ -116,6 +129,7 @@ export default function CommentForm({
       )}
       <div className="text-area-section">
         <form onSubmit={handleSubmit} className="comment-form">
+          {/* Textarea for comment and AWSImageUploader component */}
           <div className="text-area-wrapper">
             <textarea
               className="comment-field"
@@ -130,6 +144,7 @@ export default function CommentForm({
             />
             {formType === "Create" && <div className="comment-arrow"></div>}
           </div>
+          {/* Submit button for the form */}
           <button
             type="submit"
             className={`action comment-button ${

@@ -1,4 +1,3 @@
-// useResponsivePagination.js
 import { useState, useEffect, useCallback } from 'react';
 
 const useResponsivePagination = (defaultPerPage = 10) => {
@@ -6,12 +5,9 @@ const useResponsivePagination = (defaultPerPage = 10) => {
 
   const updatePerPage = useCallback(() => {
     const screenWidth = window.innerWidth;
-    console.log("Screen width: ", screenWidth); // Debugging line
     if (screenWidth < 600) {
-      console.log("Setting perPage to 2"); // Debugging line
       setPerPage(2);
     } else {
-      console.log("Setting perPage to default: ", defaultPerPage); // Debugging line
       setPerPage(defaultPerPage);
     }
   }, [defaultPerPage]);
@@ -26,4 +22,3 @@ const useResponsivePagination = (defaultPerPage = 10) => {
 };
 
 export default useResponsivePagination;
-

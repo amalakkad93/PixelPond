@@ -31,17 +31,13 @@ const setError = (error) => ({
   payload: error,
 });
 
-
-
 export const deleteImage = (imageUrl) => async (dispatch) => {
-  console.log("Type of imageUrl:", typeof imageUrl);
-
   try {
-      const response = await fetch("/api/s3/delete-image", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ image_url: imageUrl }),
-      });
+    const response = await fetch("/api/s3/delete-image", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image_url: imageUrl }),
+    });
     if (!response.ok) {
       const { error } = await response.json();
       dispatch(setError(error));
@@ -52,14 +48,14 @@ export const deleteImage = (imageUrl) => async (dispatch) => {
 };
 
 export const getPresignedUrl = (filename, contentType) => async (dispatch) => {
-  console.log("🚀 ~ file: aws.js:55 ~ getPresignedUrl ~ contentType:", contentType)
-  console.log("🚀 ~ file: aws.js:55 ~ getPresignedUrl ~ filename:", filename)
   try {
     const response = await fetch(
-      `/api/s3/generate_presigned_url?filename=${encodeURIComponent(filename)}&contentType=${contentType}`
+      `/api/s3/generate_presigned_url?filename=${encodeURIComponent(
+        filename
+      )}&contentType=${contentType}`
     );
     if (!response.ok) {
-      throw new Error('Failed to get presigned URL');
+      throw new Error("Failed to get presigned URL");
     }
     const { presigned_url, file_url } = await response.json();
     return { presignedUrl: presigned_url, fileUrl: file_url };
@@ -89,7 +85,6 @@ export default function reducer(state = initialState, action) {
       return initialState;
 
     case SET_UPLOADED_IMAGE_URL:
-      console.log("Setting uploaded image URL to:", action.payload);
       return { ...state, uploadedImageUrl: action.payload };
 
     case SET_ERROR:

@@ -40,16 +40,10 @@ function Navigation({ isLoaded, }) {
   const sessionUser = useSelector(selectSessionUser);
   const postUserInfo = useSelector(selectPostUserInfo);
   const albumUserInfo = useSelector(selectAlbumUserInfo);
-  console.log(
-    "🚀 ~ file: index.js:41 ~ Navigation ~ albumUserInfo:",
-    albumUserInfo
-  );
-
   const allTags = useSelector(selectAllTags);
   const [showModal, setShowModal] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [isOwner, setIsOwner] = useState(null);
-  // const [isLoading, setIsLoading] = useState(true);
 
   const isFavoritesPage = location.pathname.includes("/user/favorites-post");
 
@@ -78,7 +72,6 @@ function Navigation({ isLoaded, }) {
   useEffect(() => {
     if (userInfo && sessionUser) {
       setIsOwner(sessionUser.id === userInfo.id);
-      // setIsLoading(false);
     }
   }, [userInfo, sessionUser]);
 

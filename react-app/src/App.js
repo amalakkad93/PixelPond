@@ -36,10 +36,6 @@ function App() {
     document.body.className = themeName;
   }, [themeName]);
 
-  //<Route path="/user/favorites-post">
-  // <FavoritesPosts  />
-  //</Route>
-  // "/posts/users/:userId/favorites-post"
   return (
     <>
       <Navigation isLoaded={isLoaded} />

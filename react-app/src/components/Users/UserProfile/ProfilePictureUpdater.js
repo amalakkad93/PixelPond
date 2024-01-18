@@ -16,7 +16,7 @@ const ProfilePictureUpdater = () => {
           'Content-Type': file.type,
         }),
       });
-      return presignedUrl.split('?')[0]; 
+      return presignedUrl.split('?')[0];
     } catch (error) {
       console.error("Error uploading image to S3:", error);
       return null;
@@ -28,7 +28,7 @@ const ProfilePictureUpdater = () => {
     setFile(newFile);
     setPreview(URL.createObjectURL(newFile));
 
-    const response = await fetch(`/api/users/presigned-url?file_name=${newFile.name}&file_type=${newFile.type}`);
+    const response = await fetch(`/api/users/presigned-url?file_name=${newFile?.name}&file_type=${newFile?.type}`);
     if (!response.ok) {
       console.error("Failed to get presigned URL");
       return;

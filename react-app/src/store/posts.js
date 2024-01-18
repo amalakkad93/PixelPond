@@ -1,14 +1,9 @@
-// import { normalizeArray, fetchPaginatedData } from "../assets/helpers/storesHelpers";
 import {
   normalizeArray,
   uploadFileWithProgress,
 } from "../assets/helpers/storesHelpers";
 import { getPresignedUrl } from "./aws";
-import {
-  fetchPaginatedData,
-  actionSetCurrentPage,
-  actionSetTotalPages,
-} from "./paginations";
+import { fetchPaginatedData } from "./paginations";
 import { setLoading, setError } from "./ui";
 
 /** Action type to handle fetching all posts */
@@ -98,22 +93,6 @@ const actionGetOwnerPosts = (posts) => ({
   posts,
 });
 
-/** Creates an action to handle creating a new post */
-// const actionCreatePost = (post) => ({
-//   type: CREATE_POST,
-//   post,
-// });
-const actionCreatePost = (post) => {
-  console.log("Creating action for post creation: ", {
-    type: CREATE_POST,
-    post,
-  });
-  return {
-    type: CREATE_POST,
-    post,
-  };
-};
-
 /** Creates an action to handle updating a post */
 const actionUpdatePost = (post) => ({
   type: UPDATE_POST,
@@ -184,7 +163,6 @@ const actionSetPostError = (errorMessage) => ({
 //  Thunk to Fetch All Posts With Pagination
 // ***************************************************************
 export const thunkGetAllPosts = (page, perPage) => {
-  console.log("thunkGetAllPosts called", { page, perPage });
   return fetchPaginatedData(
     "/api/posts/all",
     [actionGetAllPosts],
@@ -224,10 +202,8 @@ export const thunkGetPostsByUserId = (userId, page, perPage) => {
   return fetchPaginatedData(
     `/api/posts/user/${userId}`,
     [
-      // (posts, userInfo) => actionGetPostsByUserId(posts, userInfo)
       (normalizedPosts, data) =>
         actionGetPostsByUserId(normalizedPosts, data.user_info),
-      // actionGetPostsByUserId(normalizedPosts),
     ],
     page,
     perPage,
@@ -249,14 +225,7 @@ export const thunkGetPostDetails = (postId) => async (dispatch) => {
 
     if (response.ok) {
       const post = await response.json();
-      console.log(
-        "🚀 ~ file: posts.js:164 ~ thunkGetPostDetails ~ post:",
-        post
-      );
-      console.log(
-        "🚀 ~ file: posts.js:164 ~ thunkGetPostDetails ~ post:",
-        post.user_info
-      );
+
       dispatch(actionGetSinglePost(post));
       if (post.user_info) {
         dispatch(actionSetUserInfo(post.user_info));
@@ -413,61 +382,6 @@ export const thunkUpdatePost =
     }
   };
 
-// export const thunkUpdatePost = (postId, updatedData, image) => async (dispatch) => {
-//   if (!postId) {
-//     return { type: "ERROR", error: { message: "Invalid post ID" } };
-//   }
-
-//   try {
-//     if (image) {
-//       const { presignedUrl, fileUrl } = await dispatch(getPresignedUrl(image.name, image.type));
-//       if (!presignedUrl) {
-//         throw new Error('Failed to upload image');
-//       }
-
-//       await fetch(presignedUrl, {
-//         method: "PUT",
-//         body: image,
-//         headers: {
-//           "Content-Type": image.type,
-//         },
-//       });
-
-//       updatedData.image_url = fileUrl;
-//     }
-
-//     const response = await fetch(`/api/posts/${postId}`, {
-//       method: "PUT",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify(updatedData),
-//     });
-
-//     if (response.ok) {
-//       const data = await response.json();
-//       dispatch(actionUpdatePost(data));
-//       dispatch(thunkGetPostDetails(postId));
-//       return data;
-//     } else {
-//       const errors = await response.json();
-//       console.error("Update Post Error: ", errors);
-//       dispatch(
-//         actionSetPostError(
-//           errors.error || `Error updating post with ID ${postId}.`
-//         )
-//       );
-//       return { type: "FAILURE", error: errors };
-//     }
-//   } catch (error) {
-//     console.error("Error in thunkUpdatePost: ", error);
-//     dispatch(
-//       actionSetPostError(
-//         `An error occurred while updating post with ID ${postId}.`
-//       )
-//     );
-//     return { type: "ERROR", error };
-//   }
-// };
-
 // ***************************************************************
 //  Thunk to Delete a Post
 // ***************************************************************
@@ -503,10 +417,8 @@ export const thunkGetUserPostsNotInAlbum = (userId, page, perPage) => {
   return fetchPaginatedData(
     `/api/posts/user/${userId}/not-in-album`,
     [
-      // (posts, userInfo) => actionGetPostsByUserId(posts, userInfo)
       (normalizedPosts, data) =>
         actionGetPostsNotInAlbum(normalizedPosts, data.user_info),
-      // actionGetPostsByUserId(normalizedPosts),
     ],
     page,
     perPage,
@@ -802,7 +714,6 @@ export default function reducer(state = initialState, action) {
       return {
         ...state,
         singlePost: {},
-        // neighborPosts: {},
       };
     default:
       return state;

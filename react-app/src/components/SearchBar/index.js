@@ -50,7 +50,6 @@ const SearchBar = ({ allTags, onTagSelected, onTagClear }) => {
   const [selectedTagInfo, setSelectedTagInfo] = useState(null); // Store info about the selected tag.
   const [showPopover, setShowPopover] = useState(false);
 
-
   // Pagination hook for responsive page sizes.
   const perPage = useResponsivePagination(10);
   const containerRef = useRef(null);
@@ -102,24 +101,17 @@ const SearchBar = ({ allTags, onTagSelected, onTagClear }) => {
   const debouncedHandleSearch = debounce(handleSearch, 300);
 
   // Event handlers for search interactions (input change, tag/user selection, etc.)
-  // const handleSearchChange = (e) => {
-  //   const term = e.target.value;
-  //   setSearchTerm(term);
-  //   debouncedHandleSearch(term);
-  // };
   const handleSearchChange = (e) => {
     const term = e.target.value;
     setSearchTerm(term);
     setShowDropdown(term.trim().length > 0);
 
-      setShowPopover(false);
+    setShowPopover(false);
 
     debouncedHandleSearch(term);
   };
 
   const handleTagClick = (tag) => {
-    // setSelectedTagInfo(tag);
-
     const updatedTags = selectedTags.includes(tag)
       ? selectedTags.filter((t) => t !== tag)
       : [...selectedTags, tag];
@@ -160,12 +152,6 @@ const SearchBar = ({ allTags, onTagSelected, onTagClear }) => {
     }
   };
 
-  const togglePopover = () => {
-    setShowPopover(!showPopover);
-    setShowDropdown(false);
-  };
-
-
   return (
     <div className="tag-search-container">
       {searchTerm === "" && <i className="fas fa-search search-icon"></i>}
@@ -186,18 +172,18 @@ const SearchBar = ({ allTags, onTagSelected, onTagClear }) => {
             <div
               key={index}
               className="user-search-item"
-              onClick={() => handleUserClick(user.id)}
+              onClick={() => handleUserClick(user?.id)}
             >
               <img
-                src={user.profile_picture || "/default-profile.png"}
-                alt={`${user.first_name} ${user.last_name}`}
+                src={user?.profile_picture || "/default-profile.png"}
+                alt={`${user?.first_name} ${user?.last_name}`}
                 className="user-profile-picture"
               />
               {highlightText(
-                `${user.first_name} ${user.last_name}`,
+                `${user?.first_name} ${user?.last_name}`,
                 searchTerm
               )}
-              (@{user.username})
+              (@{user?.username})
             </div>
           ))}
           {searchResults.tags.length > 0 && (
@@ -216,28 +202,21 @@ const SearchBar = ({ allTags, onTagSelected, onTagClear }) => {
         </div>
       )}
 
-      {/* <div className="tag-selected-container">
-        {selectedTags.map((tag, index) => (
-          <button
-            key={index}
-            className="tag-selected-button"
-            onClick={() => handleClear(tag)}
-          >
-            {tag} <span>X</span>
-          </button>
-        ))}
-      </div> */}
-           {showPopover && (
+      {showPopover && (
         <div className=" popover">
           {selectedTags.map((tag, index) => (
             <div key={index} className="tag-selected-div">
               {tag}
-              <button className="tag-selected-button" onClick={() => handleClear(tag)}>X</button>
+              <button
+                className="tag-selected-button"
+                onClick={() => handleClear(tag)}
+              >
+                X
+              </button>
             </div>
           ))}
         </div>
       )}
-
     </div>
   );
 };
