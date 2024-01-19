@@ -250,4 +250,7 @@
   .tag-search-input {
     width: 100%;
   }
+  .search-icon {
+    display: none;
+  }
 }

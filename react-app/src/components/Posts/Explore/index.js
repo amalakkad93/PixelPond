@@ -45,16 +45,16 @@ const Explore = () => {
   const perPage = useResponsivePagination(10);
 
   // Fetches posts based on the current page and selected tags
-  const fetchData = async () => {
+  const fetchData = async (page) => {
     setIsLoading(true);
     try {
       let response;
       if (selectedTags.length > 0) {
         response = await dispatch(
-          thunkGetPostsByTags(selectedTags, currentPage, perPage)
+          thunkGetPostsByTags(selectedTags, page, perPage)
         );
       } else {
-        response = await dispatch(thunkGetAllPosts(currentPage, perPage));
+        response = await dispatch(thunkGetAllPosts(page, perPage));
       }
 
       if (response) {
@@ -78,7 +78,7 @@ const Explore = () => {
   }, [location.search]);
 
   useEffect(() => {
-    fetchData();
+    fetchData(currentPage);
   }, [selectedTags, currentPage, perPage, dispatch]);
 
   if (isLoading) return <Spinner />;
@@ -98,7 +98,7 @@ const Explore = () => {
         totalItems={totalPages * perPage}
         itemsPerPage={perPage}
         currentPage={currentPage}
-        onPageChange={(newPage) => fetchData(newPage, selectedTags)}
+        onPageChange={(newPage) => fetchData(newPage)}
       />
     </div>
   );

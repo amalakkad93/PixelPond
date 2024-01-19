@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useLocation, useHistory } from "react-router-dom";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
+
 import { useLoading } from "../../context/LoadingContext";
 import ProfileButton from "./ProfileButton";
 import PopupsModal from "../Modals/PopupsModal";
@@ -24,6 +25,8 @@ import {
   faCameraRetro,
   faUserCircle,
   faImages,
+  faXmark,
+  faMagnifyingGlass,
 } from "@fortawesome/free-solid-svg-icons";
 
 import logo from "../../assets/images/logo.png";
@@ -31,7 +34,7 @@ import TagSearch from "../Tags/TagSearch";
 import SearchBar from "../SearchBar";
 import "./Navigation.css";
 
-function Navigation({ isLoaded, }) {
+function Navigation({ isLoaded }) {
   const location = useLocation();
   const dispatch = useDispatch();
   const history = useHistory();
@@ -44,6 +47,7 @@ function Navigation({ isLoaded, }) {
   const [showModal, setShowModal] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [isOwner, setIsOwner] = useState(null);
+  const [mobileSearchVisible, setMobileSearchVisible] = useState(false);
 
   const isFavoritesPage = location.pathname.includes("/user/favorites-post");
 
@@ -106,22 +110,45 @@ function Navigation({ isLoaded, }) {
   return (
     <>
       <div className="navbar-content">
-        <nav className="navbar">
-          <NavLink exact to="/posts/all" className="navbar-logo">
-            <img src={logo} alt="logo" className="logo" />
-          </NavLink>
+        <nav
+          className={`navbar ${
+            mobileSearchVisible ? "mobile-search-visible" : ""
+          }`}
+        >
+          {!mobileSearchVisible && (
+            <NavLink exact to="/posts/all" className="navbar-logo">
+              <img src={logo} alt="logo" className="logo" />
+            </NavLink>
+          )}
 
+          <div
+            className="mobile-search-icon"
+            onClick={() => setMobileSearchVisible(!mobileSearchVisible)}
+          >
+            {mobileSearchVisible ? (
+              <FontAwesomeIcon icon={faXmark} />
+            ) : (
+              <FontAwesomeIcon
+                icon={faMagnifyingGlass}
+                style={{ color: "#d9d9d9" }}
+              />
+            )}
+          </div>
           <SearchBar
             className="tag-search-container"
             allTags={allTags}
             onTagSelected={handleTagSelection}
             onTagClear={() => history.push("/posts/all")}
           />
+
           <ul className="navbar-links">
             <div class="menu">
               <li className="explore-icon">
                 <NavLink to="/explore" activeClassName="active">
-                  <FontAwesomeIcon icon={faCameraRetro} /> Explore
+                  <div className="explore-content">
+                    <FontAwesomeIcon icon={faCameraRetro} />
+                    <span>Explore</span>
+                  </div>
                 </NavLink>
               </li>
 

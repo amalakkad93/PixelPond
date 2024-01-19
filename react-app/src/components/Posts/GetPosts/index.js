@@ -55,7 +55,7 @@ export default function GetPosts({ mode = "all" }) {
 
   useEffect(() => {
     fetchData(currentPage);
-  }, [currentPage, mode, dispatch]);
+  }, [currentPage, mode, perPage, dispatch]); 
 
   if (!posts || posts.length === 0) return null;
 
