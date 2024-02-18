@@ -1,0 +1,7 @@
+.env
+pycache/
+*.py[cod]
+.venv
+.DS_Store
+.vscode/
+dev.db
