@@ -4,7 +4,7 @@ import './GoogleAuthButton.css'
 
 function GoogleAuthButton() {
 
-  const BASE_URL="https://pixelpond-rhct.onrender.com";
+  const BASE_URL="https://pixelpond-yu4i.onrender.com";
 
   const backendBaseUrl = process.env.NODE_ENV === "development"
     ? "http://localhost:5000"
